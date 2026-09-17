@@ -2,23 +2,24 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 0 h 53 min
+**Gesamt:** 1 h 13 min
 
 | Issue | Zeit |
 |---|---|
 | #001 Projekt-Setup | 0 h 08 min |
 | #002 Klickbarer Prototyp | 0 h 20 min |
 | #003 Datenmodell und Migrationen | 0 h 25 min |
+| #004 Agent-API | 0 h 20 min |
 
 | Meilenstein | Zeit |
 |---|---|
-| v0.1.0 | 0 h 53 min |
+| v0.1.0 | 1 h 13 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
-**Issue:** #001 Projekt-Setup, #002 Klickbarer Prototyp, #003 Datenmodell
-**Version:** 0.1.0-dev
+**Issue:** #001–#004 (Meilenstein v0.1.0)
+**Version:** 0.1.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -29,6 +30,8 @@
 - #002 abgeschlossen: Prototyp mit Beispieldaten – Layout (Sidebar, Kopfleiste, Inhaltskopf, Footer), Logo als SVG-Komponente, Theme mit Farbvorgaben und Dark-Mode, Dashboard, Kunden (Liste und Detail), Hosts (Liste, Detail, nicht zugeordnet), Rechnungen, Jahresbahn, Einstellungsseiten, globale Suche mit Strg+K
 - Screenshots aller Seiten aufgenommen und in `docs/anleitung/bilder/` abgelegt
 - #003 abgeschlossen: Prisma-Schema mit 23 Modellen, erste Migration, Seed (Administrator, 10 Warnregeln, Demo-Daten), Testdatenbank-Setup für Vitest, 3 Schema-Tests
+- #004 abgeschlossen: Agent-API mit Enrollment, Report und Ping, gehashte Tokens, Rate-Limit, zod-Validierung, 32 Tests insgesamt
+- Meilenstein v0.1.0 abgeschlossen und getaggt
 
 ### Entscheidungen
 - **Screenshots mit Firefox headless** statt Playwright: Firefox ist vorhanden, es muss kein Browser samt Systembibliotheken nachinstalliert werden (dafür wäre root nötig).
@@ -41,6 +44,9 @@
 - **Prisma 7.10.0 fest gesetzt:** Der npm-Tag `latest` zeigt derzeit auf 8.0.0-rc, ein Release Candidate gehört nicht in ein neues Projekt.
 - **Seed nutzt die Prototyp-Beispieldaten**, damit die Oberfläche ab #006 dieselben Fälle zeigt wie der Prototyp.
 - **Keine Nur-Lese-Rolle** (Rückmeldung Florian): alle Benutzer sind Administratoren.
+- **Prisma-Client wird lazy erzeugt** (Proxy), damit `next build` ohne gesetzte `DATABASE_URL` durchläuft.
+- **Report-Idempotenz über eine vom Agent erzeugte `reportId`**: nachgesendete Reports aus dem Spool dürfen beliebig oft ankommen.
+- **Unbekannte Subscription-Status werden zu `UNKNOWN`** statt abgelehnt – ein Report darf nie an einem neuen Statuswort scheitern.
 
 ### Probleme / offene Fragen
 - Docker wurde von Florian installiert; die Entwicklungsdatenbank läuft auf Port 5433 (5432 bleibt für lokale Instanzen frei).
@@ -48,4 +54,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #004 Agent-API: Enrollment, Report-Endpunkt, Token-Hashing, Rate-Limit, Tests
+- #005 Agent-Skript (Bash) mit systemd-Timer, Spool und Installer
