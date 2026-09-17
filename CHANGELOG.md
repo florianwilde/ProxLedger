@@ -11,6 +11,9 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 - Projektorganisation: Devlog, Changelog, Issue-Übersicht und Issues pro Phase (#001)
 - Architektur- und Umsetzungsplan in `docs/architektur.md` (#001)
 - Next.js-Grundgerüst mit AdminLTE-CSS, Bootstrap Icons, zod, ESLint, Prettier und Vitest (#001)
+- Klickbarer Prototyp mit Beispieldaten: Dashboard, Kunden- und Host-Ansichten, Rechnungen, Jahresbahn (#002)
+- ProxLedger-Logo als SVG-Komponente, Farbschema nach Vorgabe inklusive Dark-Mode (#002)
+- Globale Suche über Key, Host, Kunde und Rechnungsnummer mit Strg+K (#002)
 
 ### Geändert
 
