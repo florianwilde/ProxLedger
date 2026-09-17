@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 4 h 53 min
+**Gesamt:** 5 h 23 min
 
 | Issue | Zeit |
 |---|---|
@@ -19,6 +19,7 @@
 | #010 Export CSV und PDF | 0 h 20 min |
 | #011 Warnregeln | 0 h 30 min |
 | #012 Benachrichtigungen | 0 h 25 min |
+| #013 Authentifizierung | 0 h 30 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -32,12 +33,13 @@
 | v0.6.0 | 0 h 35 min | **abgeschlossen**
 | v0.7.0 | 0 h 30 min | **abgeschlossen**
 | v0.8.0 | 0 h 25 min | **abgeschlossen**
+| v0.9.0 | 0 h 30 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.8.0
+**Version:** 0.9.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -71,8 +73,11 @@
 - #012 abgeschlossen: SMTP (Microsoft 365), generischer Webhook mit Signatur, Zusammenfassung, Versandprotokoll, Testversand; keine Doppelmeldungen dank Prüfung gegen das Protokoll
 - Issue #021 angelegt: Zugangsdaten liegen noch unverschlüsselt in der Datenbank
 - Meilenstein v0.8.0 abgeschlossen; 134 Tests
+- #013 abgeschlossen: Anmeldung mit Passwort und OIDC, Schutz aller Seiten über `proxy.ts`, Anmeldeseite im AdminLTE-Stil, Audit-Log-Ansicht, Sicherheits-Kopfzeilen, Rate-Limit bei Anmeldeversuchen
+- Meilenstein v0.9.0 abgeschlossen; 147 Tests
 
 ### Entscheidungen
+- **Kein Auth.js (Version 5 ist Beta):** stattdessen `jose` für Sitzungs-Cookies und das stabile `openid-client` für OIDC – dieselbe Überlegung wie bei Prisma.
 - **Warnstufen im Fingerabdruck** (`…:7`): Der Wechsel 30 → 14 → 7 schließt die alte Warnung und öffnet eine neue. Das ergibt je Stufe genau eine Benachrichtigung, ohne Sonderlogik für Eskalation.
 - **Rechnungsnummer als Schlüssel für Sammelrechnungen:** Dieselbe Nummer bei einer zweiten Laufzeit hängt eine Position an – kein eigener Dialog für „Sammelrechnung anlegen“ nötig.
 - **PDF-Prüfung am Dateianfang** statt am gemeldeten Typ; abgelegt wird unter der Prüfsumme, gleiche Datei also nur einmal.
@@ -100,4 +105,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #013 Authentifizierung: OIDC über authentik, lokaler Admin, Audit-Log-Ansicht
+- #014 Deployment: Dockerfile, Compose mit Worker, LXC-Installer, README und Backup-Hinweise

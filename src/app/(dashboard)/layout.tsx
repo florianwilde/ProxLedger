@@ -1,6 +1,9 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { SITZUNGS_COOKIE, sitzungLesen } from "@/lib/sitzung";
 import { kennzahlen, offeneAlerts, suchIndex } from "@/server/queries/hosts";
 
 /**
@@ -9,9 +12,11 @@ import { kennzahlen, offeneAlerts, suchIndex } from "@/server/queries/hosts";
  */
 export const dynamic = "force-dynamic";
 
-const BENUTZER = "Florian";
-
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  // Der Schutz liegt in proxy.ts; hier wird zusätzlich geprüft, damit kein Zustand ohne Benutzer entsteht.
+  const sitzung = await sitzungLesen((await cookies()).get(SITZUNGS_COOKIE)?.value);
+  if (!sitzung) redirect("/login");
+
   const [zahlen, alerts, suche] = await Promise.all([kennzahlen(), offeneAlerts(), suchIndex()]);
 
   return (
@@ -25,13 +30,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
           hostId: alert.hostId,
         }))}
         suchEintraege={suche}
-        benutzer={BENUTZER}
+        benutzer={sitzung.name}
       />
       <Sidebar
         hostsAnzahl={zahlen.hostsGesamt}
         offeneRechnungspunkte={zahlen.offeneRechnungspunkte}
         offeneWarnungen={zahlen.offeneAlerts}
-        benutzer={BENUTZER}
+        benutzer={sitzung.name}
       />
       <main className="app-main">{children}</main>
       <Footer />
