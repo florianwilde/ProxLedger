@@ -20,4 +20,7 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#014](014-deployment.md) | Deployment und Dokumentation | offen | v0.10.0 | 8 h | – |
 | [#015](015-feinschliff-v1.md) | Feinschliff für 1.0 | offen | v1.0.0 | 6 h | – |
 | [#016](016-anleitung-screenshots.md) | Benutzerhandbuch mit Screenshots | offen | v0.10.0 | 5 h | – |
-| | **Summe** | | | **106 h** | **2 h 13 min** |
+| [#017](017-favicon-dateien.md) | Favicon-Dateien erzeugen | offen | v0.6.0 | 1 h | – |
+| [#018](018-agent-feldtest.md) | Agent auf echten Proxmox-Hosts prüfen | offen | v0.2.1 | 2 h | – |
+| [#019](019-ci-pipeline.md) | CI-Pipeline | offen | v0.10.0 | 3 h | – |
+| | **Summe** | | | **112 h** | **2 h 13 min** |
