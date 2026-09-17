@@ -24,6 +24,27 @@ npm test           # legt bei Bedarf die Testdatenbank an
 
 Weitere Skripte: `npm run db:studio` (Datenbank-Oberfläche), `npm run db:down` (Container stoppen).
 
+## Agent auf einem Proxmox-Host installieren
+
+```bash
+curl -fsSL https://<dashboard>/install.sh | bash -s -- --token <ENROLL_TOKEN>
+```
+
+Der Agent erkennt Proxmox VE, Backup Server und Mail Gateway selbst, registriert sich, schreibt seine
+Konfiguration nach `/etc/proxledger/agent.conf` (Rechte 600) und meldet ab dann täglich per systemd-Timer.
+
+| Befehl | Zweck |
+|---|---|
+| `proxledger-agent` | Report erzeugen und senden |
+| `proxledger-agent --dry-run` | Report nur anzeigen |
+| `proxledger-agent --test` | Verbindung zum Dashboard prüfen |
+| `proxledger-agent --update` | Agent aktualisieren |
+| `curl -fsSL https://<dashboard>/install.sh \| bash -s -- --uninstall` | Agent entfernen |
+
+Protokoll: `journalctl -t proxledger`. Ist das Dashboard nicht erreichbar, versucht es der Agent dreimal mit
+wachsendem Abstand und legt den Report danach unter `/var/lib/proxledger/spool/` ab; beim nächsten Lauf wird er
+nachgesendet.
+
 ## Dokumentation
 
 - [Architektur- und Umsetzungsplan](docs/architektur.md)

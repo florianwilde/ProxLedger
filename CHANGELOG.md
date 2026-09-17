@@ -17,6 +17,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.2.0] – 2026-09-17
+
+### Hinzugefügt
+- Agent-Skript in Bash: erkennt Proxmox VE, Backup Server und Mail Gateway, sammelt Subscription-, Host- und Systemdaten (#005)
+- Installation per One-Liner mit Enrollment-Token, systemd-Service und -Timer (täglich, zufällig versetzt) (#005)
+- Zwischenspeicher für Reports samt Nachsenden, wenn das Dashboard nicht erreichbar ist (#005)
+- Update- und Uninstall-Funktion sowie Verbindungstest (`--test`) und Vorschau (`--dry-run`) (#005)
+- Dashboard liefert `install.sh` und `agent.sh` mit eingesetzter Adresse und Version aus (#005)
+
+### Sicherheit
+- Konfiguration des Agents mit Rechten 600, TLS-Prüfung standardmäßig aktiv, optional eigenes CA-Zertifikat (#005)
+
 ## [0.1.0] – 2026-09-17
 
 ### Hinzugefügt

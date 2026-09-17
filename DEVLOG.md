@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 1 h 13 min
+**Gesamt:** 1 h 38 min
 
 | Issue | Zeit |
 |---|---|
@@ -10,16 +10,18 @@
 | #002 Klickbarer Prototyp | 0 h 20 min |
 | #003 Datenmodell und Migrationen | 0 h 25 min |
 | #004 Agent-API | 0 h 20 min |
+| #005 Agent-Skript | 0 h 25 min |
 
 | Meilenstein | Zeit |
 |---|---|
 | v0.1.0 | 1 h 13 min | **abgeschlossen**
+| v0.2.0 | 0 h 25 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
-**Issue:** #001–#004 (Meilenstein v0.1.0)
-**Version:** 0.1.0
+**Issue:** #001–#005 (Meilensteine v0.1.0 und v0.2.0)
+**Version:** 0.2.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -32,6 +34,8 @@
 - #003 abgeschlossen: Prisma-Schema mit 23 Modellen, erste Migration, Seed (Administrator, 10 Warnregeln, Demo-Daten), Testdatenbank-Setup für Vitest, 3 Schema-Tests
 - #004 abgeschlossen: Agent-API mit Enrollment, Report und Ping, gehashte Tokens, Rate-Limit, zod-Validierung, 32 Tests insgesamt
 - Meilenstein v0.1.0 abgeschlossen und getaggt
+- #005 abgeschlossen: Bash-Agent mit Produkterkennung, JSON ohne jq, Retry mit Backoff, Spool, systemd-Timer, Installer, Uninstall und Update; Dashboard liefert `/install.sh` und `/agent.sh` aus
+- Meilenstein v0.2.0 abgeschlossen und getaggt; 38 Tests
 
 ### Entscheidungen
 - **Screenshots mit Firefox headless** statt Playwright: Firefox ist vorhanden, es muss kein Browser samt Systembibliotheken nachinstalliert werden (dafür wäre root nötig).
@@ -51,7 +55,8 @@
 ### Probleme / offene Fragen
 - Docker wurde von Florian installiert; die Entwicklungsdatenbank läuft auf Port 5433 (5432 bleibt für lokale Instanzen frei).
 - Favicon-Dateien (.ico/PNG) fehlen noch, weil kein SVG-Konverter installiert ist.
+- Der Agent wurde noch auf keinem echten Proxmox-Host installiert; die Tests arbeiten mit nachgebauten Befehlen.
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #005 Agent-Skript (Bash) mit systemd-Timer, Spool und Installer
+- #006 Kunden, Standorte und Hostzuweisung (erste Oberfläche mit echten Daten)
