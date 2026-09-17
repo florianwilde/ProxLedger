@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 6 h 03 min
+**Gesamt:** 6 h 38 min
 
 | Issue | Zeit |
 |---|---|
@@ -21,6 +21,7 @@
 | #012 Benachrichtigungen | 0 h 25 min |
 | #013 Authentifizierung | 0 h 30 min |
 | #014 Deployment | 0 h 40 min |
+| #015 Feinschliff | 0 h 35 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -36,12 +37,13 @@
 | v0.8.0 | 0 h 25 min | **abgeschlossen**
 | v0.9.0 | 0 h 30 min | **abgeschlossen**
 | v0.10.0 | 0 h 40 min | **abgeschlossen**
+| v0.11.0 | 0 h 35 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.10.0
+**Version:** 0.11.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -80,8 +82,12 @@
 - #014 abgeschlossen: Dockerfile (Standalone, Non-root), Compose mit web/worker/postgres/migrate, LXC-Installer, Reverse-Proxy-Beispiele, Sicherungsskript, README mit Schnellstart und Betriebshinweisen
 - Container-Stapel wirklich gebaut und geprüft: Agent registriert sich, Report kommt an, Warnung entsteht automatisch
 - Meilenstein v0.10.0 abgeschlossen
+- #015 abgeschlossen: Dark-Mode geprüft (Logo war unsichtbar – behoben), Mobilansicht ohne Querscrollen, Lasttest mit 200 Hosts und 365.000 Reports, Auswertung der Warnregeln von 3813 auf 293 ms beschleunigt, Sicherheitsdurchsicht
+- Als v0.11.0 veröffentlicht statt 1.0.0: Feldtest, Handbuch, Favicons, CI und Verschlüsselung der Zugangsdaten stehen noch aus
 
 ### Entscheidungen
+- **Warnungen sammelweise anlegen:** Einzelne Upserts kosteten bei 737 neuen Warnungen 3,8 s; mit `createMany` sind es 0,3 s.
+- **Keine 1.0.0 ohne Feldtest:** Solange der Agent auf keinem echten Proxmox-Host lief, wäre die Zahl ein falsches Versprechen.
 - **Kein Auth.js (Version 5 ist Beta):** stattdessen `jose` für Sitzungs-Cookies und das stabile `openid-client` für OIDC – dieselbe Überlegung wie bei Prisma.
 - **Warnstufen im Fingerabdruck** (`…:7`): Der Wechsel 30 → 14 → 7 schließt die alte Warnung und öffnet eine neue. Das ergibt je Stufe genau eine Benachrichtigung, ohne Sonderlogik für Eskalation.
 - **Rechnungsnummer als Schlüssel für Sammelrechnungen:** Dieselbe Nummer bei einer zweiten Laufzeit hängt eine Position an – kein eigener Dialog für „Sammelrechnung anlegen“ nötig.
@@ -111,4 +117,5 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #015 Feinschliff: Dark-Mode prüfen, Mobilansicht, Barrierefreiheit, Sicherheits-Durchsicht
+- #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
+- Für 1.0.0 fehlt vor allem der Feldtest auf echten Proxmox-Hosts (#018)

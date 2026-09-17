@@ -17,6 +17,16 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.11.0] – 2026-09-17
+
+### Geändert
+- Auswertung der Warnregeln um den Faktor 13 beschleunigt: neue Warnungen entstehen sammelweise (#015)
+- Aufgaben-Karte auf dem Dashboard zeigt höchstens zwölf Punkte und verweist für den Rest auf die Rechnungsliste (#015)
+- Große Tabellen blenden auf schmalen Bildschirmen gestaffelt Spalten aus, statt quer zu scrollen (#015)
+
+### Behoben
+- Das Logo war im dunklen Design praktisch unsichtbar; seine Farben folgen jetzt dem Farbschema (#015)
+
 ## [0.10.0] – 2026-09-17
 
 ### Hinzugefügt

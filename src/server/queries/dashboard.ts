@@ -47,8 +47,12 @@ export async function hostsNachAblauf(jetzt: Date = new Date()) {
   });
 }
 
-/** Offene Rechnungspunkte als Aufgabenliste fürs Dashboard. */
-export async function offeneAufgaben() {
+/**
+ * Offene Rechnungspunkte als Aufgabenliste fürs Dashboard.
+ * Begrenzt, weil die Karte sonst bei vielen Hosts endlos lang wird – die vollständige
+ * Liste steht unter „Rechnungen“.
+ */
+export async function offeneAufgaben(grenze = 12) {
   const laufzeiten = await prisma.laufzeit.findMany({
     where: {
       status: "BESTAETIGT",
@@ -116,5 +120,5 @@ export async function offeneAufgaben() {
     }
   }
 
-  return aufgaben;
+  return { aufgaben: aufgaben.slice(0, grenze), gesamt: aufgaben.length };
 }
