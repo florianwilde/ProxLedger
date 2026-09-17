@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 2 h 58 min
+**Gesamt:** 3 h 23 min
 
 | Issue | Zeit |
 |---|---|
@@ -14,6 +14,7 @@
 | #006 Kunden und Hostzuweisung | 0 h 35 min |
 | #007 Host-Tabelle und Detailansichten | 0 h 25 min |
 | #020 Issues nach Gitea übertragen | 0 h 20 min |
+| #008 Laufzeiten und Rechnungen | 0 h 35 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -23,12 +24,13 @@
 | v0.4.0 | 0 h 25 min | **abgeschlossen**
 | v0.4.1 | 0 h 10 min | **abgeschlossen**
 | v0.4.2 | 0 h 10 min | **abgeschlossen**
+| v0.5.0 | 0 h 35 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.4.2
+**Version:** 0.5.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -52,8 +54,12 @@
 - #020 abgeschlossen: Abgleichskript für den Gitea-Issue-Tracker (Missverständnis geklärt – die Issues lagen bisher nur als Dateien im Repo, nicht im Tracker)
 - Token kommt aus den Git-Zugangsdaten statt aus einer zweiten Stelle; 20 Issues, 15 Labels und 13 Meilensteine in Gitea angelegt
 - Alles nach Gitea gepusht: main bei 51243c2, Tags v0.1.0 bis v0.4.1
+- #008 abgeschlossen: Laufzeit-Vorschläge bestätigen oder verwerfen, Rechnungen mit Positionen erfassen, PDF-Upload, Häkchen direkt in der Tabelle, Filter nach Status, Kunde und Jahr; Aufgabenliste auf dem Dashboard setzt jetzt echte Status
+- Meilenstein v0.5.0 abgeschlossen; 78 Tests
 
 ### Entscheidungen
+- **Rechnungsnummer als Schlüssel für Sammelrechnungen:** Dieselbe Nummer bei einer zweiten Laufzeit hängt eine Position an – kein eigener Dialog für „Sammelrechnung anlegen“ nötig.
+- **PDF-Prüfung am Dateianfang** statt am gemeldeten Typ; abgelegt wird unter der Prüfsumme, gleiche Datei also nur einmal.
 - **Screenshots mit Firefox headless** statt Playwright: Firefox ist vorhanden, es muss kein Browser samt Systembibliotheken nachinstalliert werden (dafür wäre root nötig).
 - **Kennzahlen werden berechnet, nicht hinterlegt:** auch im Prototyp kommen alle Zahlen aus den Beispieldaten, damit Tabellen und Kacheln nie widersprüchlich sind.
 - **AdminLTE 4.9.1 nur als CSS:** stabil, Bootstrap 5.3.8, kein jQuery; die JS-Plugins manipulieren das DOM und werden daher als React-Komponenten nachgebaut.
@@ -78,4 +84,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #008 Laufzeiten und Rechnungen: Vorschläge bestätigen, Rechnungen erfassen, Häkchen direkt in der Tabelle
+- #009 Kundenübersicht, Ablauf-Kalender und Jahresbahn auf Datenbankbasis

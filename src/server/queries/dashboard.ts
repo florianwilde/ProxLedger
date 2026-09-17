@@ -66,7 +66,19 @@ export async function offeneAufgaben() {
     },
   });
 
-  const aufgaben = [];
+  const aufgaben: {
+    id: string;
+    titel: string;
+    detail: string;
+    betrag: number | null;
+    faelligAm: Date | null;
+    dringlichkeit: "gefahr" | "warnung";
+    badgeText: string;
+    href: string;
+    start: Date;
+    ende: Date;
+    aktion: { laufzeitId: string; hostId: string; feld: "einkaufBezahlt" | "verkaufErstellt" };
+  }[] = [];
   for (const laufzeit of laufzeiten) {
     const basis = `${laufzeit.host.hostname} · ${laufzeit.host.kunde?.name ?? "Nicht zugeordnet"}`;
     const einkauf = laufzeit.proxmoxPosition?.rechnung;
@@ -80,9 +92,10 @@ export async function offeneAufgaben() {
         faelligAm: einkauf.faelligAm,
         dringlichkeit: "gefahr" as const,
         badgeText: "Einkauf",
-        href: `/hosts/${laufzeit.hostId}`,
+        href: `/rechnungen/${laufzeit.id}`,
         start: laufzeit.start,
         ende: laufzeit.ende,
+        aktion: { laufzeitId: laufzeit.id, hostId: laufzeit.hostId, feld: "einkaufBezahlt" as const },
       });
     }
 
@@ -95,9 +108,10 @@ export async function offeneAufgaben() {
         faelligAm: null,
         dringlichkeit: "warnung" as const,
         badgeText: "Verkauf",
-        href: "/rechnungen",
+        href: `/rechnungen/${laufzeit.id}`,
         start: laufzeit.start,
         ende: laufzeit.ende,
+        aktion: { laufzeitId: laufzeit.id, hostId: laufzeit.hostId, feld: "verkaufErstellt" as const },
       });
     }
   }

@@ -39,6 +39,7 @@ export default async function DashboardSeite() {
       dringlichkeit: aufgabe.dringlichkeit,
       badgeText: aufgabe.badgeText,
       href: aufgabe.href,
+      aktion: aufgabe.aktion,
     })),
     ...ohneKunde.map((host) => ({
       id: `zuweisen-${host.id}`,
