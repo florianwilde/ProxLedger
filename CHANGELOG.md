@@ -17,6 +17,15 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [Unveröffentlicht v0.6.0]
+
+### Hinzugefügt
+- Jahresbahn mit zwölf Monaten, Heute-Linie und Gruppierung nach Kunde, aus echten Daten (#009)
+- Ablauf-Kalender für die nächsten 90 Tage samt Rechnungsstatus und eine Übersicht bereits abgelaufener Subscriptions (#009)
+
+### Geändert
+- Die Oberfläche arbeitet vollständig mit der Datenbank; Beispieldaten dienen nur noch dem Seed (#009)
+
 ## [0.5.0] – 2026-09-17
 
 ### Hinzugefügt

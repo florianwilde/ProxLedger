@@ -1,26 +1,31 @@
 import Link from "next/link";
 import { ContentHeader } from "@/components/layout/ContentHeader";
+import { AblaufBadge, EinkaufBadge, VerkaufBadge } from "@/components/ui/Badges";
 import { Card } from "@/components/ui/Card";
-import { formatDatum, tageBis } from "@/lib/format";
-import { HEUTE, hosts, kunden } from "@/mock/data";
+import { CopyableCode } from "@/components/ui/CopyableCode";
+import { formatDatum, formatTageBis } from "@/lib/format";
+import { ablaufDaten } from "@/server/queries/jahresbahn";
 
 export const metadata = { title: "Jahresbahn" };
 
 const MONATE = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+const GESAMT_TAGE = 365;
 
-export default function JahresbahnSeite() {
-  const start = new Date(Date.UTC(HEUTE.getUTCFullYear(), HEUTE.getUTCMonth(), 1));
-  const gesamtTage = 365;
+export default async function JahresbahnSeite() {
+  const jetzt = new Date();
+  const { gruppen, naechste90Tage, abgelaufen } = await ablaufDaten(jetzt);
 
-  function position(datum: string): number | null {
-    const tage = Math.round((new Date(datum).getTime() - start.getTime()) / 86_400_000);
-    if (tage < 0 || tage > gesamtTage) return null;
-    return (tage / gesamtTage) * 100;
+  // Die Bahn beginnt am Ersten des laufenden Monats und zeigt zwölf Monate.
+  const start = new Date(Date.UTC(jetzt.getUTCFullYear(), jetzt.getUTCMonth(), 1));
+
+  function position(datum: Date): number | null {
+    const tage = Math.round((datum.getTime() - start.getTime()) / 86_400_000);
+    if (tage < 0 || tage > GESAMT_TAGE) return null;
+    return (tage / GESAMT_TAGE) * 100;
   }
 
-  const heutePosition = position(HEUTE.toISOString().slice(0, 10)) ?? 0;
-
-  const monatsBeschriftung = Array.from({ length: 12 }, (_, i) => {
+  const heutePosition = position(jetzt) ?? 0;
+  const monate = Array.from({ length: 12 }, (_, i) => {
     const datum = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + i, 1));
     return `${MONATE[datum.getUTCMonth()]} ${String(datum.getUTCFullYear()).slice(2)}`;
   });
@@ -31,79 +36,175 @@ export default function JahresbahnSeite() {
 
       <div className="app-content">
         <div className="container-fluid">
-          <Card titel="Abläufe der nächsten 12 Monate" rahmen="primary">
-            <div className="table-responsive">
-              <div style={{ minWidth: "760px" }}>
-                <div className="d-flex text-body-secondary small mb-2" style={{ marginLeft: "12rem" }}>
-                  {monatsBeschriftung.map((monat) => (
-                    <div key={monat} style={{ width: `${100 / 12}%` }}>
-                      {monat}
-                    </div>
-                  ))}
-                </div>
-
-                {kunden.map((kunde) => {
-                  const eigene = hosts.filter(
-                    (h) => h.kundeId === kunde.id && h.subscription.nextduedate !== null,
-                  );
-                  if (eigene.length === 0) return null;
-                  return (
-                    <div key={kunde.id} className="mb-3">
-                      <div className="fw-semibold small mb-1">
-                        <Link href={`/kunden/${kunde.id}`} className="text-decoration-none">
-                          {kunde.name}
-                        </Link>
+          <Card titel="Abläufe der nächsten zwölf Monate" rahmen="primary">
+            {gruppen.length === 0 ? (
+              <p className="mb-0 text-body-secondary">Noch kein Host mit Ablaufdatum gemeldet.</p>
+            ) : (
+              <div className="table-responsive">
+                <div style={{ minWidth: "820px" }}>
+                  <div className="d-flex text-body-secondary small mb-2" style={{ marginLeft: "13rem" }}>
+                    {monate.map((monat) => (
+                      <div key={monat} style={{ width: `${100 / 12}%` }}>
+                        {monat}
                       </div>
-                      {eigene.map((host) => {
-                        const datum = host.subscription.nextduedate!;
-                        const links = position(datum.slice(0, 10));
-                        const tage = tageBis(datum, HEUTE);
+                    ))}
+                  </div>
+
+                  {gruppen.map((gruppe) => (
+                    <div key={gruppe.kundeId ?? "ohne"} className="mb-3">
+                      <div className="fw-semibold small mb-1">
+                        {gruppe.kundeId ? (
+                          <Link href={`/kunden/${gruppe.kundeId}`} className="text-decoration-none">
+                            {gruppe.name}
+                          </Link>
+                        ) : (
+                          <span className="badge pl-bg-neutral">{gruppe.name}</span>
+                        )}
+                      </div>
+
+                      {gruppe.eintraege.map((eintrag) => {
+                        const links = position(eintrag.ablauf);
                         const farbe =
-                          tage === null || tage < 14
+                          eintrag.tage < 14
                             ? "var(--pl-danger)"
-                            : tage < 30
+                            : eintrag.tage < 30
                               ? "var(--pl-warning)"
                               : "var(--pl-info)";
                         return (
-                          <div key={host.id} className="d-flex align-items-center mb-1">
-                            <div className="small text-truncate" style={{ width: "12rem" }}>
-                              <Link href={`/hosts/${host.id}`} className="text-decoration-none">
-                                {host.hostname}
+                          <div key={eintrag.hostId} className="d-flex align-items-center mb-1">
+                            <div className="small text-truncate" style={{ width: "13rem" }}>
+                              <Link href={`/hosts/${eintrag.hostId}`} className="text-decoration-none">
+                                {eintrag.hostname}
                               </Link>
                             </div>
                             <div className="pl-timeline-row flex-grow-1 position-relative">
                               <div className="pl-timeline-heute" style={{ left: `${heutePosition}%` }} />
                               {links === null ? (
                                 <span className="small text-body-secondary ms-2">
-                                  außerhalb des Zeitraums ({formatDatum(datum)})
+                                  außerhalb des Zeitraums ({formatDatum(eintrag.ablauf)})
                                 </span>
                               ) : (
-                                <div
-                                  className="pl-timeline-bar"
+                                <Link
+                                  href={
+                                    eintrag.laufzeitId
+                                      ? `/rechnungen/${eintrag.laufzeitId}`
+                                      : `/hosts/${eintrag.hostId}`
+                                  }
+                                  className="pl-timeline-bar text-decoration-none"
                                   style={{
-                                    left: `${Math.max(0, links - 6)}%`,
+                                    left: `${Math.min(92, Math.max(0, links - 5))}%`,
                                     backgroundColor: farbe,
                                     color: farbe === "var(--pl-warning)" ? "var(--pl-warning-text)" : "#fff",
                                   }}
-                                  title={`${host.hostname} läuft am ${formatDatum(datum)} ab`}
+                                  title={`${eintrag.hostname} läuft am ${formatDatum(eintrag.ablauf)} ab`}
                                 >
-                                  {formatDatum(datum)}
-                                </div>
+                                  {formatDatum(eintrag.ablauf)}
+                                </Link>
                               )}
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
             <p className="small text-body-secondary mb-0">
-              Die rote Linie markiert heute ({formatDatum(HEUTE)}). Farbe der Balken: rot unter 14 Tagen, gelb
-              unter 30 Tagen, sonst blau.
+              Die rote Linie markiert heute ({formatDatum(jetzt)}). Balkenfarbe: rot unter 14 Tagen, gelb
+              unter 30 Tagen, sonst blau. Ein Klick führt zur Laufzeit mit ihren Rechnungen.
             </p>
           </Card>
+
+          <div className="row">
+            <div className="col-lg-8">
+              <Card
+                titel={`Ablauf-Kalender: nächste 90 Tage (${naechste90Tage.length})`}
+                rahmen="warning"
+                tabelle
+              >
+                <div className="table-responsive">
+                  <table className="table table-striped align-middle">
+                    <thead>
+                      <tr>
+                        <th scope="col">Ablauf</th>
+                        <th scope="col">Host</th>
+                        <th scope="col">Kunde</th>
+                        <th scope="col">Key</th>
+                        <th scope="col">Proxmox</th>
+                        <th scope="col">Kundenrechnung</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {naechste90Tage.map((eintrag) => (
+                        <tr key={eintrag.hostId}>
+                          <td>
+                            <AblaufBadge datum={eintrag.ablauf.toISOString()} heute={jetzt} />
+                          </td>
+                          <td>
+                            <Link href={`/hosts/${eintrag.hostId}`} className="text-decoration-none">
+                              {eintrag.hostname}
+                            </Link>
+                          </td>
+                          <td>
+                            {eintrag.kunde ? (
+                              <Link href={`/kunden/${eintrag.kunde.id}`} className="text-decoration-none">
+                                {eintrag.kunde.name}
+                              </Link>
+                            ) : (
+                              <span className="badge pl-bg-neutral">Nicht zugeordnet</span>
+                            )}
+                          </td>
+                          <td>
+                            <CopyableCode wert={eintrag.key} />
+                          </td>
+                          <td>
+                            <EinkaufBadge bezahlt={eintrag.einkaufBezahlt} />
+                          </td>
+                          <td>
+                            <VerkaufBadge erstellt={eintrag.verkaufErstellt ?? false} bezahlt={false} />
+                          </td>
+                        </tr>
+                      ))}
+                      {naechste90Tage.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="text-center text-body-secondary py-4">
+                            In den nächsten 90 Tagen läuft nichts ab.
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </div>
+
+            <div className="col-lg-4">
+              <Card
+                titel={`Bereits abgelaufen (${abgelaufen.length})`}
+                rahmen={abgelaufen.length > 0 ? "danger" : "info"}
+              >
+                {abgelaufen.length === 0 ? (
+                  <p className="mb-0 text-body-secondary">Keine abgelaufenen Subscriptions.</p>
+                ) : (
+                  <ul className="list-unstyled mb-0">
+                    {abgelaufen.map((eintrag) => (
+                      <li key={eintrag.hostId} className="mb-2">
+                        <Link href={`/hosts/${eintrag.hostId}`} className="fw-semibold text-decoration-none">
+                          {eintrag.hostname}
+                        </Link>
+                        <div className="small text-body-secondary">
+                          {eintrag.kunde?.name ?? "Nicht zugeordnet"} · {formatDatum(eintrag.ablauf)} (
+                          {formatTageBis(eintrag.tage)})
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </>
