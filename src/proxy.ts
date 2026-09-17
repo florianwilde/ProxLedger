@@ -14,8 +14,13 @@ const OEFFENTLICH = [
   "/api/gesundheit",
   "/install.sh",
   "/agent.sh",
+  // Symbole und Manifest: Der Browser holt sie auch vor der Anmeldung.
   "/favicon.ico",
   "/icon.svg",
+  "/apple-icon.png",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/manifest.webmanifest",
 ];
 
 export async function proxy(request: NextRequest) {
