@@ -17,11 +17,13 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
-## [Unveröffentlicht v0.6.0]
+## [0.6.0] – 2026-09-17
 
 ### Hinzugefügt
 - Jahresbahn mit zwölf Monaten, Heute-Linie und Gruppierung nach Kunde, aus echten Daten (#009)
 - Ablauf-Kalender für die nächsten 90 Tage samt Rechnungsstatus und eine Übersicht bereits abgelaufener Subscriptions (#009)
+- CSV-Export für Kundenübersicht und Rechnungsliste, PDF-Export für Hosts, Kunden und Rechnungen (#010)
+- Kundenunterlage als PDF: Hosts, Laufzeiten, Summen pro Jahr und Marge eines Kunden (#010)
 
 ### Geändert
 - Die Oberfläche arbeitet vollständig mit der Datenbank; Beispieldaten dienen nur noch dem Seed (#009)

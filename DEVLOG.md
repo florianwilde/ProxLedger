@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 3 h 38 min
+**Gesamt:** 3 h 58 min
 
 | Issue | Zeit |
 |---|---|
@@ -16,6 +16,7 @@
 | #020 Issues nach Gitea übertragen | 0 h 20 min |
 | #008 Laufzeiten und Rechnungen | 0 h 35 min |
 | #009 Jahresbahn und Ablauf-Kalender | 0 h 15 min |
+| #010 Export CSV und PDF | 0 h 20 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -26,7 +27,7 @@
 | v0.4.1 | 0 h 10 min | **abgeschlossen**
 | v0.4.2 | 0 h 10 min | **abgeschlossen**
 | v0.5.0 | 0 h 35 min | **abgeschlossen**
-| v0.6.0 | 0 h 15 min | in Arbeit
+| v0.6.0 | 0 h 35 min | **abgeschlossen**
 
 ---
 
@@ -59,6 +60,8 @@
 - #008 abgeschlossen: Laufzeit-Vorschläge bestätigen oder verwerfen, Rechnungen mit Positionen erfassen, PDF-Upload, Häkchen direkt in der Tabelle, Filter nach Status, Kunde und Jahr; Aufgabenliste auf dem Dashboard setzt jetzt echte Status
 - Meilenstein v0.5.0 abgeschlossen; 78 Tests
 - #009 abgeschlossen: Jahresbahn und Ablauf-Kalender (90 Tage) aus der Datenbank, dazu eine Karte für bereits abgelaufene Subscriptions; die Oberfläche nutzt keine Beispieldaten mehr
+- #010 abgeschlossen: CSV- und PDF-Export für Hosts, Kunden, einzelne Kundenunterlage und Rechnungsliste; PDFs serverseitig ohne Browser
+- Meilenstein v0.6.0 abgeschlossen
 
 ### Entscheidungen
 - **Rechnungsnummer als Schlüssel für Sammelrechnungen:** Dieselbe Nummer bei einer zweiten Laufzeit hängt eine Position an – kein eigener Dialog für „Sammelrechnung anlegen“ nötig.
@@ -87,4 +90,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #010 Export: CSV für Kundenübersicht und Rechnungsliste, PDF-Ausgaben
+- #011 Warnregeln mit Worker und konfigurierbaren Schwellwerten
