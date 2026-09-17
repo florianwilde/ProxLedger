@@ -19,6 +19,8 @@
   --pl-sidebar-text: #c2c7d0;
   --pl-sidebar-divider: #4b545c;
   --pl-font-mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+  --pl-logo-p: #1e2a44;
+  --pl-logo-linien: #17a2b8;
 
   --bs-primary: var(--pl-primary);
   --bs-primary-rgb: 0, 123, 255;
@@ -33,6 +35,16 @@
 :root[data-bs-theme="dark"] {
   --pl-content-bg: #1b1f24;
   --pl-sidebar-bg: #22272d;
+  /* Auf dunklem Grund wäre das dunkle P unsichtbar. */
+  --pl-logo-p: #e9ecef;
+}
+
+.pl-logo-p {
+  fill: var(--pl-logo-p);
+}
+
+.pl-logo-linien {
+  stroke: var(--pl-logo-linien);
 }
 
 body {

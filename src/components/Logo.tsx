@@ -1,6 +1,7 @@
 /**
  * ProxLedger-Monogramm: ein P auf zwei Buchungslinien.
- * Varianten: "standard" (heller Grund), "sidebar" (dunkler Grund), "mono" (einfarbig für PDF/Rechnungen).
+ * Varianten: "standard" folgt dem Farbschema (im Dunkelmodus hell), "sidebar" ist immer weiß,
+ * "mono" einfarbig für PDF und Rechnungen.
  */
 
 export type LogoVariante = "standard" | "sidebar" | "mono";
@@ -9,18 +10,19 @@ interface LogoProps {
   variante?: LogoVariante;
   groesse?: number;
   className?: string;
-  /** Für dekorative Verwendung neben dem Schriftzug. */
+  /** Für dekorative Verwendung neben dem Schriftzug leer lassen. */
   titel?: string;
 }
 
-const FARBEN: Record<LogoVariante, { p: string; linien: string }> = {
-  standard: { p: "#1E2A44", linien: "#17A2B8" },
+const FESTE_FARBEN: Record<Exclude<LogoVariante, "standard">, { p: string; linien: string }> = {
   sidebar: { p: "#FFFFFF", linien: "#17A2B8" },
   mono: { p: "#1E2A44", linien: "#1E2A44" },
 };
 
 export function Logo({ variante = "standard", groesse = 40, className, titel }: LogoProps) {
-  const farben = FARBEN[variante];
+  // Die Standardvariante nimmt ihre Farben aus dem Theme, damit sie auch auf dunklem Grund lesbar bleibt.
+  const farben = variante === "standard" ? null : FESTE_FARBEN[variante];
+
   return (
     <svg
       viewBox="0 0 48 48"
@@ -36,14 +38,21 @@ export function Logo({ variante = "standard", groesse = 40, className, titel }: 
       <path
         fillRule="evenodd"
         d="M8 4h19a12 12 0 0 1 0 24H16v16H8zM16 11h10a5 5 0 0 1 0 10H16z"
-        fill={farben.p}
+        className={farben ? undefined : "pl-logo-p"}
+        fill={farben?.p}
       />
-      <path d="M22 36h20M22 43h14" stroke={farben.linien} strokeWidth="3.5" strokeLinecap="round" />
+      <path
+        d="M22 36h20M22 43h14"
+        className={farben ? undefined : "pl-logo-linien"}
+        stroke={farben?.linien}
+        strokeWidth="3.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-/** Logo mit Schriftzug, wie in Sidebar und Login verwendet. */
+/** Logo mit Schriftzug, wie in Sidebar und Anmeldung verwendet. */
 export function LogoMitSchriftzug({
   variante = "standard",
   groesse = 36,

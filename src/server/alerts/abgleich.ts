@@ -82,26 +82,27 @@ export async function alertsAbgleichen(jetzt: Date = new Date()): Promise<Abglei
   const kontext = await kontextLaden(jetzt);
   const kandidaten = alleRegelnPruefen(kontext);
 
-  const offene = await prisma.alert.findMany({ where: { erledigtAm: null } });
+  // Alle betroffenen Warnungen in einem Zug laden: die offenen und die, deren Fall wieder auftritt.
+  const fingerprints = kandidaten.map((k) => k.fingerprint);
+  const [offene, bekannte] = await Promise.all([
+    prisma.alert.findMany({ where: { erledigtAm: null } }),
+    fingerprints.length > 0
+      ? prisma.alert.findMany({ where: { fingerprint: { in: fingerprints } } })
+      : Promise.resolve([]),
+  ]);
+
   const offeneNachFingerprint = new Map(offene.map((alert) => [alert.fingerprint, alert]));
+  const bekannteNachFingerprint = new Map(bekannte.map((alert) => [alert.fingerprint, alert]));
   const kandidatenNachFingerprint = new Map(kandidaten.map((k) => [k.fingerprint, k]));
 
   const neu = kandidaten.filter((k) => !offeneNachFingerprint.has(k.fingerprint));
   const verschwunden = offene.filter((alert) => !kandidatenNachFingerprint.has(alert.fingerprint));
 
-  for (const kandidat of neu) {
-    // Ein früher erledigter Fall taucht wieder auf: denselben Eintrag erneut öffnen.
-    await prisma.alert.upsert({
-      where: { fingerprint: kandidat.fingerprint },
-      update: {
-        titel: kandidat.titel,
-        beschreibung: kandidat.beschreibung,
-        schwere: kandidat.schwere,
-        erledigtAm: null,
-        quittiertAm: null,
-        geoeffnetAm: jetzt,
-      },
-      create: {
+  // Fälle, die es noch nie gab: in einem Rutsch anlegen.
+  const wirklichNeu = neu.filter((k) => !bekannteNachFingerprint.has(k.fingerprint));
+  if (wirklichNeu.length > 0) {
+    await prisma.alert.createMany({
+      data: wirklichNeu.map((kandidat) => ({
         fingerprint: kandidat.fingerprint,
         regel: kandidat.regel,
         schwere: kandidat.schwere,
@@ -110,6 +111,22 @@ export async function alertsAbgleichen(jetzt: Date = new Date()): Promise<Abglei
         hostId: kandidat.hostId,
         kundeId: kandidat.kundeId,
         laufzeitId: kandidat.laufzeitId,
+        geoeffnetAm: jetzt,
+      })),
+      skipDuplicates: true,
+    });
+  }
+
+  // Früher erledigte Fälle, die wieder auftreten: denselben Eintrag erneut öffnen.
+  for (const kandidat of neu.filter((k) => bekannteNachFingerprint.has(k.fingerprint))) {
+    await prisma.alert.update({
+      where: { fingerprint: kandidat.fingerprint },
+      data: {
+        titel: kandidat.titel,
+        beschreibung: kandidat.beschreibung,
+        schwere: kandidat.schwere,
+        erledigtAm: null,
+        quittiertAm: null,
         geoeffnetAm: jetzt,
       },
     });

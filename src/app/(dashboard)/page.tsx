@@ -15,7 +15,7 @@ export const metadata = { title: "Dashboard" };
 
 export default async function DashboardSeite() {
   const heute = new Date();
-  const [zahlen, ohneKunde, ablaufListe, aufgabenRoh, kunden, rechnungspunkte] = await Promise.all([
+  const [zahlen, ohneKunde, ablaufListe, aufgabenDaten, kunden, rechnungspunkte] = await Promise.all([
     kennzahlen(heute),
     hostsOhneKunde(),
     hostsNachAblauf(heute),
@@ -25,7 +25,7 @@ export default async function DashboardSeite() {
   ]);
 
   const aufgaben: Aufgabe[] = [
-    ...aufgabenRoh.map((aufgabe) => ({
+    ...aufgabenDaten.aufgaben.map((aufgabe) => ({
       id: aufgabe.id,
       titel: aufgabe.titel,
       detail: [
@@ -41,7 +41,7 @@ export default async function DashboardSeite() {
       href: aufgabe.href,
       aktion: aufgabe.aktion,
     })),
-    ...ohneKunde.map((host) => ({
+    ...ohneKunde.slice(0, 5).map((host) => ({
       id: `zuweisen-${host.id}`,
       titel: `${host.hostname} einem Kunden zuweisen`,
       detail: `Server-ID ${host.serverId ?? "unbekannt"} · seit ${formatDatum(host.erstmalsGesehenAm)} gemeldet`,
@@ -183,9 +183,19 @@ export default async function DashboardSeite() {
               <Card
                 titel="Aufgaben"
                 rahmen="warning"
-                werkzeuge={<span className="badge pl-bg-warning">{aufgaben.length}</span>}
+                werkzeuge={
+                  <span className="badge pl-bg-warning">
+                    {aufgabenDaten.gesamt + ohneKunde.length}
+                  </span>
+                }
               >
                 <TodoList aufgaben={aufgaben} />
+                {aufgabenDaten.gesamt > aufgabenDaten.aufgaben.length ? (
+                  <p className="small text-body-secondary mt-3 mb-0">
+                    {aufgabenDaten.gesamt - aufgabenDaten.aufgaben.length} weitere Punkte unter{" "}
+                    <Link href="/rechnungen">Rechnungen</Link>.
+                  </p>
+                ) : null}
               </Card>
             </div>
           </div>

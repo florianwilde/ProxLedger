@@ -125,11 +125,17 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
                   <tr>
                     <SortierKopf titel="Host" feld="hostname" basis={basis} sortierung={filter.sortierung} />
                     <SortierKopf titel="Kunde" feld="kunde" basis={basis} sortierung={filter.sortierung} />
-                    <th scope="col">Produkt</th>
+                    <th scope="col" className="d-none d-lg-table-cell">
+                      Produkt
+                    </th>
                     <SortierKopf titel="Status" feld="status" basis={basis} sortierung={filter.sortierung} />
-                    <th scope="col">Key</th>
+                    <th scope="col" className="d-none d-md-table-cell">
+                      Key
+                    </th>
                     <SortierKopf titel="Ablauf" feld="ablauf" basis={basis} sortierung={filter.sortierung} />
-                    <th scope="col">Sockets</th>
+                    <th scope="col" className="d-none d-lg-table-cell">
+                      Sockets
+                    </th>
                     <SortierKopf
                       titel="Letzte Meldung"
                       feld="meldung"
@@ -165,17 +171,17 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
                           <div className="small text-body-secondary">{host.standort.name}</div>
                         ) : null}
                       </td>
-                      <td>{PRODUKT_TEXT[host.produkt]}</td>
+                      <td className="d-none d-lg-table-cell">{PRODUKT_TEXT[host.produkt]}</td>
                       <td>
                         <StatusBadge status={host.subStatus} />
                       </td>
-                      <td>
+                      <td className="d-none d-md-table-cell">
                         <CopyableCode wert={host.subKey} />
                       </td>
                       <td>
                         <AblaufBadge datum={host.subNextduedate?.toISOString() ?? null} heute={jetzt} />
                       </td>
-                      <td>
+                      <td className="d-none d-lg-table-cell">
                         {host.subLizenzierteSockets ?? "–"} / {host.sockets ?? "–"}
                         {host.socketAbweichung ? (
                           <i
@@ -184,7 +190,9 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
                           />
                         ) : null}
                       </td>
-                      <td className="small">{formatDatumZeit(host.letzterReportAm)}</td>
+                      <td className="small d-none d-xl-table-cell">
+                        {formatDatumZeit(host.letzterReportAm)}
+                      </td>
                     </tr>
                   ))}
                   {hosts.length === 0 ? (

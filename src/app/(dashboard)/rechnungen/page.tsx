@@ -201,22 +201,32 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                 <thead>
                   <tr>
                     <th scope="col">Kunde</th>
-                    <th scope="col">Host</th>
-                    <th scope="col">Laufzeit</th>
+                    <th scope="col" className="d-none d-md-table-cell">
+                      Host
+                    </th>
+                    <th scope="col" className="d-none d-lg-table-cell">
+                      Laufzeit
+                    </th>
                     <th scope="col">Proxmox-Rechnung</th>
-                    <th scope="col">Netto</th>
+                    <th scope="col" className="d-none d-xl-table-cell">
+                      Netto
+                    </th>
                     <th scope="col" className="text-center">
                       Bezahlt
                     </th>
                     <th scope="col">Kundenrechnung</th>
-                    <th scope="col">Netto</th>
+                    <th scope="col" className="d-none d-xl-table-cell">
+                      Netto
+                    </th>
                     <th scope="col" className="text-center">
                       Erstellt
                     </th>
                     <th scope="col" className="text-center">
                       Bezahlt
                     </th>
-                    <th scope="col">Marge</th>
+                    <th scope="col" className="d-none d-xl-table-cell">
+                      Marge
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -233,12 +243,12 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                             <span className="badge pl-bg-neutral">Nicht zugeordnet</span>
                           )}
                         </td>
-                        <td>
+                        <td className="d-none d-md-table-cell">
                           <Link href={`/hosts/${zeile.hostId}`} className="text-decoration-none">
                             {zeile.hostname}
                           </Link>
                         </td>
-                        <td>
+                        <td className="d-none d-lg-table-cell">
                           <Link href={`/rechnungen/${zeile.id}`} className="text-decoration-none">
                             {formatDatum(zeile.start)} – {formatDatum(zeile.ende)}
                           </Link>
@@ -252,7 +262,7 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                             </div>
                           ) : null}
                         </td>
-                        <td>{formatEuro(zeile.einkaufBetrag)}</td>
+                        <td className="d-none d-xl-table-cell">{formatEuro(zeile.einkaufBetrag)}</td>
                         <td className="text-center">
                           <StatusHaken
                             laufzeitId={zeile.id}
@@ -266,7 +276,7 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                         <td>
                           <CopyableCode wert={zeile.verkaufNummer} />
                         </td>
-                        <td>{formatEuro(zeile.verkaufBetrag)}</td>
+                        <td className="d-none d-xl-table-cell">{formatEuro(zeile.verkaufBetrag)}</td>
                         <td className="text-center">
                           <StatusHaken
                             laufzeitId={zeile.id}
@@ -286,7 +296,9 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                             titel="Kundenrechnung vom Kunden bezahlt"
                           />
                         </td>
-                        <td className={(zeile.marge ?? 0) >= 0 ? "pl-text-success" : "pl-text-danger"}>
+                        <td
+                          className={`d-none d-xl-table-cell ${(zeile.marge ?? 0) >= 0 ? "pl-text-success" : "pl-text-danger"}`}
+                        >
                           {zeile.marge === null ? "–" : formatEuro(zeile.marge)}
                         </td>
                       </tr>
