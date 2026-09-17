@@ -17,6 +17,14 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.11.1] – 2026-09-17
+
+### Behoben
+- Nach der Anmeldung führte jeder Klick zurück zur Anmeldeseite: Das Sitzungs-Cookie erhielt im Produktionsbau immer das Merkmal `Secure` und wurde über `http://` vom Browser verworfen. Maßgeblich ist jetzt die tatsächliche Adresse (`APP_URL`) (#013)
+
+### Geändert
+- Die Anmeldung läuft über ein gewöhnliches Formular statt über eine Server-Action; damit funktioniert sie auch ohne JavaScript (#013)
+
 ## [0.11.0] – 2026-09-17
 
 ### Geändert

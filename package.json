@@ -1,6 +1,6 @@
 {
   "name": "proxledger",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -23,7 +23,8 @@
     "alerts:check": "tsx scripts/alerts-pruefen.ts",
     "build:worker": "esbuild src/worker/index.ts --bundle --platform=node --target=node24 --format=esm --outfile=dist/worker.mjs --banner:js=\"$(cat deploy/worker-banner.js)\" --external:@prisma/client --external:@node-rs/argon2 --external:pg-native",
     "build:all": "npm run build && npm run build:worker",
-    "lasttest": "tsx scripts/lasttest.ts"
+    "lasttest": "tsx scripts/lasttest.ts",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.1",

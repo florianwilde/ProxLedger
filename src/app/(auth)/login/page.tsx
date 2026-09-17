@@ -30,9 +30,7 @@ export default async function AnmeldeSeite({ searchParams }: { searchParams: Suc
           <div className="card-body">
             {fehler ? (
               <div className="alert alert-danger py-2" role="alert">
-                {fehler === "oidc"
-                  ? "Die Anmeldung über den Anbieter hat nicht geklappt."
-                  : "Anmeldung nicht möglich."}
+                {fehler === "oidc" ? "Die Anmeldung über den Anbieter hat nicht geklappt." : fehler}
               </div>
             ) : null}
 

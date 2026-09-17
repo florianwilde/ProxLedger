@@ -33,3 +33,8 @@ Zugriff auf das Dashboard absichern und Änderungen nachvollziehbar machen.
   freigeschaltet ist, soll auch hier arbeiten können.
 - Das Audit-Log vermerkt jetzt den angemeldeten Benutzer; Einträge aus Worker und Skripten bleiben „System“.
 - **Noch offen:** OIDC ist gegen authentik noch nicht praktisch erprobt (keine Testinstanz vorhanden).
+- **Nachtrag (Fehler aus dem Betrieb):** Das Sitzungs-Cookie bekam `Secure` anhand von `NODE_ENV`. Ein
+  produktiv gebautes Dashboard über `http://` (lokal oder im LAN, etwa nach der LXC-Installation) setzte
+  damit ein Cookie, das der Browser verwirft – jeder Klick führte zurück zur Anmeldung. Jetzt entscheidet
+  das Schema in `APP_URL`. Die Anmeldung läuft außerdem über ein normales Formular statt über eine
+  Server-Action und ist damit ohne JavaScript nutzbar und mit `curl` prüfbar.

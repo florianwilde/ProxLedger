@@ -53,11 +53,22 @@ export async function sitzungLesen(token: string | undefined): Promise<Sitzung |
   }
 }
 
+/**
+ * `Secure` richtet sich nach der tatsächlichen Adresse, nicht nach NODE_ENV:
+ * Ein produktiv gebautes Dashboard, das über http:// läuft (etwa im LAN oder beim lokalen Prüfen),
+ * würde sonst ein Cookie setzen, das der Browser verwirft – die Anmeldung liefe dann ins Leere.
+ */
+export function ueberHttps(): boolean {
+  const adresse = process.env.APP_URL;
+  if (adresse) return adresse.startsWith("https://");
+  return process.env.NODE_ENV === "production";
+}
+
 export function cookieOptionen() {
   return {
     httpOnly: true,
     sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
+    secure: ueberHttps(),
     path: "/",
     maxAge: SITZUNGSDAUER_STUNDEN * 3600,
   };
