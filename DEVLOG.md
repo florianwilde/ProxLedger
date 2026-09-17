@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 6 h 38 min
+**Gesamt:** 7 h 08 min
 
 | Issue | Zeit |
 |---|---|
@@ -22,6 +22,7 @@
 | #013 Authentifizierung | 0 h 30 min |
 | #014 Deployment | 0 h 40 min |
 | #015 Feinschliff | 0 h 35 min |
+| #016 Handbuch | 0 h 30 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -38,12 +39,13 @@
 | v0.9.0 | 0 h 30 min | **abgeschlossen**
 | v0.10.0 | 0 h 40 min | **abgeschlossen**
 | v0.11.0 | 0 h 35 min | **abgeschlossen**
+| v0.12.0 | 0 h 30 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.11.1
+**Version:** 0.12.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -84,6 +86,8 @@
 - Meilenstein v0.10.0 abgeschlossen
 - #015 abgeschlossen: Dark-Mode geprüft (Logo war unsichtbar – behoben), Mobilansicht ohne Querscrollen, Lasttest mit 200 Hosts und 365.000 Reports, Auswertung der Warnregeln von 3813 auf 293 ms beschleunigt, Sicherheitsdurchsicht
 - Als v0.11.0 veröffentlicht statt 1.0.0: Feldtest, Handbuch, Favicons, CI und Verschlüsselung der Zugangsdaten stehen noch aus
+- 0.11.1: Anmeldefehler behoben (Secure-Cookie über http)
+- #016 abgeschlossen: Handbuch mit elf Kapiteln und 16 Bildern, dazu `npm run screenshots` zum Auffrischen
 
 ### Entscheidungen
 - **Warnungen sammelweise anlegen:** Einzelne Upserts kosteten bei 737 neuen Warnungen 3,8 s; mit `createMany` sind es 0,3 s.

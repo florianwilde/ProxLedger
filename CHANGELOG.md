@@ -17,6 +17,12 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.12.0] – 2026-09-17
+
+### Hinzugefügt
+- Handbuch mit Bildern: Installation, Agent-Rollout, Zuweisung, Rechnungen, Warnungen, Benachrichtigungen, Exporte, Sicherung und Fehlersuche (#016)
+- `npm run screenshots` erzeugt alle Bilder des Handbuchs neu, auch im dunklen Design und in der Mobilansicht (#016)
+
 ## [0.11.1] – 2026-09-17
 
 ### Behoben

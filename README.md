@@ -173,6 +173,7 @@ SMTP und Webhook liegen (noch) unverschlüsselt in der Datenbank, eine Sicherung
 
 ## Dokumentation
 
+- **[Handbuch mit Bildern](docs/anleitung/README.md)** – Installation, Agent-Rollout, Rechnungen, Warnungen, Fehlersuche
 - [Architektur- und Umsetzungsplan](docs/architektur.md)
 - [Issues](docs/issues/README.md)
 - [Changelog](CHANGELOG.md) · [Devlog](DEVLOG.md)
