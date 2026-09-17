@@ -21,10 +21,21 @@ export default async function KundenSeite() {
             rahmen="primary"
             tabelle
             werkzeuge={
-              <Link href="/kunden/neu" className="btn btn-sm btn-primary">
-                <i className="bi bi-plus-lg me-1" aria-hidden="true" />
-                Kunde anlegen
-              </Link>
+              <>
+                {/* Downloads: bewusst kein <Link>, sonst würde Next.js die Datei vorab laden. */}
+                <a href="/kunden/export" download className="btn btn-sm btn-outline-secondary">
+                  <i className="bi bi-filetype-csv me-1" aria-hidden="true" />
+                  CSV
+                </a>
+                <a href="/kunden/export?format=pdf" download className="btn btn-sm btn-outline-secondary">
+                  <i className="bi bi-filetype-pdf me-1" aria-hidden="true" />
+                  PDF
+                </a>
+                <Link href="/kunden/neu" className="btn btn-sm btn-primary">
+                  <i className="bi bi-plus-lg me-1" aria-hidden="true" />
+                  Kunde anlegen
+                </Link>
+              </>
             }
           >
             <div className="table-responsive">

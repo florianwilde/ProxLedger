@@ -1,6 +1,10 @@
 import { PRODUKT_TEXT, STATUS_TEXT, statusAusDatenbank } from "@/lib/anzeige";
 import { csvAntwort, csvDatei } from "@/lib/csv";
+import { formatDatum } from "@/lib/format";
+import { Bericht, pdfAntwort, Tabelle } from "@/server/pdf/dokument";
 import { hostListe, type HostFilter } from "@/server/queries/hostliste";
+
+type ExportHost = Awaited<ReturnType<typeof hostListe>>["hosts"][number];
 
 export const dynamic = "force-dynamic";
 
@@ -20,11 +24,46 @@ export async function GET(request: Request) {
   };
 
   const { gesamt } = await hostListe({ ...filter }, new Date());
-  const alle = [];
+  const alle: ExportHost[] = [];
   for (let seite = 1; alle.length < gesamt; seite++) {
     const teil = await hostListe({ ...filter, seite }, new Date());
     if (teil.hosts.length === 0) break;
     alle.push(...teil.hosts);
+  }
+
+  const datum = new Date().toISOString().slice(0, 10);
+
+  if (new URL(request.url).searchParams.get("format") === "pdf") {
+    return pdfAntwort(
+      Bericht({
+        titel: "Host-Liste",
+        untertitel: `${alle.length} Hosts`,
+        quer: true,
+        children: Tabelle({
+          spalten: [
+            { titel: "Host", breite: 18, wert: (h: ExportHost) => h.hostname },
+            { titel: "Kunde", breite: 18, wert: (h) => h.kunde?.name ?? "Nicht zugeordnet" },
+            { titel: "Produkt", breite: 15, wert: (h) => PRODUKT_TEXT[h.produkt] },
+            { titel: "Status", breite: 12, wert: (h) => STATUS_TEXT[statusAusDatenbank(h.subStatus)] },
+            { titel: "Key", breite: 15, wert: (h) => h.subKey ?? "–" },
+            {
+              titel: "Sockets",
+              breite: 8,
+              wert: (h) => `${h.subLizenzierteSockets ?? "–"} / ${h.sockets ?? "–"}`,
+              rechts: true,
+            },
+            {
+              titel: "Ablauf",
+              breite: 14,
+              wert: (h) => (h.subNextduedate ? formatDatum(h.subNextduedate) : "–"),
+              rechts: true,
+            },
+          ],
+          zeilen: alle,
+        }),
+      }),
+      `proxledger-hosts-${datum}.pdf`,
+    );
   }
 
   const inhalt = csvDatei(
@@ -64,6 +103,5 @@ export async function GET(request: Request) {
     ]),
   );
 
-  const datum = new Date().toISOString().slice(0, 10);
   return csvAntwort(inhalt, `proxledger-hosts-${datum}.csv`);
 }

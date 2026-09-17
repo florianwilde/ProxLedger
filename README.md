@@ -45,6 +45,18 @@ Protokoll: `journalctl -t proxledger`. Ist das Dashboard nicht erreichbar, versu
 wachsendem Abstand und legt den Report danach unter `/var/lib/proxledger/spool/` ab; beim nächsten Lauf wird er
 nachgesendet.
 
+## Exporte
+
+| Ansicht | CSV | PDF |
+|---|---|---|
+| Hosts | `/hosts/export` | `/hosts/export?format=pdf` |
+| Kunden | `/kunden/export` | `/kunden/export?format=pdf` |
+| Einzelner Kunde | – | `/kunden/<id>/export` (Anlage für Kundenunterlagen) |
+| Rechnungen | `/rechnungen/export` | `/rechnungen/export?format=pdf` |
+
+Alle Exporte übernehmen die Filter der jeweiligen Ansicht. CSV kommt als UTF-8 mit BOM und Semikolon,
+öffnet sich also ohne Umwege in Excel.
+
 ## Issues nach Gitea übertragen
 
 Die Issues werden als Markdown-Dateien in `docs/issues/` gepflegt – sie liegen damit im Repo und wandern mit

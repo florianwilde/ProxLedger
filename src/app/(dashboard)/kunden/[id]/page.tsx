@@ -41,10 +41,16 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
         titel={kunde.name}
         brotkrumen={[{ titel: "Kunden", href: "/kunden" }, { titel: kunde.name }]}
         aktion={
-          <Link href={`/kunden/${kunde.id}/bearbeiten`} className="btn btn-sm btn-outline-primary">
-            <i className="bi bi-pencil me-1" aria-hidden="true" />
-            Bearbeiten
-          </Link>
+          <span className="d-flex gap-2">
+            <a href={`/kunden/${kunde.id}/export`} className="btn btn-sm btn-outline-secondary">
+              <i className="bi bi-filetype-pdf me-1" aria-hidden="true" />
+              Unterlage
+            </a>
+            <Link href={`/kunden/${kunde.id}/bearbeiten`} className="btn btn-sm btn-outline-primary">
+              <i className="bi bi-pencil me-1" aria-hidden="true" />
+              Bearbeiten
+            </Link>
+          </span>
         }
       />
 

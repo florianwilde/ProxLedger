@@ -111,24 +111,40 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
             rahmen="primary"
             tabelle
             werkzeuge={
-              <div className="btn-group btn-group-sm" role="group" aria-label="Filter">
-                {(
-                  [
-                    ["offen", "Offen"],
-                    ["erledigt", "Erledigt"],
-                    ["alle", "Alle"],
-                    ["vorschlaege", `Vorschläge${vorschlaege ? ` (${vorschlaege})` : ""}`],
-                  ] as const
-                ).map(([wert, text]) => (
-                  <Link
-                    key={wert}
-                    href={adresse({ status: wert })}
-                    className={`btn ${filter.status === wert ? "btn-primary" : "btn-outline-primary"}`}
-                  >
-                    {text}
-                  </Link>
-                ))}
-              </div>
+              <>
+                <a
+                  href={adresse({}).replace("/rechnungen", "/rechnungen/export")}
+                  className="btn btn-sm btn-outline-secondary"
+                >
+                  <i className="bi bi-filetype-csv me-1" aria-hidden="true" />
+                  CSV
+                </a>
+                <a
+                  href={adresse({ format: "pdf" }).replace("/rechnungen", "/rechnungen/export")}
+                  className="btn btn-sm btn-outline-secondary"
+                >
+                  <i className="bi bi-filetype-pdf me-1" aria-hidden="true" />
+                  PDF
+                </a>
+                <div className="btn-group btn-group-sm" role="group" aria-label="Filter">
+                  {(
+                    [
+                      ["offen", "Offen"],
+                      ["erledigt", "Erledigt"],
+                      ["alle", "Alle"],
+                      ["vorschlaege", `Vorschläge${vorschlaege ? ` (${vorschlaege})` : ""}`],
+                    ] as const
+                  ).map(([wert, text]) => (
+                    <Link
+                      key={wert}
+                      href={adresse({ status: wert })}
+                      className={`btn ${filter.status === wert ? "btn-primary" : "btn-outline-primary"}`}
+                    >
+                      {text}
+                    </Link>
+                  ))}
+                </div>
+              </>
             }
           >
             <form className="row g-2 p-3 border-bottom" role="search">
