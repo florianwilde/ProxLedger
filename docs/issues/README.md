@@ -9,8 +9,8 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#003](003-datenmodell.md) | Datenmodell und Migrationen | erledigt | v0.1.0 | 5 h | 0 h 25 min |
 | [#004](004-agent-api.md) | Agent-API | erledigt | v0.1.0 | 6 h | 0 h 20 min |
 | [#005](005-agent-skript.md) | Agent-Skript | erledigt | v0.2.0 | 8 h | 0 h 25 min |
-| [#006](006-kunden-hostzuweisung.md) | Kunden, Standorte und Hostzuweisung | in Arbeit | v0.3.0 | 6 h | – |
-| [#007](007-hosts-detailansichten.md) | Host-Tabelle, Suche und Detailansichten | offen | v0.4.0 | 8 h | – |
+| [#006](006-kunden-hostzuweisung.md) | Kunden, Standorte und Hostzuweisung | erledigt | v0.3.0 | 6 h | 0 h 35 min |
+| [#007](007-hosts-detailansichten.md) | Host-Tabelle, Suche und Detailansichten | in Arbeit | v0.4.0 | 8 h | – |
 | [#008](008-laufzeiten-rechnungen.md) | Laufzeiten und Rechnungen | offen | v0.5.0 | 10 h | – |
 | [#009](009-kundenuebersicht-dashboard-jahresbahn.md) | Kundenübersicht, Dashboard und Jahresbahn | offen | v0.6.0 | 8 h | – |
 | [#010](010-export.md) | Export CSV und PDF | offen | v0.6.0 | 5 h | – |
@@ -20,4 +20,4 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#014](014-deployment.md) | Deployment und Dokumentation | offen | v0.10.0 | 8 h | – |
 | [#015](015-feinschliff-v1.md) | Feinschliff für 1.0 | offen | v1.0.0 | 6 h | – |
 | [#016](016-anleitung-screenshots.md) | Benutzerhandbuch mit Screenshots | offen | v0.10.0 | 5 h | – |
-| | **Summe** | | | **106 h** | **1 h 38 min** |
+| | **Summe** | | | **106 h** | **2 h 13 min** |

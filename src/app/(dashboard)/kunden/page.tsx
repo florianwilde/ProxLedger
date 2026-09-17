@@ -2,14 +2,13 @@ import Link from "next/link";
 import { ContentHeader } from "@/components/layout/ContentHeader";
 import { AblaufBadge, Badge } from "@/components/ui/Badges";
 import { Card } from "@/components/ui/Card";
-import { formatEuro } from "@/lib/format";
-import { HEUTE } from "@/mock/data";
-import { kundenUebersicht, summenVonKunde } from "@/mock/queries";
+import { kundenListe, offeneRechnungspunkteProKunde } from "@/server/queries/kunden";
 
 export const metadata = { title: "Kunden" };
 
-export default function KundenSeite() {
-  const uebersicht = kundenUebersicht();
+export default async function KundenSeite() {
+  const [kunden, rechnungspunkte] = await Promise.all([kundenListe(), offeneRechnungspunkteProKunde()]);
+  const heute = new Date();
 
   return (
     <>
@@ -18,10 +17,15 @@ export default function KundenSeite() {
       <div className="app-content">
         <div className="container-fluid">
           <Card
-            titel={`${uebersicht.length} Kunden`}
+            titel={`${kunden.length} Kunden`}
             rahmen="primary"
             tabelle
-            werkzeuge={<span className="btn btn-sm btn-primary disabled">Kunde anlegen (ab #006)</span>}
+            werkzeuge={
+              <Link href="/kunden/neu" className="btn btn-sm btn-primary">
+                <i className="bi bi-plus-lg me-1" aria-hidden="true" />
+                Kunde anlegen
+              </Link>
+            }
           >
             <div className="table-responsive">
               <table className="table table-striped align-middle">
@@ -34,49 +38,50 @@ export default function KundenSeite() {
                     <th scope="col">Nächster Ablauf</th>
                     <th scope="col">Warnungen</th>
                     <th scope="col">Rechnungen</th>
-                    <th scope="col">Marge (netto)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {uebersicht.map((eintrag) => {
-                    const summen = summenVonKunde(eintrag.kunde.id);
+                  {kunden.map((kunde) => {
+                    const punkte = rechnungspunkte.get(kunde.id);
                     return (
-                      <tr key={eintrag.kunde.id}>
+                      <tr key={kunde.id}>
                         <td>
-                          <Link
-                            href={`/kunden/${eintrag.kunde.id}`}
-                            className="fw-semibold text-decoration-none"
-                          >
-                            {eintrag.kunde.name}
+                          <Link href={`/kunden/${kunde.id}`} className="fw-semibold text-decoration-none">
+                            {kunde.name}
                           </Link>
-                          <div className="small text-body-secondary">
-                            {eintrag.kunde.ansprechpartner ?? "–"}
-                          </div>
+                          <div className="small text-body-secondary">{kunde.ansprechpartner ?? "–"}</div>
                         </td>
-                        <td className="pl-mono">{eintrag.kunde.kundennummer}</td>
-                        <td>{eintrag.hosts}</td>
-                        <td>{eintrag.aktiv}</td>
+                        <td className="pl-mono">{kunde.kundennummer}</td>
+                        <td>{kunde.hosts}</td>
+                        <td>{kunde.aktiv}</td>
                         <td>
-                          <AblaufBadge datum={eintrag.naechsterAblauf} heute={HEUTE} />
+                          <AblaufBadge datum={kunde.naechsterAblauf?.toISOString() ?? null} heute={heute} />
                         </td>
                         <td>
-                          {eintrag.offeneAlerts > 0 ? (
-                            <Badge farbe="warning">{eintrag.offeneAlerts} offen</Badge>
+                          {kunde.offeneAlerts > 0 ? (
+                            <Badge farbe="warning">{kunde.offeneAlerts} offen</Badge>
                           ) : (
                             <Badge farbe="success">keine</Badge>
                           )}
                         </td>
                         <td>
-                          {eintrag.offeneRechnungspunkte > 0 ? (
-                            <Badge farbe="danger">{eintrag.offeneRechnungspunkte} offen</Badge>
+                          {punkte && punkte.offen > 0 ? (
+                            <Badge farbe="danger">{punkte.offen} offen</Badge>
                           ) : (
                             <Badge farbe="success">erledigt</Badge>
                           )}
                         </td>
-                        <td>{formatEuro(summen.marge)}</td>
                       </tr>
                     );
                   })}
+                  {kunden.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="text-center text-body-secondary py-4">
+                        Noch keine Kunden angelegt.{" "}
+                        <Link href="/kunden/neu">Jetzt den ersten Kunden anlegen.</Link>
+                      </td>
+                    </tr>
+                  ) : null}
                 </tbody>
               </table>
             </div>

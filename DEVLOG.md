@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 1 h 38 min
+**Gesamt:** 2 h 13 min
 
 | Issue | Zeit |
 |---|---|
@@ -11,17 +11,19 @@
 | #003 Datenmodell und Migrationen | 0 h 25 min |
 | #004 Agent-API | 0 h 20 min |
 | #005 Agent-Skript | 0 h 25 min |
+| #006 Kunden und Hostzuweisung | 0 h 35 min |
 
 | Meilenstein | Zeit |
 |---|---|
 | v0.1.0 | 1 h 13 min | **abgeschlossen**
 | v0.2.0 | 0 h 25 min | **abgeschlossen**
+| v0.3.0 | 0 h 35 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
-**Issue:** #001–#005 (Meilensteine v0.1.0 und v0.2.0)
-**Version:** 0.2.0
+**Issue:** #001–#006 (Meilensteine v0.1.0 bis v0.3.0)
+**Version:** 0.3.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -36,6 +38,9 @@
 - Meilenstein v0.1.0 abgeschlossen und getaggt
 - #005 abgeschlossen: Bash-Agent mit Produkterkennung, JSON ohne jq, Retry mit Backoff, Spool, systemd-Timer, Installer, Uninstall und Update; Dashboard liefert `/install.sh` und `/agent.sh` aus
 - Meilenstein v0.2.0 abgeschlossen und getaggt; 38 Tests
+- #006 abgeschlossen: Kunden und Standorte pflegen, Mehrfachzuweisung nicht zugeordneter Hosts, Enrollment- und Host-Tokens verwalten, Audit-Log; Dashboard, Kundenseiten und globale Suche laufen auf der Datenbank
+- Durchlauf gegen den laufenden Server geprüft: Token anlegen → `enroll` → Agent-Report → Laufzeit-Vorschlag → Host erscheint als „nicht zugeordnet“ → `ping`
+- Meilenstein v0.3.0 abgeschlossen und getaggt; 45 Tests
 
 ### Entscheidungen
 - **Screenshots mit Firefox headless** statt Playwright: Firefox ist vorhanden, es muss kein Browser samt Systembibliotheken nachinstalliert werden (dafür wäre root nötig).
@@ -51,12 +56,15 @@
 - **Prisma-Client wird lazy erzeugt** (Proxy), damit `next build` ohne gesetzte `DATABASE_URL` durchläuft.
 - **Report-Idempotenz über eine vom Agent erzeugte `reportId`**: nachgesendete Reports aus dem Spool dürfen beliebig oft ankommen.
 - **Unbekannte Subscription-Status werden zu `UNKNOWN`** statt abgelehnt – ein Report darf nie an einem neuen Statuswort scheitern.
+- **Dashboard gleich mit auf die Datenbank umgestellt** (eigentlich #009): Eine frisch zugewiesene Zuordnung hätte dort sonst weiter als „nicht zugeordnet“ gestanden.
+- **Server Actions rufen Services auf**, damit die Regeln ohne Next.js-Laufzeit testbar bleiben.
 
 ### Probleme / offene Fragen
+- Prisma-Client erzeugte in der Produktionsumgebung bei jedem Zugriff einen neuen Verbindungspool → „too many clients“. Behoben: Client wird im Modul festgehalten.
 - Docker wurde von Florian installiert; die Entwicklungsdatenbank läuft auf Port 5433 (5432 bleibt für lokale Instanzen frei).
 - Favicon-Dateien (.ico/PNG) fehlen noch, weil kein SVG-Konverter installiert ist.
 - Der Agent wurde noch auf keinem echten Proxmox-Host installiert; die Tests arbeiten mit nachgebauten Befehlen.
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #006 Kunden, Standorte und Hostzuweisung (erste Oberfläche mit echten Daten)
+- #007 Host-Tabelle mit Filtern, globale Suche auf Datenbankbasis und Host-Detailansicht

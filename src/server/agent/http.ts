@@ -20,11 +20,7 @@ export function fehlerBehandeln(fehler: unknown) {
 }
 
 /** Prüft das Rate-Limit für IP und (falls vorhanden) Token. */
-export function rateLimitPruefen(
-  limit: RateLimit,
-  headers: Headers,
-  token: string | null,
-): Response | null {
+export function rateLimitPruefen(limit: RateLimit, headers: Headers, token: string | null): Response | null {
   const schluessel = token ? `token:${token.slice(0, 16)}` : `ip:${clientIp(headers)}`;
   const ergebnis = limit.pruefe(schluessel);
   if (ergebnis.erlaubt) return null;
