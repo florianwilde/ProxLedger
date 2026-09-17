@@ -10,6 +10,7 @@
  * Die Markdown-Dateien bleiben die Quelle der Wahrheit; Gitea erhält eine Kopie zum Kommentieren.
  */
 
+import { execFileSync } from "node:child_process";
 import { readFile, readdir } from "node:fs/promises";
 import "dotenv/config";
 import path from "node:path";
@@ -138,6 +139,49 @@ class Gitea {
   }
 }
 
+/**
+ * Ermittelt Serveradresse und Repo aus dem Git-Remote, damit beides nicht doppelt gepflegt werden muss.
+ * Beispiel: https://git.example.de/benutzer/ProxLedger.git → { basis, repo }
+ */
+function ausRemote(): { basis: string; repo: string } | null {
+  try {
+    const url = execFileSync("git", ["remote", "get-url", "origin"], { encoding: "utf8" }).trim();
+    const treffer = /^https?:\/\/(?:[^@/]*@)?([^/]+)\/(.+?)(?:\.git)?$/.exec(url);
+    if (!treffer) return null;
+    return { basis: `https://${treffer[1]}`, repo: treffer[2] };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Holt den Token aus den Git-Zugangsdaten (Schlüsselbund oder `~/.git-credentials`).
+ * So genügt ein einziger Token für Push und API – er muss nicht zusätzlich in der .env stehen.
+ */
+function tokenAusGitCredentials(basis: string): string | null {
+  const host = new URL(basis).host;
+
+  // Erst die eingerichteten Helfer (z. B. Schlüsselbund), dann zusätzlich die Datei
+  // ~/.git-credentials – je nach Rechner ist mal das eine, mal das andere gefüllt.
+  for (const zusatz of [[], ["-c", "credential.helper=store"]]) {
+    try {
+      const antwort = execFileSync("git", [...zusatz, "credential", "fill"], {
+        input: `protocol=https\nhost=${host}\n\n`,
+        encoding: "utf8",
+        // Keine Rückfrage im Terminal: Wenn nichts hinterlegt ist, soll der Aufruf scheitern.
+        env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
+        stdio: ["pipe", "pipe", "ignore"],
+      });
+      const passwort = /^password=(.*)$/m.exec(antwort);
+      if (passwort?.[1]) return passwort[1];
+    } catch {
+      // Nächste Möglichkeit versuchen.
+    }
+  }
+
+  return null;
+}
+
 /** Titel in Gitea, z. B. „#004 Agent-Skript“ – daran werden vorhandene Issues wiedererkannt. */
 function giteaTitel(issue: IssueDatei): string {
   return `#${String(issue.nummer).padStart(3, "0")} ${issue.titel}`;
@@ -145,9 +189,11 @@ function giteaTitel(issue: IssueDatei): string {
 
 async function main() {
   const trockenlauf = process.argv.includes("--dry-run");
-  const basis = (process.env.GITEA_URL ?? "").replace(/\/$/, "");
-  const repo = process.env.GITEA_REPO ?? "";
-  const token = process.env.GITEA_TOKEN ?? "";
+  const remote = ausRemote();
+  const basis = (process.env.GITEA_URL ?? remote?.basis ?? "").replace(/\/$/, "");
+  const repo = process.env.GITEA_REPO ?? remote?.repo ?? "";
+  const token = process.env.GITEA_TOKEN || (basis ? (tokenAusGitCredentials(basis) ?? "") : "");
+  const tokenQuelle = process.env.GITEA_TOKEN ? "Umgebungsvariable" : "Git-Zugangsdaten";
 
   const verzeichnis = path.join(process.cwd(), "docs", "issues");
   const issues = await dateienLesen(verzeichnis);
@@ -155,7 +201,10 @@ async function main() {
 
   if (trockenlauf || !basis || !repo || !token) {
     if (!trockenlauf) {
-      console.log("\nGITEA_URL, GITEA_REPO oder GITEA_TOKEN fehlen – es läuft nur ein Trockenlauf.\n");
+      console.log(
+        "\nAdresse, Repo oder Token nicht ermittelbar – es läuft nur ein Trockenlauf.\n" +
+          "Entweder GITEA_TOKEN setzen oder einmal `git push` ausführen, damit der Token hinterlegt wird.\n",
+      );
     }
     for (const issue of issues) {
       console.log(
@@ -165,11 +214,13 @@ async function main() {
       );
     }
     console.log(
-      "\nEchter Abgleich: GITEA_URL, GITEA_REPO und GITEA_TOKEN setzen (Token mit Recht „issue:write“).",
+      `\nZiel wäre: ${basis || "?"}/${repo || "?"} – Token ${token ? "vorhanden" : "fehlt"}.` +
+        "\nDer Token wird aus den Git-Zugangsdaten gelesen; er braucht zusätzlich das Recht „issue:write“.",
     );
     return;
   }
 
+  console.log(`Ziel: ${basis}/${repo} (Token aus: ${tokenQuelle})`);
   const gitea = new Gitea(basis, repo, token);
 
   const vorhandeneLabels = new Map((await gitea.labels()).map((l) => [l.name.toLowerCase(), l.id]));

@@ -27,5 +27,9 @@ aktuell bleiben – ohne dass sie von Hand nachgepflegt werden müssen.
 ## Notizen / Entscheidungen
 - Die Markdown-Dateien bleiben die Quelle der Wahrheit: Sie liegen im Repo, sind ohne Netz lesbar und
   wandern mit jedem Klon mit. Gitea bekommt eine Kopie zum Kommentieren und Zuweisen.
-- Der erste echte Lauf steht noch aus: Dafür braucht es einen Gitea-Token mit `issue:write`.
-  Der Trockenlauf liest alle 20 Dateien korrekt.
+- Der Token kommt aus den Git-Zugangsdaten (`git credential fill`), Adresse und Repo aus dem Remote.
+  Damit muss derselbe Token nicht zweimal gepflegt werden.
+- Gefragt werden zuerst die eingerichteten Helfer (Schlüsselbund), danach zusätzlich `~/.git-credentials` –
+  je nach Rechner ist mal das eine, mal das andere gefüllt.
+- Erster echter Lauf am 17.09.2026: 20 Issues, 15 Labels und 13 Meilensteine angelegt, erledigte Issues
+  direkt geschlossen. Zweiter Lauf: 0 neue, 20 aktualisiert – keine Dubletten.

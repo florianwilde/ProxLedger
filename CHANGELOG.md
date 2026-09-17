@@ -17,6 +17,11 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.4.2] – 2026-09-17
+
+### Geändert
+- Der Issue-Abgleich holt Serveradresse und Repository aus dem Git-Remote und den Token aus den hinterlegten Git-Zugangsdaten; ein zweiter Token in der `.env` ist nicht mehr nötig (#020)
+
 ## [0.4.1] – 2026-09-17
 
 ### Hinzugefügt

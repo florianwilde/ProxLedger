@@ -52,16 +52,16 @@ jedem Klon mit. Wer sie zusätzlich im Gitea-Tracker haben möchte, gleicht sie 
 
 ```bash
 npm run issues:sync -- --dry-run    # zeigt nur, was passieren würde
-
-GITEA_URL=https://git.example.de \
-GITEA_REPO=benutzer/ProxLedger \
-GITEA_TOKEN=... \
-npm run issues:sync
+npm run issues:sync                 # echter Abgleich
 ```
 
-Der Token braucht das Recht `issue:write` (Gitea: Einstellungen → Anwendungen → Zugriffstoken). Er kann auch in
-`.env` stehen, die Datei ist von Git ausgenommen. Der Abgleich legt Labels und Meilensteine an, erkennt
-vorhandene Issues an der Nummer im Titel, aktualisiert sie und schließt erledigte.
+Serveradresse und Repository liest das Skript aus dem Git-Remote, den Token aus den hinterlegten
+Git-Zugangsdaten (Schlüsselbund oder `~/.git-credentials`) – derselbe Token wie fürs Pushen, er braucht
+zusätzlich das Recht `issue:write`. Wer beides trennen möchte, setzt `GITEA_URL`, `GITEA_REPO` und
+`GITEA_TOKEN` in der `.env`.
+
+Der Abgleich legt Labels und Meilensteine an, erkennt vorhandene Issues an der Nummer im Titel,
+aktualisiert sie und schließt erledigte. Ein zweiter Lauf erzeugt keine Dubletten.
 
 ## Dokumentation
 
