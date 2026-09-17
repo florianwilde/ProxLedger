@@ -7,7 +7,17 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   prettier,
-  globalIgnores([".next/**", "out/**", "build/**", "coverage/**", "next-env.d.ts", "src/generated/**"]),
+  globalIgnores([
+    ".next/**",
+    "out/**",
+    "build/**",
+    "coverage/**",
+    "next-env.d.ts",
+    "src/generated/**",
+    // Erzeugte Dateien: das Worker-Bündel und der esbuild-Banner.
+    "dist/**",
+    "deploy/worker-banner.js",
+  ]),
 ]);
 
 export default eslintConfig;
