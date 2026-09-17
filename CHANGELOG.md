@@ -17,6 +17,11 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.12.1] – 2026-09-17
+
+### Hinzugefügt
+- Symbole für Browser-Tab (SVG und ICO), iOS-Startbildschirm und Web-Manifest, erzeugt mit `npm run icons` aus den SVG-Vorlagen in `assets/` (#017)
+
 ## [0.12.0] – 2026-09-17
 
 ### Hinzugefügt

@@ -1,0 +1,4 @@
+<!-- Fassung für 16 px: nur das P. -->
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M6 2h21a14 14 0 0 1 0 28H18v16H6zM18 13h8a3 3 0 0 1 0 6h-8z" fill="#1E2A44"/>
+</svg>

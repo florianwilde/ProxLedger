@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 7 h 08 min
+**Gesamt:** 7 h 23 min
 
 | Issue | Zeit |
 |---|---|
@@ -23,6 +23,7 @@
 | #014 Deployment | 0 h 40 min |
 | #015 Feinschliff | 0 h 35 min |
 | #016 Handbuch | 0 h 30 min |
+| #017 Favicons | 0 h 15 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -45,7 +46,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.12.0
+**Version:** 0.12.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -88,6 +89,7 @@
 - Als v0.11.0 veröffentlicht statt 1.0.0: Feldtest, Handbuch, Favicons, CI und Verschlüsselung der Zugangsdaten stehen noch aus
 - 0.11.1: Anmeldefehler behoben (Secure-Cookie über http)
 - #016 abgeschlossen: Handbuch mit elf Kapiteln und 16 Bildern, dazu `npm run screenshots` zum Auffrischen
+- #017 abgeschlossen: Symbole für Tab, Startbildschirm und Manifest, erzeugt mit `npm run icons` aus SVG-Vorlagen
 
 ### Entscheidungen
 - **Warnungen sammelweise anlegen:** Einzelne Upserts kosteten bei 737 neuen Warnungen 3,8 s; mit `createMany` sind es 0,3 s.
