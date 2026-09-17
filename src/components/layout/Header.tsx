@@ -214,7 +214,9 @@ export function Header({
               <Link href="/einstellungen/system" className="dropdown-item">
                 Einstellungen
               </Link>
-              <span className="dropdown-item text-body-secondary">Abmelden (ab #013)</span>
+              <a className="dropdown-item" href="/api/auth/abmelden">
+                Abmelden
+              </a>
             </div>
           </li>
         </ul>

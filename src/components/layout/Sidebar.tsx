@@ -58,6 +58,7 @@ export function Sidebar({
     { href: "/einstellungen/tokens", titel: "Agent-Tokens", icon: "bi-key" },
     { href: "/einstellungen/warnregeln", titel: "Warnregeln", icon: "bi-shield-exclamation" },
     { href: "/einstellungen/benachrichtigungen", titel: "Benachrichtigungen", icon: "bi-bell" },
+    { href: "/einstellungen/audit", titel: "Protokoll", icon: "bi-list-check" },
     { href: "/einstellungen/system", titel: "System", icon: "bi-sliders" },
   ];
 

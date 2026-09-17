@@ -17,6 +17,21 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.9.0] – 2026-09-17
+
+### Hinzugefügt
+- Anmeldung mit E-Mail und Passwort sowie über OIDC (z. B. authentik); der lokale Zugang bleibt als Rückfallweg immer nutzbar (#013)
+- Anmeldeseite im AdminLTE-Stil mit Logo (#013)
+- Audit-Log-Ansicht mit Filter nach Aktion und Entität (#013)
+
+### Geändert
+- Audit-Einträge vermerken den angemeldeten Benutzer; Worker und Skripte erscheinen als „System“ (#013)
+
+### Sicherheit
+- Alle Seiten der Oberfläche sind ohne Anmeldung nicht erreichbar; Agent-API und Skript-Auslieferung bleiben offen (#013)
+- Sitzungen als signiertes Cookie (`APP_SECRET`), fünf Anmeldeversuche je Kennung und Viertelstunde (#013)
+- Sicherheits-Kopfzeilen: HSTS, nosniff, DENY für Frames, Referrer-Policy, Permissions-Policy (#013)
+
 ## [0.8.0] – 2026-09-17
 
 ### Hinzugefügt

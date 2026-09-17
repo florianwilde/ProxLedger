@@ -52,6 +52,19 @@ Protokoll: `journalctl -t proxledger`. Ist das Dashboard nicht erreichbar, versu
 wachsendem Abstand und legt den Report danach unter `/var/lib/proxledger/spool/` ab; beim nächsten Lauf wird er
 nachgesendet.
 
+## Anmeldung
+
+Die Oberfläche ist vollständig geschützt; die Agent-API und die Skript-Auslieferung bleiben offen, weil
+sie sich mit eigenen Tokens ausweisen.
+
+- **Lokaler Zugang:** E-Mail und Passwort aus dem Seed (`ADMIN_EMAIL`, `ADMIN_PASSWORD`). Fünf Fehlversuche
+  je Kennung und Viertelstunde, danach Sperre.
+- **OIDC (z. B. authentik):** `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` setzen. Rückkehradresse
+  ist `<APP_URL>/api/auth/oidc/callback`. Ohne diese Werte erscheint nur der lokale Zugang – der bleibt
+  absichtlich immer nutzbar, falls der Anmeldedienst ausfällt.
+- **`APP_SECRET`** (mindestens 32 Zeichen) signiert die Sitzungs-Cookies. Ändert sich der Wert, sind alle
+  Sitzungen ungültig.
+
 ## Exporte
 
 | Ansicht | CSV | PDF |
