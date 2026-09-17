@@ -150,7 +150,7 @@ export function Header({
               {alerts.slice(0, 6).map((alert) => (
                 <Link
                   key={alert.id}
-                  href={alert.hostId ? `/hosts/${alert.hostId}` : "/hosts"}
+                  href={alert.hostId ? `/hosts/${alert.hostId}` : "/warnungen"}
                   className="dropdown-item d-flex gap-2 py-2"
                   onClick={() => setGlockeOffen(false)}
                 >
@@ -162,7 +162,11 @@ export function Header({
                 </Link>
               ))}
               <div className="dropdown-divider" />
-              <Link href="/hosts" className="dropdown-item text-center" onClick={() => setGlockeOffen(false)}>
+              <Link
+                href="/warnungen"
+                className="dropdown-item text-center"
+                onClick={() => setGlockeOffen(false)}
+              >
                 Alle Warnungen ansehen
               </Link>
             </div>

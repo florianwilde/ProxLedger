@@ -17,6 +17,17 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.7.0] – 2026-09-17
+
+### Hinzugefügt
+- Zehn Warnregeln: Ablauf in 30/14/7 Tagen, Status nicht aktiv, Socket-Abweichung, keine Meldung seit 48 Stunden, geänderte Server-ID, mehrfach gemeldeter Key, Host ohne Kunde, fällige Proxmox-Rechnung, fehlende und überfällige Kundenrechnung (#011)
+- Worker-Prozess (`npm run worker`), der die Regeln stündlich auswertet; zusätzlich Auswertung nach jedem eingehenden Report (#011)
+- Seite „Warnungen“ mit Filter offen/erledigt, Quittieren, Schließen und sofortiger Prüfung (#011)
+- Einstellungsseite für Regeln und Schwellwerte (#011)
+
+### Geändert
+- Warnungen schließen sich automatisch, sobald die Ursache behoben ist; Titel und Beschreibung werden laufend nachgeführt (#011)
+
 ## [0.6.0] – 2026-09-17
 
 ### Hinzugefügt

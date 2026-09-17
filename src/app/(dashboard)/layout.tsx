@@ -30,6 +30,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <Sidebar
         hostsAnzahl={zahlen.hostsGesamt}
         offeneRechnungspunkte={zahlen.offeneRechnungspunkte}
+        offeneWarnungen={zahlen.offeneAlerts}
         benutzer={BENUTZER}
       />
       <main className="app-main">{children}</main>
