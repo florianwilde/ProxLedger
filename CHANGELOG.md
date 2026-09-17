@@ -10,6 +10,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### Hinzugefügt
 - Projektorganisation: Devlog, Changelog, Issue-Übersicht und Issues pro Phase (#001)
 - Architektur- und Umsetzungsplan in `docs/architektur.md` (#001)
+- Next.js-Grundgerüst mit AdminLTE-CSS, Bootstrap Icons, zod, ESLint, Prettier und Vitest (#001)
 
 ### Geändert
 

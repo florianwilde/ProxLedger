@@ -2,15 +2,15 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 0 h 00 min (laufende Sitzung nicht eingerechnet)
+**Gesamt:** 0 h 08 min
 
 | Issue | Zeit |
 |---|---|
-| #001 Projekt-Setup | 0 h 00 min |
+| #001 Projekt-Setup | 0 h 08 min |
 
 | Meilenstein | Zeit |
 |---|---|
-| v0.1.0 | 0 h 00 min |
+| v0.1.0 | 0 h 08 min |
 
 ---
 
@@ -23,6 +23,7 @@
 - Umgebung geprüft: Ubuntu 26.04, Git 2.53; Node/Docker fehlten → Node 24 LTS per nvm installiert
 - Repository-Rechte korrigiert (Verzeichnis gehörte root), Branch `master` → `main`, Git-Identität lokal gesetzt
 - `.gitignore`, `CHANGELOG.md`, `DEVLOG.md`, Architekturplan und 15 Issues angelegt
+- #001 abgeschlossen: Next.js 16 (App Router, TypeScript strict), AdminLTE-CSS, Bootstrap Icons, zod, ESLint/Prettier/Vitest; Lint, Typecheck, Test und Build grün
 
 ### Entscheidungen
 - **AdminLTE 4.9.1 nur als CSS:** stabil, Bootstrap 5.3.8, kein jQuery; die JS-Plugins manipulieren das DOM und werden daher als React-Komponenten nachgebaut.
