@@ -23,4 +23,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#017](017-favicon-dateien.md) | Favicon-Dateien erzeugen | offen | v0.6.0 | 1 h | – |
 | [#018](018-agent-feldtest.md) | Agent auf echten Proxmox-Hosts prüfen | offen | v0.2.1 | 2 h | – |
 | [#019](019-ci-pipeline.md) | CI-Pipeline | offen | v0.10.0 | 3 h | – |
-| | **Summe** | | | **112 h** | **2 h 38 min** |
+| [#020](020-gitea-issue-abgleich.md) | Issues nach Gitea übertragen | erledigt | v0.4.1 | 2 h | 0 h 10 min |
+| | **Summe** | | | **114 h** | **2 h 48 min** |

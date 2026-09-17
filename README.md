@@ -45,6 +45,24 @@ Protokoll: `journalctl -t proxledger`. Ist das Dashboard nicht erreichbar, versu
 wachsendem Abstand und legt den Report danach unter `/var/lib/proxledger/spool/` ab; beim nächsten Lauf wird er
 nachgesendet.
 
+## Issues nach Gitea übertragen
+
+Die Issues werden als Markdown-Dateien in `docs/issues/` gepflegt – sie liegen damit im Repo und wandern mit
+jedem Klon mit. Wer sie zusätzlich im Gitea-Tracker haben möchte, gleicht sie ab:
+
+```bash
+npm run issues:sync -- --dry-run    # zeigt nur, was passieren würde
+
+GITEA_URL=https://git.example.de \
+GITEA_REPO=benutzer/ProxLedger \
+GITEA_TOKEN=... \
+npm run issues:sync
+```
+
+Der Token braucht das Recht `issue:write` (Gitea: Einstellungen → Anwendungen → Zugriffstoken). Er kann auch in
+`.env` stehen, die Datei ist von Git ausgenommen. Der Abgleich legt Labels und Meilensteine an, erkennt
+vorhandene Issues an der Nummer im Titel, aktualisiert sie und schließt erledigte.
+
 ## Dokumentation
 
 - [Architektur- und Umsetzungsplan](docs/architektur.md)
