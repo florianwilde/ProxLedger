@@ -184,9 +184,7 @@ export default async function DashboardSeite() {
                 titel="Aufgaben"
                 rahmen="warning"
                 werkzeuge={
-                  <span className="badge pl-bg-warning">
-                    {aufgabenDaten.gesamt + ohneKunde.length}
-                  </span>
+                  <span className="badge pl-bg-warning">{aufgabenDaten.gesamt + ohneKunde.length}</span>
                 }
               >
                 <TodoList aufgaben={aufgaben} />

@@ -54,7 +54,18 @@ describe("Sitzungen", () => {
     ).rejects.toThrow(/APP_SECRET/);
   });
 
-  it("setzt das Cookie nur über HTTPS, wenn produktiv gebaut wurde", () => {
+  it("setzt Secure nur, wenn das Dashboard über HTTPS läuft", () => {
+    const vorher = process.env.APP_URL;
+
+    process.env.APP_URL = "https://proxledger.example.de";
+    expect(cookieOptionen().secure).toBe(true);
+
+    // Produktiv gebaut, aber über http erreichbar: sonst verwirft der Browser das Cookie
+    // und die Anmeldung landet sofort wieder auf der Anmeldeseite.
+    process.env.APP_URL = "http://192.168.1.50:3000";
+    expect(cookieOptionen().secure).toBe(false);
+
+    process.env.APP_URL = vorher;
     expect(cookieOptionen().httpOnly).toBe(true);
     expect(cookieOptionen().sameSite).toBe("lax");
   });

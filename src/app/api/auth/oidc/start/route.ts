@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { ueberHttps } from "@/lib/sitzung";
 import { anmeldungStarten, oidcEinstellungen } from "@/server/auth/oidc";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
     const optionen = {
       httpOnly: true,
       sameSite: "lax" as const,
-      secure: process.env.NODE_ENV === "production",
+      secure: ueberHttps(),
       path: "/",
       maxAge: 600,
     };

@@ -43,7 +43,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.11.0
+**Version:** 0.11.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -109,6 +109,7 @@
 - **Server Actions rufen Services auf**, damit die Regeln ohne Next.js-Laufzeit testbar bleiben.
 
 ### Probleme / offene Fragen
+- Von Florian im Betrieb gemeldet: Nach der Anmeldung führte jeder Klick zurück zur Anmeldeseite. Ursache: `Secure`-Cookie über `http://`. Behoben in 0.11.1.
 - Der LXC-Installer ist ungetestet (kein Proxmox-Host verfügbar); gleiches gilt für den Agent im Feld (#018).
 - Prisma-Client erzeugte in der Produktionsumgebung bei jedem Zugriff einen neuen Verbindungspool → „too many clients“. Behoben: Client wird im Modul festgehalten.
 - Docker wurde von Florian installiert; die Entwicklungsdatenbank läuft auf Port 5433 (5432 bleibt für lokale Instanzen frei).

@@ -1,23 +1,11 @@
-"use client";
-
-import { useActionState } from "react";
-import { anmelden } from "@/server/actions/auth";
-import type { AktionsErgebnis } from "@/server/actions/kunden";
-
-const LEER: AktionsErgebnis = {};
-
+/**
+ * Anmeldeformular. Es sendet ganz gewöhnlich an eine Route – dadurch funktioniert die
+ * Anmeldung auch ohne JavaScript, und das Sitzungs-Cookie kommt mit einer normalen Antwort.
+ */
 export function AnmeldeFormular({ ziel }: { ziel: string }) {
-  const [ergebnis, aktion, laeuft] = useActionState(anmelden, LEER);
-
   return (
-    <form action={aktion}>
+    <form method="post" action="/api/auth/anmelden">
       <input type="hidden" name="ziel" value={ziel} />
-
-      {ergebnis.fehler ? (
-        <div className="alert alert-danger py-2" role="alert">
-          {ergebnis.fehler}
-        </div>
-      ) : null}
 
       <div className="mb-3">
         <label className="form-label" htmlFor="email">
@@ -47,8 +35,8 @@ export function AnmeldeFormular({ ziel }: { ziel: string }) {
         />
       </div>
 
-      <button type="submit" className="btn btn-primary w-100 pl-touch-target" disabled={laeuft}>
-        {laeuft ? "Meldet an …" : "Anmelden"}
+      <button type="submit" className="btn btn-primary w-100 pl-touch-target">
+        Anmelden
       </button>
     </form>
   );
