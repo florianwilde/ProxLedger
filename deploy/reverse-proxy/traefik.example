@@ -1,0 +1,8 @@
+# Traefik: diese Labels an den Dienst „web“ in der docker-compose.yml hängen.
+
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.proxledger.rule=Host(`proxledger.example.de`)"
+  - "traefik.http.routers.proxledger.entrypoints=websecure"
+  - "traefik.http.routers.proxledger.tls.certresolver=letsencrypt"
+  - "traefik.http.services.proxledger.loadbalancer.server.port=3000"

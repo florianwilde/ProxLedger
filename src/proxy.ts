@@ -11,6 +11,7 @@ const OEFFENTLICH = [
   "/login",
   "/api/auth",
   "/api/agent",
+  "/api/gesundheit",
   "/install.sh",
   "/agent.sh",
   "/favicon.ico",

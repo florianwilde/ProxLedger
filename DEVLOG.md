@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 5 h 23 min
+**Gesamt:** 6 h 03 min
 
 | Issue | Zeit |
 |---|---|
@@ -20,6 +20,7 @@
 | #011 Warnregeln | 0 h 30 min |
 | #012 Benachrichtigungen | 0 h 25 min |
 | #013 Authentifizierung | 0 h 30 min |
+| #014 Deployment | 0 h 40 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -34,12 +35,13 @@
 | v0.7.0 | 0 h 30 min | **abgeschlossen**
 | v0.8.0 | 0 h 25 min | **abgeschlossen**
 | v0.9.0 | 0 h 30 min | **abgeschlossen**
+| v0.10.0 | 0 h 40 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.9.0
+**Version:** 0.10.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -75,6 +77,9 @@
 - Meilenstein v0.8.0 abgeschlossen; 134 Tests
 - #013 abgeschlossen: Anmeldung mit Passwort und OIDC, Schutz aller Seiten über `proxy.ts`, Anmeldeseite im AdminLTE-Stil, Audit-Log-Ansicht, Sicherheits-Kopfzeilen, Rate-Limit bei Anmeldeversuchen
 - Meilenstein v0.9.0 abgeschlossen; 147 Tests
+- #014 abgeschlossen: Dockerfile (Standalone, Non-root), Compose mit web/worker/postgres/migrate, LXC-Installer, Reverse-Proxy-Beispiele, Sicherungsskript, README mit Schnellstart und Betriebshinweisen
+- Container-Stapel wirklich gebaut und geprüft: Agent registriert sich, Report kommt an, Warnung entsteht automatisch
+- Meilenstein v0.10.0 abgeschlossen
 
 ### Entscheidungen
 - **Kein Auth.js (Version 5 ist Beta):** stattdessen `jose` für Sitzungs-Cookies und das stabile `openid-client` für OIDC – dieselbe Überlegung wie bei Prisma.
@@ -98,6 +103,7 @@
 - **Server Actions rufen Services auf**, damit die Regeln ohne Next.js-Laufzeit testbar bleiben.
 
 ### Probleme / offene Fragen
+- Der LXC-Installer ist ungetestet (kein Proxmox-Host verfügbar); gleiches gilt für den Agent im Feld (#018).
 - Prisma-Client erzeugte in der Produktionsumgebung bei jedem Zugriff einen neuen Verbindungspool → „too many clients“. Behoben: Client wird im Modul festgehalten.
 - Docker wurde von Florian installiert; die Entwicklungsdatenbank läuft auf Port 5433 (5432 bleibt für lokale Instanzen frei).
 - Favicon-Dateien (.ico/PNG) fehlen noch, weil kein SVG-Konverter installiert ist.
@@ -105,4 +111,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #014 Deployment: Dockerfile, Compose mit Worker, LXC-Installer, README und Backup-Hinweise
+- #015 Feinschliff: Dark-Mode prüfen, Mobilansicht, Barrierefreiheit, Sicherheits-Durchsicht

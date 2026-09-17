@@ -17,6 +17,16 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.10.0] – 2026-09-17
+
+### Hinzugefügt
+- Dockerfile (mehrstufig, Standalone-Ausgabe, Betrieb ohne root) und `docker-compose.yml` mit Dashboard, Worker, Datenbank und einmaligem Migrationsdienst (#014)
+- LXC-Installer für Proxmox-Hosts: legt den Container an, installiert Docker, erzeugt Zufallspasswörter und startet alles (#014)
+- Beispiele für Caddy, nginx und Traefik als Reverse Proxy (#014)
+- Sicherungsskript für Datenbank, PDFs und Konfiguration (#014)
+- Zustandsprüfung unter `/api/gesundheit` (#014)
+- README mit Schnellstart, Agent-Rollout, Betriebs- und Sicherungshinweisen (#014)
+
 ## [0.9.0] – 2026-09-17
 
 ### Hinzugefügt

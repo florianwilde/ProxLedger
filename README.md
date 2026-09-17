@@ -3,7 +3,41 @@
 Zentrales Dashboard für den Subscription-Status aller Proxmox-Hosts (VE, Backup Server, Mail Gateway).
 Auf jedem Host meldet ein schlanker Agent täglich per HTTPS seinen Status (Push-Modell) – auch aus Kundennetzen hinter NAT.
 
-> **Status:** in Entwicklung (0.1.0-dev). Noch nicht produktiv einsetzen.
+> **Status:** in Entwicklung. Der Funktionsumfang steht, der Agent wurde aber noch nicht auf echten
+> Proxmox-Hosts erprobt (#018).
+
+## Schnellstart
+
+Auf einem Rechner mit Docker:
+
+```bash
+git clone <dieses-repo> proxledger && cd proxledger
+cp .env.example .env
+# Pflichtangaben setzen: APP_SECRET, POSTGRES_PASSWORD, ADMIN_PASSWORD, APP_URL
+docker compose up -d
+```
+
+Beim ersten Start legt der Dienst `migrate` das Schema an und erzeugt den Administrator aus der `.env`.
+Danach ist das Dashboard unter `APP_URL` erreichbar.
+
+**Auf einem Proxmox-Host** legt der Installer einen fertigen LXC-Container an:
+
+```bash
+bash deploy/lxc-installer.sh
+```
+
+Er fragt Ressourcen und Netzwerk ab, installiert Docker, holt den Quelltext, erzeugt Zufallspasswörter
+und startet alles. Am Ende stehen Adresse, Benutzer und Passwort auf dem Bildschirm.
+
+### Agent ausrollen
+
+1. Im Dashboard unter *Einstellungen → Agent-Tokens* einen Enrollment-Token erzeugen
+2. Auf jedem Proxmox-Host als root:
+   ```bash
+   curl -fsSL https://<dashboard>/install.sh | bash -s -- --token <ENROLL_TOKEN>
+   ```
+3. Der Host meldet sich sofort und danach täglich. Unter *Hosts → Nicht zugeordnet* einem Kunden zuweisen –
+   oder den Token gleich mit Kundenbindung erzeugen, dann entfällt der Schritt.
 
 ## Entwicklung
 
@@ -94,6 +128,48 @@ zusätzlich das Recht `issue:write`. Wer beides trennen möchte, setzt `GITEA_UR
 
 Der Abgleich legt Labels und Meilensteine an, erkennt vorhandene Issues an der Nummer im Titel,
 aktualisiert sie und schließt erledigte. Ein zweiter Lauf erzeugt keine Dubletten.
+
+## Betrieb
+
+**Dienste:** `web` (Dashboard), `worker` (Warnregeln und Benachrichtigungen), `postgres`, dazu `migrate`,
+der nur beim Start läuft.
+
+```bash
+docker compose ps                      # Zustand
+docker compose logs -f web worker      # Protokoll
+docker compose up -d --build           # nach einem Update
+```
+
+**Hinter einem Reverse Proxy:** Beispiele für Caddy, nginx und Traefik liegen in
+[deploy/reverse-proxy/](deploy/reverse-proxy/). Wichtig ist, dass `X-Forwarded-For` durchgereicht wird –
+darauf stützt sich das Rate-Limit der Agent-API. `APP_URL` muss auf die öffentliche Adresse zeigen,
+sonst stimmen die Links in E-Mails und im Installations-Einzeiler nicht.
+
+**Zustandsprüfung:** `GET /api/gesundheit` antwortet mit `{"ok":true}`, solange die Datenbank erreichbar ist.
+
+## Sicherung
+
+[deploy/backup.sh](deploy/backup.sh) sichert Datenbank, hochgeladene PDFs und die `.env`:
+
+```bash
+./deploy/backup.sh /var/backups/proxledger
+```
+
+Für regelmäßige Sicherungen in die Crontab eintragen:
+
+```
+30 2 * * * /opt/proxledger/deploy/backup.sh /var/backups/proxledger
+```
+
+Zum Zurückspielen:
+
+```bash
+gunzip -c datenbank-20260917-023000.sql.gz | docker compose exec -T postgres psql -U proxledger proxledger
+```
+
+**Wichtig:** `APP_SECRET` mitsichern. Ohne diesen Wert sind alle Sitzungen ungültig; die Zugangsdaten für
+SMTP und Webhook liegen (noch) unverschlüsselt in der Datenbank, eine Sicherung enthält sie also im Klartext
+– siehe Issue #021.
 
 ## Dokumentation
 
