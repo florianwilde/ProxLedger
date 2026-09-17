@@ -17,6 +17,12 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.13.0] – 2026-09-17
+
+### Hinzugefügt
+- Prüfung bei jedem Push über Gitea Actions: Lint, Typen, Tests gegen PostgreSQL, Build, ShellCheck und Dokumentationsprüfung (#019)
+- `npm run pruefe:doku` vergleicht Version, Issue-Übersicht und Handbuch-Bilder auf Konsistenz (#019)
+
 ## [0.12.1] – 2026-09-17
 
 ### Hinzugefügt
