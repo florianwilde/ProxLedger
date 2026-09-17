@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { statusUmschalten } from "@/server/actions/rechnungen";
 import { Badge } from "./Badges";
 import type { Farbton } from "./SmallBox";
 
@@ -12,6 +13,12 @@ export interface Aufgabe {
   dringlichkeit: "gefahr" | "warnung" | "info";
   badgeText: string;
   href: string;
+  /** Gesetzt, wenn das Abhaken direkt einen Rechnungsstatus setzt. */
+  aktion?: {
+    laufzeitId: string;
+    hostId: string;
+    feld: "einkaufBezahlt" | "verkaufErstellt";
+  };
 }
 
 const BADGE_FARBE: Record<Aufgabe["dringlichkeit"], Farbton> = {
@@ -21,14 +28,30 @@ const BADGE_FARBE: Record<Aufgabe["dringlichkeit"], Farbton> = {
 };
 
 /**
- * Aufgabenliste im AdminLTE-Todo-Stil. Im Prototyp merkt sich das Abhaken den Zustand nur lokal;
- * ab #008 setzt es den Rechnungsstatus in der Datenbank.
+ * Aufgabenliste im AdminLTE-Todo-Stil. Aufgaben mit `aktion` setzen beim Abhaken den
+ * Rechnungsstatus in der Datenbank; die übrigen sind Merkposten und verschwinden erst,
+ * wenn die Ursache behoben ist (z. B. ein Host einem Kunden zugewiesen wurde).
  */
 export function TodoList({ aufgaben }: { aufgaben: Aufgabe[] }) {
-  const [erledigt, setErledigt] = useState<string[]>([]);
+  const [oertlichErledigt, setOertlichErledigt] = useState<string[]>([]);
+  const [laeuft, starte] = useTransition();
 
-  function umschalten(id: string) {
-    setErledigt((alt) => (alt.includes(id) ? alt.filter((x) => x !== id) : [...alt, id]));
+  function umschalten(aufgabe: Aufgabe) {
+    if (!aufgabe.aktion) {
+      setOertlichErledigt((alt) =>
+        alt.includes(aufgabe.id) ? alt.filter((x) => x !== aufgabe.id) : [...alt, aufgabe.id],
+      );
+      return;
+    }
+
+    const daten = new FormData();
+    daten.set("laufzeitId", aufgabe.aktion.laufzeitId);
+    daten.set("hostId", aufgabe.aktion.hostId);
+    daten.set("feld", aufgabe.aktion.feld);
+    daten.set("wert", "true");
+    starte(async () => {
+      await statusUmschalten(daten);
+    });
   }
 
   if (aufgaben.length === 0) {
@@ -38,7 +61,7 @@ export function TodoList({ aufgaben }: { aufgaben: Aufgabe[] }) {
   return (
     <ul className="pl-todo-list">
       {aufgaben.map((aufgabe) => {
-        const istErledigt = erledigt.includes(aufgabe.id);
+        const istErledigt = oertlichErledigt.includes(aufgabe.id);
         return (
           <li
             key={aufgabe.id}
@@ -48,8 +71,12 @@ export function TodoList({ aufgaben }: { aufgaben: Aufgabe[] }) {
               type="checkbox"
               className="form-check-input mt-1 pl-touch-target"
               checked={istErledigt}
-              onChange={() => umschalten(aufgabe.id)}
-              aria-label={`${aufgabe.titel} erledigt`}
+              disabled={laeuft}
+              onChange={() => umschalten(aufgabe)}
+              aria-label={
+                aufgabe.aktion ? `${aufgabe.titel} als erledigt eintragen` : `${aufgabe.titel} abhaken`
+              }
+              title={aufgabe.aktion ? "Setzt den Rechnungsstatus" : "Nur zur eigenen Übersicht"}
             />
             <div className="flex-grow-1 pl-todo-text">
               <Link href={aufgabe.href} className="fw-semibold text-decoration-none">

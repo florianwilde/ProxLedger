@@ -11,8 +11,8 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#005](005-agent-skript.md) | Agent-Skript | erledigt | v0.2.0 | 8 h | 0 h 25 min |
 | [#006](006-kunden-hostzuweisung.md) | Kunden, Standorte und Hostzuweisung | erledigt | v0.3.0 | 6 h | 0 h 35 min |
 | [#007](007-hosts-detailansichten.md) | Host-Tabelle, Suche und Detailansichten | erledigt | v0.4.0 | 8 h | 0 h 25 min |
-| [#008](008-laufzeiten-rechnungen.md) | Laufzeiten und Rechnungen | in Arbeit | v0.5.0 | 10 h | – |
-| [#009](009-kundenuebersicht-dashboard-jahresbahn.md) | Kundenübersicht, Dashboard und Jahresbahn | offen | v0.6.0 | 8 h | – |
+| [#008](008-laufzeiten-rechnungen.md) | Laufzeiten und Rechnungen | erledigt | v0.5.0 | 10 h | 0 h 35 min |
+| [#009](009-kundenuebersicht-dashboard-jahresbahn.md) | Kundenübersicht, Dashboard und Jahresbahn | in Arbeit | v0.6.0 | 8 h | – |
 | [#010](010-export.md) | Export CSV und PDF | offen | v0.6.0 | 5 h | – |
 | [#011](011-warnregeln.md) | Warnregeln | offen | v0.7.0 | 8 h | – |
 | [#012](012-benachrichtigungen.md) | Benachrichtigungen | offen | v0.8.0 | 6 h | – |
@@ -24,4 +24,4 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#018](018-agent-feldtest.md) | Agent auf echten Proxmox-Hosts prüfen | offen | v0.2.1 | 2 h | – |
 | [#019](019-ci-pipeline.md) | CI-Pipeline | offen | v0.10.0 | 3 h | – |
 | [#020](020-gitea-issue-abgleich.md) | Issues nach Gitea übertragen | erledigt | v0.4.1 | 2 h | 0 h 10 min |
-| | **Summe** | | | **114 h** | **2 h 48 min** |
+| | **Summe** | | | **114 h** | **3 h 23 min** |

@@ -17,6 +17,19 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.5.0] – 2026-09-17
+
+### Hinzugefügt
+- Laufzeit-Vorschläge der Agents bestätigen oder verwerfen (#008)
+- Proxmox- und Kundenrechnungen erfassen; gleiche Rechnungsnummer fasst mehrere Laufzeiten zu einer Sammelrechnung zusammen (#008)
+- PDF-Upload für beide Rechnungsarten mit Prüfung des Dateiinhalts und Ablage unter der Prüfsumme (#008)
+- Rechnungsübersicht mit Häkchen „bezahlt“ und „erstellt“ direkt in der Zeile, Filter nach Status, Kunde, Jahr und Suchbegriff (#008)
+- Detailseite je Laufzeit mit Beträgen, Marge und Übersicht der Sammelrechnung (#008)
+- Laufzeiten lassen sich von Hand anlegen (#008)
+
+### Geändert
+- Die Aufgabenliste auf dem Dashboard setzt beim Abhaken den Rechnungsstatus in der Datenbank (#008)
+
 ## [0.4.2] – 2026-09-17
 
 ### Geändert
