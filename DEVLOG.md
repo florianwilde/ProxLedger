@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 3 h 23 min
+**Gesamt:** 3 h 38 min
 
 | Issue | Zeit |
 |---|---|
@@ -15,6 +15,7 @@
 | #007 Host-Tabelle und Detailansichten | 0 h 25 min |
 | #020 Issues nach Gitea übertragen | 0 h 20 min |
 | #008 Laufzeiten und Rechnungen | 0 h 35 min |
+| #009 Jahresbahn und Ablauf-Kalender | 0 h 15 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -25,12 +26,13 @@
 | v0.4.1 | 0 h 10 min | **abgeschlossen**
 | v0.4.2 | 0 h 10 min | **abgeschlossen**
 | v0.5.0 | 0 h 35 min | **abgeschlossen**
+| v0.6.0 | 0 h 15 min | in Arbeit
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.5.0
+**Version:** 0.6.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -56,6 +58,7 @@
 - Alles nach Gitea gepusht: main bei 51243c2, Tags v0.1.0 bis v0.4.1
 - #008 abgeschlossen: Laufzeit-Vorschläge bestätigen oder verwerfen, Rechnungen mit Positionen erfassen, PDF-Upload, Häkchen direkt in der Tabelle, Filter nach Status, Kunde und Jahr; Aufgabenliste auf dem Dashboard setzt jetzt echte Status
 - Meilenstein v0.5.0 abgeschlossen; 78 Tests
+- #009 abgeschlossen: Jahresbahn und Ablauf-Kalender (90 Tage) aus der Datenbank, dazu eine Karte für bereits abgelaufene Subscriptions; die Oberfläche nutzt keine Beispieldaten mehr
 
 ### Entscheidungen
 - **Rechnungsnummer als Schlüssel für Sammelrechnungen:** Dieselbe Nummer bei einer zweiten Laufzeit hängt eine Position an – kein eigener Dialog für „Sammelrechnung anlegen“ nötig.
@@ -84,4 +87,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #009 Kundenübersicht, Ablauf-Kalender und Jahresbahn auf Datenbankbasis
+- #010 Export: CSV für Kundenübersicht und Rechnungsliste, PDF-Ausgaben
