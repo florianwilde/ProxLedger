@@ -10,6 +10,7 @@ import {
 } from "@/server/agent/http";
 import { reportSchema } from "@/server/agent/schema";
 import { authentifiziereHost, verarbeiteReport } from "@/server/agent/service";
+import { alertsAbgleichen } from "@/server/alerts/abgleich";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,14 @@ export async function POST(request: Request) {
   try {
     const host = await authentifiziereHost(token);
     const ergebnis = await verarbeiteReport(host, eingabe.daten, clientIp(request.headers));
+
+    // Warnungen sofort neu bewerten – ein Report ist der häufigste Auslöser für Änderungen.
+    // Schlägt das fehl, ist der Report trotzdem angenommen.
+    try {
+      await alertsAbgleichen();
+    } catch (fehler) {
+      console.error("Auswertung der Warnregeln nach einem Report fehlgeschlagen:", fehler);
+    }
 
     return Response.json({
       ok: true,

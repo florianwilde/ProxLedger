@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 3 h 58 min
+**Gesamt:** 4 h 28 min
 
 | Issue | Zeit |
 |---|---|
@@ -17,6 +17,7 @@
 | #008 Laufzeiten und Rechnungen | 0 h 35 min |
 | #009 Jahresbahn und Ablauf-Kalender | 0 h 15 min |
 | #010 Export CSV und PDF | 0 h 20 min |
+| #011 Warnregeln | 0 h 30 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -28,12 +29,13 @@
 | v0.4.2 | 0 h 10 min | **abgeschlossen**
 | v0.5.0 | 0 h 35 min | **abgeschlossen**
 | v0.6.0 | 0 h 35 min | **abgeschlossen**
+| v0.7.0 | 0 h 30 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.6.0
+**Version:** 0.7.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -62,8 +64,11 @@
 - #009 abgeschlossen: Jahresbahn und Ablauf-Kalender (90 Tage) aus der Datenbank, dazu eine Karte für bereits abgelaufene Subscriptions; die Oberfläche nutzt keine Beispieldaten mehr
 - #010 abgeschlossen: CSV- und PDF-Export für Hosts, Kunden, einzelne Kundenunterlage und Rechnungsliste; PDFs serverseitig ohne Browser
 - Meilenstein v0.6.0 abgeschlossen
+- #011 abgeschlossen: zehn Warnregeln als reine Funktionen, Abgleich mit offenen Warnungen, Worker mit stündlichem Zeitplan, Auswertung nach jedem Report, Warnungsliste und Einstellungsseite; 123 Tests
+- Meilenstein v0.7.0 abgeschlossen
 
 ### Entscheidungen
+- **Warnstufen im Fingerabdruck** (`…:7`): Der Wechsel 30 → 14 → 7 schließt die alte Warnung und öffnet eine neue. Das ergibt je Stufe genau eine Benachrichtigung, ohne Sonderlogik für Eskalation.
 - **Rechnungsnummer als Schlüssel für Sammelrechnungen:** Dieselbe Nummer bei einer zweiten Laufzeit hängt eine Position an – kein eigener Dialog für „Sammelrechnung anlegen“ nötig.
 - **PDF-Prüfung am Dateianfang** statt am gemeldeten Typ; abgelegt wird unter der Prüfsumme, gleiche Datei also nur einmal.
 - **Screenshots mit Firefox headless** statt Playwright: Firefox ist vorhanden, es muss kein Browser samt Systembibliotheken nachinstalliert werden (dafür wäre root nötig).
@@ -90,4 +95,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #011 Warnregeln mit Worker und konfigurierbaren Schwellwerten
+- #012 Benachrichtigungen: SMTP über Microsoft 365, Webhook, Zusammenfassung, keine Doppelten

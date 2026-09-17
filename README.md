@@ -22,6 +22,13 @@ npm run typecheck
 npm test           # legt bei Bedarf die Testdatenbank an
 ```
 
+Der Worker wertet die Warnregeln stündlich aus und läuft als eigener Prozess:
+
+```bash
+npm run worker        # Dauerbetrieb
+npm run alerts:check  # einmalige Auswertung
+```
+
 Weitere Skripte: `npm run db:studio` (Datenbank-Oberfläche), `npm run db:down` (Container stoppen).
 
 ## Agent auf einem Proxmox-Host installieren

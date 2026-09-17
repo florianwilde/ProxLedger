@@ -15,10 +15,12 @@ interface MenuEintrag {
 export function Sidebar({
   hostsAnzahl,
   offeneRechnungspunkte,
+  offeneWarnungen,
   benutzer,
 }: {
   hostsAnzahl: number;
   offeneRechnungspunkte: number;
+  offeneWarnungen: number;
   benutzer: string;
 }) {
   const pathname = usePathname();
@@ -44,10 +46,17 @@ export function Sidebar({
           : undefined,
     },
     { href: "/jahresbahn", titel: "Jahresbahn", icon: "bi-calendar3-range" },
+    {
+      href: "/warnungen",
+      titel: "Warnungen",
+      icon: "bi-bell",
+      badge: offeneWarnungen > 0 ? { text: String(offeneWarnungen), klasse: "pl-bg-warning" } : undefined,
+    },
   ];
 
   const einstellungen: MenuEintrag[] = [
     { href: "/einstellungen/tokens", titel: "Agent-Tokens", icon: "bi-key" },
+    { href: "/einstellungen/warnregeln", titel: "Warnregeln", icon: "bi-shield-exclamation" },
     { href: "/einstellungen/benachrichtigungen", titel: "Benachrichtigungen", icon: "bi-bell" },
     { href: "/einstellungen/system", titel: "System", icon: "bi-sliders" },
   ];
