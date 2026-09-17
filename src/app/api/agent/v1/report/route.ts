@@ -11,6 +11,7 @@ import {
 import { reportSchema } from "@/server/agent/schema";
 import { authentifiziereHost, verarbeiteReport } from "@/server/agent/service";
 import { alertsAbgleichen } from "@/server/alerts/abgleich";
+import { neueAlertsMelden } from "@/server/notifications/versand";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,10 @@ export async function POST(request: Request) {
     // Warnungen sofort neu bewerten – ein Report ist der häufigste Auslöser für Änderungen.
     // Schlägt das fehl, ist der Report trotzdem angenommen.
     try {
-      await alertsAbgleichen();
+      const auswertung = await alertsAbgleichen();
+      if (auswertung.geoeffnet.length > 0) {
+        await neueAlertsMelden(auswertung.geoeffnet.map((alert) => alert.fingerprint));
+      }
     } catch (fehler) {
       console.error("Auswertung der Warnregeln nach einem Report fehlgeschlagen:", fehler);
     }

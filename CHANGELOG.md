@@ -17,6 +17,17 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.8.0] – 2026-09-17
+
+### Hinzugefügt
+- E-Mail-Versand über SMTP mit STARTTLS, abgestimmt auf Microsoft 365 (#012)
+- Generischer Webhook mit JSON-Nutzdaten und optionaler HMAC-Signatur (#012)
+- Tägliche oder wöchentliche Zusammenfassung mit offenen Warnungen, Rechnungspunkten und bald ablaufenden Subscriptions (#012)
+- Einstellungsseite mit Testversand und Versandprotokoll (#012)
+
+### Sicherheit
+- Benachrichtigungen werden je Warnung nur einmal verschickt; fehlgeschlagene Versuche werden protokolliert und später wiederholt (#012)
+
 ## [0.7.0] – 2026-09-17
 
 ### Hinzugefügt
