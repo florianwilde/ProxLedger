@@ -17,6 +17,11 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.4.1] – 2026-09-17
+
+### Hinzugefügt
+- Abgleich der Issue-Dateien mit dem Gitea-Tracker über `npm run issues:sync`, inklusive Labels, Meilensteinen und Trockenlauf (#020)
+
 ## [0.4.0] – 2026-09-17
 
 ### Hinzugefügt
