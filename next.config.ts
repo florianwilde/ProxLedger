@@ -10,6 +10,8 @@ const SICHERHEITS_KOPFZEILEN = [
 ];
 
 const nextConfig: NextConfig = {
+  // Für das Container-Abbild: nur die tatsächlich benötigten Dateien mitnehmen.
+  output: "standalone",
   // Die Agent-Skripte werden zur Laufzeit ausgeliefert und müssen daher mitgepackt werden.
   outputFileTracingIncludes: {
     "/install.sh": ["./agent/install.sh"],

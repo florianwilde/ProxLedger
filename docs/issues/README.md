@@ -17,12 +17,12 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#011](011-warnregeln.md) | Warnregeln | erledigt | v0.7.0 | 8 h | 0 h 30 min |
 | [#012](012-benachrichtigungen.md) | Benachrichtigungen | erledigt | v0.8.0 | 6 h | 0 h 25 min |
 | [#013](013-authentifizierung.md) | Authentifizierung und Audit-Log | erledigt | v0.9.0 | 6 h | 0 h 30 min |
-| [#014](014-deployment.md) | Deployment und Dokumentation | in Arbeit | v0.10.0 | 8 h | – |
-| [#015](015-feinschliff-v1.md) | Feinschliff für 1.0 | offen | v1.0.0 | 6 h | – |
+| [#014](014-deployment.md) | Deployment und Dokumentation | erledigt | v0.10.0 | 8 h | 0 h 40 min |
+| [#015](015-feinschliff-v1.md) | Feinschliff für 1.0 | in Arbeit | v1.0.0 | 6 h | – |
 | [#016](016-anleitung-screenshots.md) | Benutzerhandbuch mit Screenshots | offen | v0.10.0 | 5 h | – |
 | [#017](017-favicon-dateien.md) | Favicon-Dateien erzeugen | offen | v0.6.0 | 1 h | – |
 | [#018](018-agent-feldtest.md) | Agent auf echten Proxmox-Hosts prüfen | offen | v0.2.1 | 2 h | – |
 | [#019](019-ci-pipeline.md) | CI-Pipeline | offen | v0.10.0 | 3 h | – |
 | [#020](020-gitea-issue-abgleich.md) | Issues nach Gitea übertragen | erledigt | v0.4.1 | 2 h | 0 h 10 min |
 | [#021](021-geheimnisse-verschluesseln.md) | Zugangsdaten verschlüsselt speichern | offen | v0.9.0 | 2 h | – |
-| | **Summe** | | | **116 h** | **5 h 23 min** |
+| | **Summe** | | | **116 h** | **6 h 03 min** |
