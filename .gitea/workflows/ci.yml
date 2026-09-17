@@ -1,0 +1,75 @@
+# Prüft jeden Push und jede Pull-Request-Änderung.
+# Läuft mit Gitea Actions (act_runner); die Syntax entspricht GitHub Actions.
+
+name: Prüfung
+
+on:
+  push:
+    branches: [main, "phase/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pruefung:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: proxledger
+          POSTGRES_PASSWORD: proxledger
+          POSTGRES_DB: proxledger_test
+        options: >-
+          --health-cmd "pg_isready -U proxledger"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    env:
+      DATABASE_URL: postgresql://proxledger:proxledger@localhost:5432/proxledger_test?schema=public
+      TEST_DATABASE_URL: postgresql://proxledger:proxledger@localhost:5432/proxledger_test?schema=public
+      APP_SECRET: ci-geheimnis-mit-mindestens-32-zeichen-laenge
+      APP_URL: http://localhost:3000
+
+    steps:
+      - name: Quelltext holen
+        uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Prisma-Client erzeugen
+        run: npx prisma generate
+
+      - name: Code-Stil prüfen
+        run: npm run lint
+
+      - name: Typen prüfen
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Anwendung bauen
+        run: npm run build
+
+      - name: Worker bauen
+        run: npm run build:worker
+
+      - name: Agent-Skripte prüfen
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck
+          shellcheck --severity=warning agent/*.sh deploy/*.sh
+
+      - name: Dokumentation und Versionen prüfen
+        run: npm run pruefe:doku

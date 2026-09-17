@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 7 h 23 min
+**Gesamt:** 7 h 43 min
 
 | Issue | Zeit |
 |---|---|
@@ -24,6 +24,7 @@
 | #015 Feinschliff | 0 h 35 min |
 | #016 Handbuch | 0 h 30 min |
 | #017 Favicons | 0 h 15 min |
+| #019 CI-Pipeline | 0 h 20 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -46,7 +47,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.12.1
+**Version:** 0.13.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -90,6 +91,7 @@
 - 0.11.1: Anmeldefehler behoben (Secure-Cookie über http)
 - #016 abgeschlossen: Handbuch mit elf Kapiteln und 16 Bildern, dazu `npm run screenshots` zum Auffrischen
 - #017 abgeschlossen: Symbole für Tab, Startbildschirm und Manifest, erzeugt mit `npm run icons` aus SVG-Vorlagen
+- #019 abgeschlossen: Gitea-Actions-Workflow mit Lint, Typen, Tests, Build, ShellCheck und Doku-Prüfung
 
 ### Entscheidungen
 - **Warnungen sammelweise anlegen:** Einzelne Upserts kosteten bei 737 neuen Warnungen 3,8 s; mit `createMany` sind es 0,3 s.

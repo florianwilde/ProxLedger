@@ -1,6 +1,6 @@
 {
   "name": "proxledger",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -25,7 +25,8 @@
     "build:all": "npm run build && npm run build:worker",
     "lasttest": "tsx scripts/lasttest.ts",
     "screenshots": "node scripts/screenshots.mjs",
-    "icons": "node scripts/icons.mjs"
+    "icons": "node scripts/icons.mjs",
+    "pruefe:doku": "node scripts/pruefe-doku.mjs"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.1",

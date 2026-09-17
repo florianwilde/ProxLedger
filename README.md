@@ -63,7 +63,20 @@ npm run worker        # Dauerbetrieb
 npm run alerts:check  # einmalige Auswertung
 ```
 
-Weitere Skripte: `npm run db:studio` (Datenbank-Oberfläche), `npm run db:down` (Container stoppen).
+Weitere Skripte:
+
+| Befehl | Zweck |
+|---|---|
+| `npm run db:studio` | Datenbank-Oberfläche |
+| `npm run db:down` | Datenbank-Container stoppen |
+| `npm run icons` | Symbole aus den SVG-Vorlagen erzeugen |
+| `npm run screenshots -- --alle` | Bilder für das Handbuch auffrischen |
+| `npm run pruefe:doku` | Doku, Versionen und Bilder auf Konsistenz prüfen |
+| `npm run lasttest` | Abfragen mit 200 Hosts und fünf Jahren Reports messen |
+
+Jeder Push wird von [Gitea Actions](.gitea/workflows/ci.yml) geprüft: Lint, Typen, Tests gegen eine
+PostgreSQL-Instanz, Build, ShellCheck für die Agent-Skripte und die Konsistenz der Dokumentation.
+Dafür muss auf dem Gitea-Server ein `act_runner` eingerichtet sein.
 
 ## Agent auf einem Proxmox-Host installieren
 

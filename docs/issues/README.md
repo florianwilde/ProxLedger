@@ -22,7 +22,7 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#016](016-anleitung-screenshots.md) | Benutzerhandbuch mit Screenshots | erledigt | v0.12.0 | 5 h | 0 h 30 min |
 | [#017](017-favicon-dateien.md) | Favicon-Dateien erzeugen | erledigt | v0.12.1 | 1 h | 0 h 15 min |
 | [#018](018-agent-feldtest.md) | Agent auf echten Proxmox-Hosts prüfen | offen | v0.2.1 | 2 h | – |
-| [#019](019-ci-pipeline.md) | CI-Pipeline | in Arbeit | v0.10.0 | 3 h | – |
+| [#019](019-ci-pipeline.md) | CI-Pipeline | erledigt | v0.13.0 | 3 h | 0 h 20 min |
 | [#020](020-gitea-issue-abgleich.md) | Issues nach Gitea übertragen | erledigt | v0.4.1 | 2 h | 0 h 10 min |
-| [#021](021-geheimnisse-verschluesseln.md) | Zugangsdaten verschlüsselt speichern | offen | v0.9.0 | 2 h | – |
-| | **Summe** | | | **116 h** | **7 h 23 min** |
+| [#021](021-geheimnisse-verschluesseln.md) | Zugangsdaten verschlüsselt speichern | in Arbeit | v0.9.0 | 2 h | – |
+| | **Summe** | | | **116 h** | **7 h 43 min** |
