@@ -14,6 +14,9 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 - Klickbarer Prototyp mit Beispieldaten: Dashboard, Kunden- und Host-Ansichten, Rechnungen, Jahresbahn (#002)
 - ProxLedger-Logo als SVG-Komponente, Farbschema nach Vorgabe inklusive Dark-Mode (#002)
 - Globale Suche über Key, Host, Kunde und Rechnungsnummer mit Strg+K (#002)
+- Datenmodell mit Prisma: Kunden, Standorte, Hosts, Reports, Key- und Server-ID-Historie, Laufzeiten, Proxmox- und Kundenrechnungen mit Positionen, Tokens, Warnungen, Benachrichtigungen, Benutzer und Audit-Log (#003)
+- Erste Migration, Seed für Administrator, Warnregeln und Demo-Daten (#003)
+- Docker-Compose für die Entwicklungsdatenbank und Testdatenbank-Setup für Vitest (#003)
 
 ### Geändert
 

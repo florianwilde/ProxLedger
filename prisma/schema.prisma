@@ -1,0 +1,484 @@
+// ProxLedger – Datenmodell
+// Entwurfsentscheidungen siehe docs/architektur.md, Abschnitt 3.
+// Kurz: Ein Host wird über seine agentId identifiziert (nicht über die Server-ID, die sich bei
+// Hardwaretausch ändert), Rechnungen sind eigene Entitäten mit Positionen, damit Sammelbestellungen
+// bei Proxmox und Sammelrechnungen an Kunden ohne doppelte Rechnungsnummern abbildbar sind.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------- Aufzählungen
+
+enum Produkt {
+  PVE
+  PBS
+  PMG
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  NOTFOUND
+  INVALID
+  EXPIRED
+  SUSPENDED
+  UNKNOWN
+}
+
+enum LaufzeitStatus {
+  VORSCHLAG
+  BESTAETIGT
+}
+
+enum AlertSchwere {
+  INFO
+  WARNUNG
+  GEFAHR
+}
+
+enum NotificationKanal {
+  EMAIL
+  WEBHOOK
+}
+
+enum NotificationStatus {
+  GESENDET
+  FEHLGESCHLAGEN
+  WARTEND
+}
+
+// ---------------------------------------------------------------- Kunden und Standorte
+
+model Kunde {
+  id             String   @id @default(cuid())
+  name           String
+  kundennummer   String   @unique
+  ansprechpartner String?
+  email          String?
+  telefon        String?
+  notizen        String?
+  erstelltAm     DateTime @default(now())
+  geaendertAm    DateTime @updatedAt
+
+  standorte        Standort[]
+  hosts            Host[]
+  kundenrechnungen Kundenrechnung[]
+  enrollmentTokens EnrollmentToken[]
+  alerts           Alert[]
+
+  @@index([name])
+}
+
+model Standort {
+  id          String   @id @default(cuid())
+  kundeId     String
+  name        String
+  strasse     String?
+  plz         String?
+  ort         String?
+  notizen     String?
+  erstelltAm  DateTime @default(now())
+  geaendertAm DateTime @updatedAt
+
+  kunde            Kunde             @relation(fields: [kundeId], references: [id], onDelete: Cascade)
+  hosts            Host[]
+  enrollmentTokens EnrollmentToken[]
+
+  @@index([kundeId])
+}
+
+// ---------------------------------------------------------------- Hosts
+
+model Host {
+  id String @id @default(cuid())
+
+  /// Stabile Kennung, die der Agent bei der Registrierung erzeugt (aus /etc/machine-id abgeleitet).
+  /// Sie bleibt auch dann gleich, wenn sich die Proxmox-Server-ID durch Hardwaretausch ändert.
+  agentId String @unique
+
+  hostname    String
+  fqdn        String?
+  kundeId     String?
+  standortId  String?
+  produkt     Produkt
+  produktVersion String?
+  kernel      String?
+
+  /// Aktuelle Server-ID laut letztem Report; die Historie steht in ServerIdHistorie.
+  serverId    String?
+  clusterName String?
+  nodeName    String?
+  ips         String[] @default([])
+  sockets     Int?
+  cpuModell   String?
+  uptimeSekunden BigInt?
+  paketUpdates   Int?
+  agentVersion   String?
+  notizen        String?
+
+  // Momentaufnahme der Subscription aus dem letzten Report (für Listen und Filter).
+  subKey               String?
+  subStatus            SubscriptionStatus @default(UNKNOWN)
+  subLevel             String?
+  subProduktname       String?
+  subLizenzierteSockets Int?
+  subRegdate           DateTime?          @db.Date
+  subNextduedate       DateTime?          @db.Date
+  subChecktime         DateTime?
+
+  erstmalsGesehenAm DateTime  @default(now())
+  letzterReportAm   DateTime?
+  erstelltAm        DateTime  @default(now())
+  geaendertAm       DateTime  @updatedAt
+
+  kunde             Kunde?               @relation(fields: [kundeId], references: [id], onDelete: SetNull)
+  standort          Standort?            @relation(fields: [standortId], references: [id], onDelete: SetNull)
+  reports           Report[]
+  keyHistorie       SubscriptionKeyHistorie[]
+  serverIdHistorie  ServerIdHistorie[]
+  laufzeiten        Laufzeit[]
+  tokens            AgentToken[]
+  alerts            Alert[]
+  tags              Tag[]                @relation("HostTags")
+
+  @@index([kundeId])
+  @@index([standortId])
+  @@index([hostname])
+  @@index([serverId])
+  @@index([subKey])
+  @@index([subNextduedate])
+  @@index([subStatus])
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  farbe String?
+
+  hosts Host[] @relation("HostTags")
+}
+
+model Report {
+  id     String @id @default(cuid())
+  hostId String
+
+  /// Vom Agent erzeugte UUID; verhindert doppelte Verarbeitung nachgesendeter Reports.
+  reportId String @unique
+
+  /// Zeitpunkt der Datenerhebung auf dem Host (kann bei nachgesendeten Reports älter sein).
+  erhobenAm  DateTime
+  empfangenAm DateTime @default(now())
+
+  subStatus      SubscriptionStatus
+  subKey         String?
+  subNextduedate DateTime?          @db.Date
+  serverId       String?
+  hostname       String?
+  produktVersion String?
+  kernel         String?
+  sockets        Int?
+  paketUpdates   Int?
+  agentVersion   String?
+  ips            String[]           @default([])
+  quellIp        String?
+
+  /// Vollständiger Report, damit auch künftige Felder nachträglich auswertbar sind.
+  rohdaten Json
+
+  host Host @relation(fields: [hostId], references: [id], onDelete: Cascade)
+
+  @@index([hostId, erhobenAm])
+  @@index([empfangenAm])
+}
+
+model SubscriptionKeyHistorie {
+  id            String   @id @default(cuid())
+  hostId        String
+  key           String
+  ersteMeldung  DateTime @default(now())
+  letzteMeldung DateTime @default(now())
+
+  host Host @relation(fields: [hostId], references: [id], onDelete: Cascade)
+
+  @@unique([hostId, key])
+  @@index([key])
+}
+
+model ServerIdHistorie {
+  id            String   @id @default(cuid())
+  hostId        String
+  serverId      String
+  ersteMeldung  DateTime @default(now())
+  letzteMeldung DateTime @default(now())
+
+  host Host @relation(fields: [hostId], references: [id], onDelete: Cascade)
+
+  @@unique([hostId, serverId])
+  @@index([serverId])
+}
+
+// ---------------------------------------------------------------- Laufzeiten und Rechnungen
+
+model Laufzeit {
+  id      String         @id @default(cuid())
+  hostId  String
+  key     String
+  start   DateTime       @db.Date
+  ende    DateTime       @db.Date
+  status  LaufzeitStatus @default(VORSCHLAG)
+  notizen String?
+
+  /// Position der Proxmox-Rechnung (Einkauf), die diese Laufzeit bezahlt.
+  proxmoxPositionId String? @unique
+
+  /// Position der Kundenrechnung (Verkauf), mit der die Laufzeit weiterberechnet wird.
+  kundenPositionId String? @unique
+
+  erstelltAm  DateTime @default(now())
+  geaendertAm DateTime @updatedAt
+
+  host            Host                     @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  proxmoxPosition ProxmoxRechnungPosition? @relation(fields: [proxmoxPositionId], references: [id], onDelete: SetNull)
+  kundenPosition  KundenrechnungPosition?  @relation(fields: [kundenPositionId], references: [id], onDelete: SetNull)
+  alerts          Alert[]
+
+  @@unique([hostId, start])
+  @@index([ende])
+  @@index([key])
+}
+
+/// Rechnung von Proxmox (Einkauf). Eine Bestellung kann mehrere Keys umfassen.
+model ProxmoxRechnung {
+  id           String    @id @default(cuid())
+  nummer       String    @unique
+  datum        DateTime  @db.Date
+  faelligAm    DateTime? @db.Date
+  nettoBetrag  Decimal   @db.Decimal(12, 2)
+  ustSatz      Decimal   @default(19.00) @db.Decimal(5, 2)
+  rabatt       Decimal?  @db.Decimal(12, 2)
+  zahlungsart  String?
+  bezahlt      Boolean   @default(false)
+  bezahltAm    DateTime? @db.Date
+  notizen      String?
+  anhangId     String?
+  erstelltAm   DateTime  @default(now())
+  geaendertAm  DateTime  @updatedAt
+
+  anhang     Anhang?                   @relation(fields: [anhangId], references: [id], onDelete: SetNull)
+  positionen ProxmoxRechnungPosition[]
+
+  @@index([bezahlt, faelligAm])
+  @@index([datum])
+}
+
+model ProxmoxRechnungPosition {
+  id          String  @id @default(cuid())
+  rechnungId  String
+  bezeichnung String
+  menge       Int     @default(1)
+  nettoBetrag Decimal @db.Decimal(12, 2)
+
+  rechnung ProxmoxRechnung @relation(fields: [rechnungId], references: [id], onDelete: Cascade)
+  laufzeit Laufzeit?
+
+  @@index([rechnungId])
+}
+
+/// Rechnung an den Kunden (Verkauf). `erstellt = false` bedeutet: steht noch aus.
+model Kundenrechnung {
+  id          String    @id @default(cuid())
+  kundeId     String
+  erstellt    Boolean   @default(false)
+  nummer      String?   @unique
+  datum       DateTime? @db.Date
+  nettoBetrag Decimal?  @db.Decimal(12, 2)
+  ustSatz     Decimal   @default(19.00) @db.Decimal(5, 2)
+  bezahlt     Boolean   @default(false)
+  bezahltAm   DateTime? @db.Date
+  notizen     String?
+  anhangId    String?
+  erstelltAm  DateTime  @default(now())
+  geaendertAm DateTime  @updatedAt
+
+  kunde      Kunde                    @relation(fields: [kundeId], references: [id], onDelete: Cascade)
+  anhang     Anhang?                  @relation(fields: [anhangId], references: [id], onDelete: SetNull)
+  positionen KundenrechnungPosition[]
+
+  @@index([kundeId])
+  @@index([erstellt, bezahlt])
+}
+
+model KundenrechnungPosition {
+  id          String  @id @default(cuid())
+  rechnungId  String
+  bezeichnung String
+  menge       Int     @default(1)
+  nettoBetrag Decimal @db.Decimal(12, 2)
+
+  rechnung Kundenrechnung @relation(fields: [rechnungId], references: [id], onDelete: Cascade)
+  laufzeit Laufzeit?
+
+  @@index([rechnungId])
+}
+
+model Anhang {
+  id           String   @id @default(cuid())
+  dateiname    String
+  pfad         String
+  mimeTyp      String
+  groesse      Int
+  sha256       String
+  hochgeladenAm DateTime @default(now())
+
+  proxmoxRechnungen ProxmoxRechnung[]
+  kundenrechnungen  Kundenrechnung[]
+}
+
+// ---------------------------------------------------------------- Tokens
+
+/// Host-spezifischer API-Token. In der Datenbank liegt nur der SHA-256-Hash.
+model AgentToken {
+  id             String    @id @default(cuid())
+  hostId         String
+  tokenHash      String    @unique
+  praefix        String
+  bezeichnung    String?
+  erstelltAm     DateTime  @default(now())
+  letzteNutzungAm DateTime?
+  widerrufenAm   DateTime?
+
+  host Host @relation(fields: [hostId], references: [id], onDelete: Cascade)
+
+  @@index([hostId])
+}
+
+/// Token für die Erstregistrierung, optional mit Kunden- und Standortzuordnung.
+model EnrollmentToken {
+  id           String    @id @default(cuid())
+  tokenHash    String    @unique
+  praefix      String
+  bezeichnung  String?
+  gueltigBis   DateTime?
+  maxNutzungen Int?
+  nutzungen    Int       @default(0)
+  kundeId      String?
+  standortId   String?
+  erstelltAm   DateTime  @default(now())
+  widerrufenAm DateTime?
+
+  kunde    Kunde?    @relation(fields: [kundeId], references: [id], onDelete: SetNull)
+  standort Standort? @relation(fields: [standortId], references: [id], onDelete: SetNull)
+}
+
+// ---------------------------------------------------------------- Warnungen und Benachrichtigungen
+
+model Alert {
+  id    String @id @default(cuid())
+  regel String
+
+  /// Regel + betroffenes Objekt (+ Schwelle). Verhindert doppelte offene Warnungen.
+  fingerprint String @unique
+
+  schwere      AlertSchwere
+  titel        String
+  beschreibung String
+
+  hostId     String?
+  kundeId    String?
+  laufzeitId String?
+
+  geoeffnetAm DateTime  @default(now())
+  quittiertAm DateTime?
+  erledigtAm  DateTime?
+
+  host     Host?          @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  kunde    Kunde?         @relation(fields: [kundeId], references: [id], onDelete: Cascade)
+  laufzeit Laufzeit?      @relation(fields: [laufzeitId], references: [id], onDelete: Cascade)
+  benachrichtigungen Benachrichtigung[]
+
+  @@index([erledigtAm])
+  @@index([hostId])
+  @@index([kundeId])
+  @@index([regel])
+}
+
+model Benachrichtigung {
+  id         String             @id @default(cuid())
+  alertId    String?
+  kanal      NotificationKanal
+  empfaenger String
+  betreff    String?
+  status     NotificationStatus @default(WARTEND)
+  fehler     String?
+  versendetAm DateTime?
+  erstelltAm DateTime           @default(now())
+
+  alert Alert? @relation(fields: [alertId], references: [id], onDelete: SetNull)
+
+  @@index([alertId])
+  @@index([erstelltAm])
+}
+
+/// Schwellwerte je Warnregel, z. B. { "tage": [30, 14, 7] }.
+model WarnregelEinstellung {
+  id           String   @id @default(cuid())
+  regel        String   @unique
+  aktiv        Boolean  @default(true)
+  schwellwerte Json     @default("{}")
+  geaendertAm  DateTime @updatedAt
+}
+
+model Benachrichtigungskanal {
+  id            String            @id @default(cuid())
+  typ           NotificationKanal
+  name          String
+  aktiv         Boolean           @default(true)
+  konfiguration Json
+  erstelltAm    DateTime          @default(now())
+  geaendertAm   DateTime          @updatedAt
+}
+
+// ---------------------------------------------------------------- Benutzer und Protokoll
+
+/// Alle Benutzer sind Administratoren; eine Nur-Lese-Rolle ist bewusst nicht vorgesehen.
+model Benutzer {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  passwortHash  String?
+  oidcSubject   String?   @unique
+  aktiv         Boolean   @default(true)
+  letzterLoginAm DateTime?
+  erstelltAm    DateTime  @default(now())
+  geaendertAm   DateTime  @updatedAt
+
+  auditEintraege AuditEintrag[]
+}
+
+model AuditEintrag {
+  id         String   @id @default(cuid())
+  benutzerId String?
+  aktion     String
+  entitaet   String
+  entitaetId String?
+  aenderung  Json?
+  ipAdresse  String?
+  erstelltAm DateTime @default(now())
+
+  benutzer Benutzer? @relation(fields: [benutzerId], references: [id], onDelete: SetNull)
+
+  @@index([entitaet, entitaetId])
+  @@index([erstelltAm])
+}
+
+/// Freie Systemeinstellungen (z. B. SMTP-Konfiguration, Anzeigeoptionen).
+model Einstellung {
+  schluessel  String   @id
+  wert        Json
+  geaendertAm DateTime @updatedAt
+}

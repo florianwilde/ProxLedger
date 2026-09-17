@@ -51,3 +51,5 @@ Thumbs.db
 # Vercel / Sonstiges
 .vercel
 *.pem
+
+/src/generated/prisma

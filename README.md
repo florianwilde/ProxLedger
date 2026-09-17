@@ -11,11 +11,18 @@ Voraussetzungen: Node.js ≥ 24, Docker (für PostgreSQL ab #003).
 
 ```bash
 npm install
+npm run db:up      # PostgreSQL im Container (Port 5433)
+cp .env.example .env
+npm run db:migrate # Schema anlegen
+npm run db:seed    # Administrator, Warnregeln, mit SEED_DEMO=1 auch Demo-Daten
 npm run dev        # http://localhost:3000
+
 npm run lint
 npm run typecheck
-npm test
+npm test           # legt bei Bedarf die Testdatenbank an
 ```
+
+Weitere Skripte: `npm run db:studio` (Datenbank-Oberfläche), `npm run db:down` (Container stoppen).
 
 ## Dokumentation
 
