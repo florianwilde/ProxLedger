@@ -17,6 +17,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.4.0] – 2026-09-17
+
+### Hinzugefügt
+- Host-Tabelle mit Suche über Hostname, FQDN, Key, Server-ID, IP, Kunde und Rechnungsnummer (#007)
+- Filter nach Kunde, Status, Produkt, Ablauffrist und offenen Rechnungspunkten; Sortierung und Seitenblättern (#007)
+- CSV-Export der Host-Liste unter Berücksichtigung der aktiven Filter (#007)
+- Host-Detailansicht mit Übersicht, Subscription-Historie, Reports, Rechnungen, Notizen mit Tags und Tokens (#007)
+- Kunde eines Hosts direkt in der Detailansicht ändern (#007)
+
+### Geändert
+- Host-Tabelle und Host-Detail arbeiten mit echten Daten statt Beispieldaten (#007)
+
 ## [0.3.0] – 2026-09-17
 
 ### Hinzugefügt

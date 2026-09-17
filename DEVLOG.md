@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 2 h 13 min
+**Gesamt:** 2 h 38 min
 
 | Issue | Zeit |
 |---|---|
@@ -12,18 +12,20 @@
 | #004 Agent-API | 0 h 20 min |
 | #005 Agent-Skript | 0 h 25 min |
 | #006 Kunden und Hostzuweisung | 0 h 35 min |
+| #007 Host-Tabelle und Detailansichten | 0 h 25 min |
 
 | Meilenstein | Zeit |
 |---|---|
 | v0.1.0 | 1 h 13 min | **abgeschlossen**
 | v0.2.0 | 0 h 25 min | **abgeschlossen**
 | v0.3.0 | 0 h 35 min | **abgeschlossen**
+| v0.4.0 | 0 h 25 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
-**Issue:** #001–#006 (Meilensteine v0.1.0 bis v0.3.0)
-**Version:** 0.3.0
+**Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
+**Version:** 0.4.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -41,6 +43,9 @@
 - #006 abgeschlossen: Kunden und Standorte pflegen, Mehrfachzuweisung nicht zugeordneter Hosts, Enrollment- und Host-Tokens verwalten, Audit-Log; Dashboard, Kundenseiten und globale Suche laufen auf der Datenbank
 - Durchlauf gegen den laufenden Server geprüft: Token anlegen → `enroll` → Agent-Report → Laufzeit-Vorschlag → Host erscheint als „nicht zugeordnet“ → `ping`
 - Meilenstein v0.3.0 abgeschlossen und getaggt; 45 Tests
+- Issues #017 bis #019 aus bisherigen Notizen angelegt (Favicons, Feldtest des Agents, CI-Pipeline)
+- #007 abgeschlossen: Host-Tabelle mit Suche, fünf Filtern, Sortierung, Seitenblättern und CSV-Export; Host-Detail mit sechs Tabs, Notizen, Tags, Kundenzuweisung und Token-Widerruf
+- Meilenstein v0.4.0 abgeschlossen und getaggt; 59 Tests
 
 ### Entscheidungen
 - **Screenshots mit Firefox headless** statt Playwright: Firefox ist vorhanden, es muss kein Browser samt Systembibliotheken nachinstalliert werden (dafür wäre root nötig).
@@ -67,4 +72,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #007 Host-Tabelle mit Filtern, globale Suche auf Datenbankbasis und Host-Detailansicht
+- #008 Laufzeiten und Rechnungen: Vorschläge bestätigen, Rechnungen erfassen, Häkchen direkt in der Tabelle

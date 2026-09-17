@@ -1,23 +1,96 @@
 import Link from "next/link";
 import { ContentHeader } from "@/components/layout/ContentHeader";
+import { HostFilterLeiste } from "@/components/hosts/HostFilterLeiste";
 import { AblaufBadge, KeineMeldungBadge, StatusBadge } from "@/components/ui/Badges";
 import { Card } from "@/components/ui/Card";
 import { CopyableCode } from "@/components/ui/CopyableCode";
-import { HEUTE, hosts } from "@/mock/data";
-import { PRODUKT_NAME, getKunde, hostMeldetNicht, suche } from "@/mock/queries";
+import { PRODUKT_TEXT } from "@/lib/anzeige";
+import { formatDatumZeit } from "@/lib/format";
+import { filterOptionen, hostListe, type HostFilter } from "@/server/queries/hostliste";
 
 export const metadata = { title: "Hosts" };
 
-export default async function HostsSeite({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string; status?: string; kunde?: string }>;
-}) {
-  const { q, status, kunde } = await searchParams;
+type SuchParameter = Promise<Record<string, string | string[] | undefined>>;
 
-  let liste = q ? suche(q).hosts : hosts;
-  if (status) liste = liste.filter((h) => h.subscription.status === status);
-  if (kunde) liste = liste.filter((h) => h.kundeId === kunde);
+function einzeln(wert: string | string[] | undefined): string | undefined {
+  const text = Array.isArray(wert) ? wert[0] : wert;
+  return text && text.length > 0 ? text : undefined;
+}
+
+/** Baut eine Adresse mit geänderten Parametern – für Sortierung, Blättern und Export. */
+function mitParametern(
+  basis: Record<string, string | undefined>,
+  aenderung: Record<string, string | undefined> = {},
+  pfad = "/hosts",
+) {
+  const params = new URLSearchParams();
+  for (const [schluessel, wert] of Object.entries({ ...basis, ...aenderung })) {
+    if (wert) params.set(schluessel, wert);
+  }
+  const text = params.toString();
+  return text ? `${pfad}?${text}` : pfad;
+}
+
+/** Spaltenkopf, der beim Klick die Sortierung umschaltet. */
+function SortierKopf({
+  titel,
+  feld,
+  basis,
+  sortierung,
+}: {
+  titel: string;
+  feld: string;
+  basis: Record<string, string | undefined>;
+  sortierung: string | undefined;
+}) {
+  const aktiv = (sortierung ?? "hostname").startsWith(feld);
+  const absteigend = sortierung === `${feld}-ab`;
+  return (
+    <th scope="col">
+      <Link
+        href={mitParametern(basis, { sortierung: absteigend ? feld : `${feld}-ab`, seite: undefined })}
+        className="text-decoration-none text-body d-inline-flex align-items-center gap-1"
+      >
+        {titel}
+        {aktiv ? (
+          <i
+            className={`bi ${absteigend ? "bi-caret-down-fill" : "bi-caret-up-fill"} small`}
+            aria-hidden="true"
+          />
+        ) : null}
+      </Link>
+    </th>
+  );
+}
+
+export default async function HostsSeite({ searchParams }: { searchParams: SuchParameter }) {
+  const roh = await searchParams;
+  const filter: HostFilter = {
+    q: einzeln(roh.q),
+    kunde: einzeln(roh.kunde),
+    status: einzeln(roh.status),
+    produkt: einzeln(roh.produkt),
+    ablauf: einzeln(roh.ablauf) as HostFilter["ablauf"],
+    rechnung: einzeln(roh.rechnung) as HostFilter["rechnung"],
+    sortierung: einzeln(roh.sortierung),
+    seite: Number(einzeln(roh.seite) ?? 1),
+  };
+
+  const jetzt = new Date();
+  const [{ hosts, gesamt, seite, seiten }, optionen] = await Promise.all([
+    hostListe(filter, jetzt),
+    filterOptionen(),
+  ]);
+
+  const basis: Record<string, string | undefined> = {
+    q: filter.q,
+    kunde: filter.kunde,
+    status: filter.status,
+    produkt: filter.produkt,
+    ablauf: filter.ablauf,
+    rechnung: filter.rechnung,
+    sortierung: filter.sortierung,
+  };
 
   return (
     <>
@@ -26,7 +99,7 @@ export default async function HostsSeite({
       <div className="app-content">
         <div className="container-fluid">
           <Card
-            titel={`${liste.length} von ${hosts.length} Hosts`}
+            titel={`${gesamt} Host${gesamt === 1 ? "" : "s"}${gesamt !== hosts.length ? ` · Seite ${seite} von ${seiten}` : ""}`}
             rahmen="primary"
             tabelle
             werkzeuge={
@@ -34,106 +107,120 @@ export default async function HostsSeite({
                 <Link href="/hosts/nicht-zugeordnet" className="btn btn-sm btn-outline-primary">
                   Nicht zugeordnete
                 </Link>
-                <span className="btn btn-sm btn-outline-secondary disabled">CSV-Export (ab #007)</span>
+                <a
+                  href={mitParametern(basis, {}, "/hosts/export")}
+                  className="btn btn-sm btn-outline-secondary"
+                >
+                  <i className="bi bi-filetype-csv me-1" aria-hidden="true" />
+                  CSV
+                </a>
               </>
             }
           >
-            <form className="p-3 border-bottom row g-2" role="search">
-              <div className="col-md-5">
-                <input
-                  type="search"
-                  name="q"
-                  defaultValue={q ?? ""}
-                  className="form-control"
-                  placeholder="Hostname, Key, Server-ID oder IP …"
-                  aria-label="Hosts durchsuchen"
-                />
-              </div>
-              <div className="col-md-3">
-                <select name="status" defaultValue={status ?? ""} className="form-select" aria-label="Status">
-                  <option value="">Alle Status</option>
-                  <option value="active">Aktiv</option>
-                  <option value="expired">Abgelaufen</option>
-                  <option value="notfound">Keine Subscription</option>
-                </select>
-              </div>
-              <div className="col-md-2">
-                <button type="submit" className="btn btn-primary w-100">
-                  Filtern
-                </button>
-              </div>
-            </form>
+            <HostFilterLeiste kunden={optionen.kunden} werte={basis} />
 
             <div className="table-responsive">
               <table className="table table-striped align-middle">
                 <thead>
                   <tr>
-                    <th scope="col">Host</th>
-                    <th scope="col">Kunde</th>
+                    <SortierKopf titel="Host" feld="hostname" basis={basis} sortierung={filter.sortierung} />
+                    <SortierKopf titel="Kunde" feld="kunde" basis={basis} sortierung={filter.sortierung} />
                     <th scope="col">Produkt</th>
-                    <th scope="col">Status</th>
+                    <SortierKopf titel="Status" feld="status" basis={basis} sortierung={filter.sortierung} />
                     <th scope="col">Key</th>
-                    <th scope="col">Ablauf</th>
+                    <SortierKopf titel="Ablauf" feld="ablauf" basis={basis} sortierung={filter.sortierung} />
                     <th scope="col">Sockets</th>
+                    <SortierKopf
+                      titel="Letzte Meldung"
+                      feld="meldung"
+                      basis={basis}
+                      sortierung={filter.sortierung}
+                    />
                   </tr>
                 </thead>
                 <tbody>
-                  {liste.map((host) => {
-                    const kundeDesHosts = getKunde(host.kundeId);
-                    const socketAbweichung =
-                      host.subscription.lizenzierteSockets !== null &&
-                      host.sockets !== null &&
-                      host.subscription.lizenzierteSockets !== host.sockets;
-                    return (
-                      <tr key={host.id}>
-                        <td>
-                          <Link href={`/hosts/${host.id}`} className="fw-semibold text-decoration-none">
-                            {host.hostname}
+                  {hosts.map((host) => (
+                    <tr key={host.id}>
+                      <td>
+                        <Link href={`/hosts/${host.id}`} className="fw-semibold text-decoration-none">
+                          {host.hostname}
+                        </Link>
+                        {host.meldetNicht ? <KeineMeldungBadge /> : null}
+                        <div className="small text-body-secondary">{host.ips.join(", ") || "–"}</div>
+                      </td>
+                      <td>
+                        {host.kunde ? (
+                          <Link href={`/kunden/${host.kunde.id}`} className="text-decoration-none">
+                            {host.kunde.name}
                           </Link>
-                          {hostMeldetNicht(host) ? <KeineMeldungBadge /> : null}
-                          <div className="small text-body-secondary">{host.ips.join(", ")}</div>
-                        </td>
-                        <td>
-                          {kundeDesHosts ? (
-                            <Link href={`/kunden/${kundeDesHosts.id}`} className="text-decoration-none">
-                              {kundeDesHosts.name}
-                            </Link>
-                          ) : (
-                            <span className="badge pl-bg-neutral">Nicht zugeordnet</span>
-                          )}
-                        </td>
-                        <td>{PRODUKT_NAME[host.produkt]}</td>
-                        <td>
-                          <StatusBadge status={host.subscription.status} />
-                        </td>
-                        <td>
-                          <CopyableCode wert={host.subscription.key} />
-                        </td>
-                        <td>
-                          <AblaufBadge datum={host.subscription.nextduedate} heute={HEUTE} />
-                        </td>
-                        <td>
-                          {host.subscription.lizenzierteSockets ?? "–"} / {host.sockets ?? "–"}
-                          {socketAbweichung ? (
-                            <i
-                              className="bi bi-exclamation-triangle-fill pl-text-warning ms-2"
-                              title="Lizenzierte und physische Sockets weichen ab"
-                            />
-                          ) : null}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {liste.length === 0 ? (
+                        ) : (
+                          <Link
+                            href="/hosts/nicht-zugeordnet"
+                            className="badge pl-bg-neutral text-decoration-none"
+                          >
+                            Nicht zugeordnet
+                          </Link>
+                        )}
+                        {host.standort ? (
+                          <div className="small text-body-secondary">{host.standort.name}</div>
+                        ) : null}
+                      </td>
+                      <td>{PRODUKT_TEXT[host.produkt]}</td>
+                      <td>
+                        <StatusBadge status={host.subStatus} />
+                      </td>
+                      <td>
+                        <CopyableCode wert={host.subKey} />
+                      </td>
+                      <td>
+                        <AblaufBadge datum={host.subNextduedate?.toISOString() ?? null} heute={jetzt} />
+                      </td>
+                      <td>
+                        {host.subLizenzierteSockets ?? "–"} / {host.sockets ?? "–"}
+                        {host.socketAbweichung ? (
+                          <i
+                            className="bi bi-exclamation-triangle-fill pl-text-warning ms-2"
+                            title="Lizenzierte und physische Sockets weichen ab"
+                          />
+                        ) : null}
+                      </td>
+                      <td className="small">{formatDatumZeit(host.letzterReportAm)}</td>
+                    </tr>
+                  ))}
+                  {hosts.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center text-body-secondary py-4">
-                        Keine Hosts gefunden.
+                      <td colSpan={8} className="text-center text-body-secondary py-4">
+                        Keine Hosts gefunden. <Link href="/hosts">Filter zurücksetzen</Link>
                       </td>
                     </tr>
                   ) : null}
                 </tbody>
               </table>
             </div>
+
+            {seiten > 1 ? (
+              <nav className="p-3 border-top" aria-label="Seiten">
+                <ul className="pagination pagination-sm mb-0">
+                  <li className={`page-item ${seite <= 1 ? "disabled" : ""}`}>
+                    <Link className="page-link" href={mitParametern(basis, { seite: String(seite - 1) })}>
+                      Zurück
+                    </Link>
+                  </li>
+                  {Array.from({ length: seiten }, (_, i) => i + 1).map((nummer) => (
+                    <li key={nummer} className={`page-item ${nummer === seite ? "active" : ""}`}>
+                      <Link className="page-link" href={mitParametern(basis, { seite: String(nummer) })}>
+                        {nummer}
+                      </Link>
+                    </li>
+                  ))}
+                  <li className={`page-item ${seite >= seiten ? "disabled" : ""}`}>
+                    <Link className="page-link" href={mitParametern(basis, { seite: String(seite + 1) })}>
+                      Weiter
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+            ) : null}
           </Card>
         </div>
       </div>
