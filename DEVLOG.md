@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 2 h 48 min
+**Gesamt:** 2 h 58 min
 
 | Issue | Zeit |
 |---|---|
@@ -13,7 +13,7 @@
 | #005 Agent-Skript | 0 h 25 min |
 | #006 Kunden und Hostzuweisung | 0 h 35 min |
 | #007 Host-Tabelle und Detailansichten | 0 h 25 min |
-| #020 Issues nach Gitea übertragen | 0 h 10 min |
+| #020 Issues nach Gitea übertragen | 0 h 20 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -22,12 +22,13 @@
 | v0.3.0 | 0 h 35 min | **abgeschlossen**
 | v0.4.0 | 0 h 25 min | **abgeschlossen**
 | v0.4.1 | 0 h 10 min | **abgeschlossen**
+| v0.4.2 | 0 h 10 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.4.1
+**Version:** 0.4.2
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -49,6 +50,8 @@
 - #007 abgeschlossen: Host-Tabelle mit Suche, fünf Filtern, Sortierung, Seitenblättern und CSV-Export; Host-Detail mit sechs Tabs, Notizen, Tags, Kundenzuweisung und Token-Widerruf
 - Meilenstein v0.4.0 abgeschlossen und getaggt; 59 Tests
 - #020 abgeschlossen: Abgleichskript für den Gitea-Issue-Tracker (Missverständnis geklärt – die Issues lagen bisher nur als Dateien im Repo, nicht im Tracker)
+- Token kommt aus den Git-Zugangsdaten statt aus einer zweiten Stelle; 20 Issues, 15 Labels und 13 Meilensteine in Gitea angelegt
+- Alles nach Gitea gepusht: main bei 51243c2, Tags v0.1.0 bis v0.4.1
 
 ### Entscheidungen
 - **Screenshots mit Firefox headless** statt Playwright: Firefox ist vorhanden, es muss kein Browser samt Systembibliotheken nachinstalliert werden (dafür wäre root nötig).
@@ -75,5 +78,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- Gitea-Token erzeugen und `npm run issues:sync` einmal echt laufen lassen
 - #008 Laufzeiten und Rechnungen: Vorschläge bestätigen, Rechnungen erfassen, Häkchen direkt in der Tabelle
