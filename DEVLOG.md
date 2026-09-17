@@ -2,20 +2,21 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 0 h 08 min
+**Gesamt:** 0 h 28 min
 
 | Issue | Zeit |
 |---|---|
 | #001 Projekt-Setup | 0 h 08 min |
+| #002 Klickbarer Prototyp | 0 h 20 min |
 
 | Meilenstein | Zeit |
 |---|---|
-| v0.1.0 | 0 h 08 min |
+| v0.1.0 | 0 h 28 min |
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
-**Issue:** #001 Projekt-Setup
+**Issue:** #001 Projekt-Setup, #002 Klickbarer Prototyp
 **Version:** 0.1.0-dev
 
 ### Erledigt
@@ -24,8 +25,12 @@
 - Repository-Rechte korrigiert (Verzeichnis gehörte root), Branch `master` → `main`, Git-Identität lokal gesetzt
 - `.gitignore`, `CHANGELOG.md`, `DEVLOG.md`, Architekturplan und 15 Issues angelegt
 - #001 abgeschlossen: Next.js 16 (App Router, TypeScript strict), AdminLTE-CSS, Bootstrap Icons, zod, ESLint/Prettier/Vitest; Lint, Typecheck, Test und Build grün
+- #002 abgeschlossen: Prototyp mit Beispieldaten – Layout (Sidebar, Kopfleiste, Inhaltskopf, Footer), Logo als SVG-Komponente, Theme mit Farbvorgaben und Dark-Mode, Dashboard, Kunden (Liste und Detail), Hosts (Liste, Detail, nicht zugeordnet), Rechnungen, Jahresbahn, Einstellungsseiten, globale Suche mit Strg+K
+- Screenshots aller Seiten aufgenommen und in `docs/anleitung/bilder/` abgelegt
 
 ### Entscheidungen
+- **Screenshots mit Firefox headless** statt Playwright: Firefox ist vorhanden, es muss kein Browser samt Systembibliotheken nachinstalliert werden (dafür wäre root nötig).
+- **Kennzahlen werden berechnet, nicht hinterlegt:** auch im Prototyp kommen alle Zahlen aus den Beispieldaten, damit Tabellen und Kacheln nie widersprüchlich sind.
 - **AdminLTE 4.9.1 nur als CSS:** stabil, Bootstrap 5.3.8, kein jQuery; die JS-Plugins manipulieren das DOM und werden daher als React-Komponenten nachgebaut.
 - **Host-Identität über Agent-Token statt Server-ID:** Die Server-ID ändert sich bei Hardwaretausch und soll dann eine Warnung auslösen, statt einen neuen Host zu erzeugen.
 - **Rechnungen mit Positionen:** Proxmox-Sammelbestellungen und Sammelrechnungen an Kunden sollen ohne doppelte Rechnungsnummern abbildbar sein.
@@ -33,8 +38,9 @@
 - **Prototyp direkt im Next.js-Projekt**, damit die Komponenten weiterverwendet werden.
 
 ### Probleme / offene Fragen
-- Docker ist nicht installiert und `sudo` erfordert ein Passwort → Installation muss manuell erfolgen (benötigt ab #003).
+- Docker ist nicht installiert und `sudo` erfordert ein Passwort → Installation muss manuell erfolgen (wird ab #003 gebraucht).
+- Favicon-Dateien (.ico/PNG) fehlen noch, weil kein SVG-Konverter installiert ist.
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- Next.js-Grundgerüst (#001), danach Prototyp (#002)
+- Rückmeldung zum Prototyp abwarten, dann #003 Datenmodell (braucht PostgreSQL per Docker)
