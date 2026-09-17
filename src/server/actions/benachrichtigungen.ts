@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { verschluesseln } from "@/lib/geheimnisse";
 import { protokolliere } from "@/server/audit";
 import type { EmailKonfiguration, WebhookKonfiguration } from "@/server/notifications/kanaele";
 import { testNachricht } from "@/server/notifications/nachrichten";
@@ -45,8 +46,9 @@ export async function emailKanalSpeichern(
     port,
     secure: port === 465,
     benutzer: formular.get("benutzer")?.toString().trim() ?? "",
-    // Leeres Feld heißt „unverändert“ – so muss das Passwort nicht erneut eingegeben werden.
-    passwort: passwortEingabe || (bisher?.passwort ?? ""),
+    // Leeres Feld heißt „unverändert“; das gespeicherte Passwort bleibt dann wie es ist.
+    // Neue Eingaben werden verschlüsselt abgelegt (#021).
+    passwort: passwortEingabe ? verschluesseln(passwortEingabe) : (bisher?.passwort ?? ""),
     absender: formular.get("absender")?.toString().trim() ?? "",
     empfaenger,
   };
@@ -90,7 +92,7 @@ export async function webhookKanalSpeichern(
 
   const konfiguration: WebhookKonfiguration = {
     url,
-    geheimnis: geheimnisEingabe || bisher?.geheimnis,
+    geheimnis: geheimnisEingabe ? verschluesseln(geheimnisEingabe) : bisher?.geheimnis,
   };
 
   const daten = {

@@ -65,9 +65,7 @@ describe.runIf(datenbankVerfuegbar)("Datenmodell", () => {
 
     expect(laufzeiten).toHaveLength(2);
     expect(laufzeiten.every((l) => l.proxmoxPosition?.rechnung.nummer === "PX-TEST-1")).toBe(true);
-    expect(
-      laufzeiten.reduce((summe, l) => summe + Number(l.proxmoxPosition?.nettoBetrag ?? 0), 0),
-    ).toBe(230);
+    expect(laufzeiten.reduce((summe, l) => summe + Number(l.proxmoxPosition?.nettoBetrag ?? 0), 0)).toBe(230);
   });
 
   it("erlaubt Hosts ohne Kunde und setzt die Zuordnung beim Löschen des Kunden zurück", async () => {
@@ -98,4 +96,4 @@ describe.runIf(datenbankVerfuegbar)("Datenmodell", () => {
     await testPrisma.laufzeit.create({ data: daten });
     await expect(testPrisma.laufzeit.create({ data: daten })).rejects.toThrow();
   });
-})
+});

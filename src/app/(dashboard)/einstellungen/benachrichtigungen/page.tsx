@@ -42,6 +42,7 @@ export default async function BenachrichtigungenSeite() {
     absender: emailKonfiguration?.absender ?? "",
     empfaenger: emailKonfiguration?.empfaenger?.join(", ") ?? "",
     passwortGesetzt: Boolean(emailKonfiguration?.passwort),
+    // Der Wert selbst wird nie an den Browser gegeben – nur ob einer hinterlegt ist.
   };
 
   const webhookWerte: WebhookWerte = {

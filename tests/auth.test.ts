@@ -1,7 +1,12 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { hash } from "@node-rs/argon2";
 import { cookieOptionen, sitzungErzeugen, sitzungLesen } from "@/lib/sitzung";
-import { AnmeldeFehler, anmeldeRateLimit, mitOidcAnmelden, mitPasswortAnmelden } from "@/server/auth/benutzer";
+import {
+  AnmeldeFehler,
+  anmeldeRateLimit,
+  mitOidcAnmelden,
+  mitPasswortAnmelden,
+} from "@/server/auth/benutzer";
 import { datenbankLeeren, datenbankVerfuegbar, testPrisma } from "./helpers/db";
 
 const GEHEIMNIS = "test-geheimnis-mit-mindestens-32-zeichen!!";
@@ -108,7 +113,9 @@ describe.runIf(datenbankVerfuegbar)("Anmeldung", () => {
     await admin();
     await expect(mitPasswortAnmelden("admin@example.de", "falsch", "1.2.3.4")).rejects.toThrow(AnmeldeFehler);
 
-    const protokoll = await testPrisma.auditEintrag.findFirst({ where: { aktion: "anmeldung.fehlgeschlagen" } });
+    const protokoll = await testPrisma.auditEintrag.findFirst({
+      where: { aktion: "anmeldung.fehlgeschlagen" },
+    });
     expect(protokoll).not.toBeNull();
   });
 

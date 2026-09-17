@@ -253,7 +253,10 @@ describe("Warnregeln", () => {
 
     it("meldet bezahlte oder noch nicht fällige Rechnungen nicht", () => {
       expect(
-        ausRegel(kontext({ laufzeiten: [laufzeit({ einkaufFaelligAm: inTagen(3) })] }), "proxmox-rechnung-faellig"),
+        ausRegel(
+          kontext({ laufzeiten: [laufzeit({ einkaufFaelligAm: inTagen(3) })] }),
+          "proxmox-rechnung-faellig",
+        ),
       ).toHaveLength(0);
       expect(
         ausRegel(

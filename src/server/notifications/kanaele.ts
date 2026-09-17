@@ -2,6 +2,7 @@ import { createHmac } from "node:crypto";
 import nodemailer from "nodemailer";
 import type { NotificationKanal } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/db";
+import { entschluesseln } from "@/lib/geheimnisse";
 
 /**
  * Versandwege für Benachrichtigungen: SMTP (getestet gegen Microsoft 365) und ein generischer Webhook,
@@ -109,6 +110,19 @@ export interface KanalEintrag {
   konfiguration: EmailKonfiguration | WebhookKonfiguration;
 }
 
+/** Holt die Zugangsdaten aus der Datenbank und entschlüsselt sie für den Versand. */
+export function konfigurationLesen(
+  typ: NotificationKanal,
+  gespeichert: unknown,
+): EmailKonfiguration | WebhookKonfiguration {
+  if (typ === "EMAIL") {
+    const eintrag = gespeichert as EmailKonfiguration;
+    return { ...eintrag, passwort: entschluesseln(eintrag.passwort ?? "") };
+  }
+  const eintrag = gespeichert as WebhookKonfiguration;
+  return { ...eintrag, geheimnis: eintrag.geheimnis ? entschluesseln(eintrag.geheimnis) : undefined };
+}
+
 export async function aktiveKanaele(): Promise<KanalEintrag[]> {
   const kanaele = await prisma.benachrichtigungskanal.findMany({ where: { aktiv: true } });
   return kanaele.map((kanal) => ({
@@ -116,7 +130,7 @@ export async function aktiveKanaele(): Promise<KanalEintrag[]> {
     typ: kanal.typ,
     name: kanal.name,
     aktiv: kanal.aktiv,
-    konfiguration: kanal.konfiguration as unknown as EmailKonfiguration | WebhookKonfiguration,
+    konfiguration: konfigurationLesen(kanal.typ, kanal.konfiguration),
   }));
 }
 
