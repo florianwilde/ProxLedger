@@ -57,8 +57,14 @@ describe("Agent-Skript", () => {
     befehlErsetzen("pvesubscription", PVE_SUBSCRIPTION);
     befehlErsetzen("pveversion", "pve-manager/8.3.2/dc2b2f4e");
     befehlErsetzen("lscpu", "Socket(s):             2\nModel name:            Intel(R) Xeon(R) E-2388G");
-    befehlErsetzen("ip", "1: lo    inet 127.0.0.1/8 scope host lo\n2: vmbr0    inet 192.168.10.11/24 scope global vmbr0");
-    befehlErsetzen("apt", "Auflistung...\nlibc6/stable 2.40 amd64 [upgradable from: 2.39]\nbash/stable 5.3 amd64 [upgradable from: 5.2]");
+    befehlErsetzen(
+      "ip",
+      "1: lo    inet 127.0.0.1/8 scope host lo\n2: vmbr0    inet 192.168.10.11/24 scope global vmbr0",
+    );
+    befehlErsetzen(
+      "apt",
+      "Auflistung...\nlibc6/stable 2.40 amd64 [upgradable from: 2.39]\nbash/stable 5.3 amd64 [upgradable from: 5.2]",
+    );
 
     const report = reportErzeugen() as {
       reportId: string;

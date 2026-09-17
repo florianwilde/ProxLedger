@@ -1,6 +1,7 @@
 import { createHmac } from "node:crypto";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { perWebhookSenden, VersandFehler } from "@/server/notifications/kanaele";
+import { verschluesseln } from "@/lib/geheimnisse";
+import { konfigurationLesen, perWebhookSenden, VersandFehler } from "@/server/notifications/kanaele";
 import { alertNachricht, zusammenfassungNachricht } from "@/server/notifications/nachrichten";
 import { neueAlertsMelden, zusammenfassungSenden } from "@/server/notifications/versand";
 import { datenbankLeeren, datenbankVerfuegbar, testPrisma } from "./helpers/db";
@@ -43,9 +44,7 @@ describe("Nachrichten", () => {
           },
         ],
         neueAlerts: [],
-        baldAblaufend: [
-          { hostname: "pve-01", kunde: "Brandl GmbH", datum: new Date("2026-09-24"), tage: 7 },
-        ],
+        baldAblaufend: [{ hostname: "pve-01", kunde: "Brandl GmbH", datum: new Date("2026-09-24"), tage: 7 }],
         offeneRechnungspunkte: 3,
         hostsOhneMeldung: 1,
       },
@@ -217,6 +216,52 @@ describe.runIf(datenbankVerfuegbar)("Versand", () => {
     const zweiter = await neueAlertsMelden([eintrag.fingerprint]);
 
     expect(zweiter.gesendet).toBe(1);
+  });
+
+  it("nutzt ein verschlüsselt gespeichertes Webhook-Geheimnis für die Signatur", async () => {
+    process.env.APP_SECRET = "test-geheimnis-mit-mindestens-32-zeichen!!";
+
+    const aufrufe: RequestInit[] = [];
+    vi.stubGlobal("fetch", async (_url: string, optionen: RequestInit) => {
+      aufrufe.push(optionen);
+      return new Response("ok", { status: 200 });
+    });
+
+    await testPrisma.benachrichtigungskanal.create({
+      data: {
+        typ: "WEBHOOK",
+        name: "Signierter Hook",
+        aktiv: true,
+        konfiguration: { url: "https://hook.example.de/x", geheimnis: verschluesseln("s3cret") },
+      },
+    });
+    const eintrag = await alert();
+
+    await neueAlertsMelden([eintrag.fingerprint]);
+
+    const kopfzeilen = aufrufe[0].headers as Record<string, string>;
+    const koerper = aufrufe[0].body as string;
+    expect(kopfzeilen["X-ProxLedger-Signatur"]).toBe(
+      `sha256=${createHmac("sha256", "s3cret").update(koerper).digest("hex")}`,
+    );
+
+    // In der Datenbank steht kein Klartext.
+    const gespeichert = await testPrisma.benachrichtigungskanal.findFirstOrThrow();
+    expect(JSON.stringify(gespeichert.konfiguration)).not.toContain("s3cret");
+  });
+
+  it("liest Zugangsdaten aus der Zeit vor der Verschlüsselung weiter", () => {
+    const konfiguration = konfigurationLesen("EMAIL", {
+      host: "smtp.example.de",
+      port: 587,
+      secure: false,
+      benutzer: "post",
+      passwort: "alt-im-klartext",
+      absender: "post@example.de",
+      empfaenger: ["florian@example.de"],
+    });
+
+    expect((konfiguration as { passwort: string }).passwort).toBe("alt-im-klartext");
   });
 
   it("verschickt die Zusammenfassung mit den aktuellen Zahlen", async () => {

@@ -24,5 +24,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#018](018-agent-feldtest.md) | Agent auf echten Proxmox-Hosts prüfen | offen | v0.2.1 | 2 h | – |
 | [#019](019-ci-pipeline.md) | CI-Pipeline | erledigt | v0.13.0 | 3 h | 0 h 20 min |
 | [#020](020-gitea-issue-abgleich.md) | Issues nach Gitea übertragen | erledigt | v0.4.1 | 2 h | 0 h 10 min |
-| [#021](021-geheimnisse-verschluesseln.md) | Zugangsdaten verschlüsselt speichern | in Arbeit | v0.9.0 | 2 h | – |
-| | **Summe** | | | **116 h** | **7 h 43 min** |
+| [#021](021-geheimnisse-verschluesseln.md) | Zugangsdaten verschlüsselt speichern | erledigt | v0.13.1 | 2 h | 0 h 20 min |
+| | **Summe** | | | **116 h** | **8 h 03 min** |

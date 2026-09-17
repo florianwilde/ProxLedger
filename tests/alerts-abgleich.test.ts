@@ -82,9 +82,7 @@ describe.runIf(datenbankVerfuegbar)("Abgleich der Warnungen", () => {
     });
     const ergebnis = await alertsAbgleichen(JETZT);
 
-    expect(ergebnis.geoeffnet.map((a) => a.fingerprint)).toContain(
-      `subscription-laeuft-ab:${host.id}:7`,
-    );
+    expect(ergebnis.geoeffnet.map((a) => a.fingerprint)).toContain(`subscription-laeuft-ab:${host.id}:7`);
     const alerts = await testPrisma.alert.findMany({
       where: { fingerprint: `subscription-laeuft-ab:${host.id}:7` },
     });

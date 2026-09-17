@@ -180,9 +180,9 @@ Zum Zurückspielen:
 gunzip -c datenbank-20260917-023000.sql.gz | docker compose exec -T postgres psql -U proxledger proxledger
 ```
 
-**Wichtig:** `APP_SECRET` mitsichern. Ohne diesen Wert sind alle Sitzungen ungültig; die Zugangsdaten für
-SMTP und Webhook liegen (noch) unverschlüsselt in der Datenbank, eine Sicherung enthält sie also im Klartext
-– siehe Issue #021.
+**Wichtig:** `APP_SECRET` mitsichern und sicher aufbewahren. Der Wert signiert die Sitzungen **und**
+verschlüsselt die Zugangsdaten für SMTP und Webhook in der Datenbank. Geht er verloren, müssen diese
+Zugangsdaten neu eingetragen werden; eine Sicherung allein gibt sie nicht preis.
 
 ## Dokumentation
 

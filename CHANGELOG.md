@@ -17,6 +17,12 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.13.1] – 2026-09-17
+
+### Sicherheit
+- SMTP-Passwort und Webhook-Geheimnis werden verschlüsselt in der Datenbank abgelegt (AES-256-GCM, Schlüssel aus `APP_SECRET`); eine Sicherung gibt sie damit nicht mehr im Klartext preis (#021)
+- Werte aus der Zeit davor werden weiterhin gelesen und beim nächsten Speichern umgeschlüsselt (#021)
+
 ## [0.13.0] – 2026-09-17
 
 ### Hinzugefügt

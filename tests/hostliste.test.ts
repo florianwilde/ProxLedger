@@ -101,7 +101,10 @@ describe.runIf(datenbankVerfuegbar)("Host-Tabelle", () => {
   it("findet Hosts über Server-ID, IP, FQDN und Kundenname", async () => {
     for (const suche of ["A1B2C3D4E5F60718", "192.168.10.11", "brandl.local", "Brandl Elektro"]) {
       const { hosts } = await hostListe({ q: suche }, JETZT);
-      expect(hosts.map((h) => h.hostname), `Suche nach ${suche}`).toContain("pve-brandl-01");
+      expect(
+        hosts.map((h) => h.hostname),
+        `Suche nach ${suche}`,
+      ).toContain("pve-brandl-01");
     }
   });
 
@@ -117,7 +120,9 @@ describe.runIf(datenbankVerfuegbar)("Host-Tabelle", () => {
   });
 
   it("filtert nach Kunde, Status und Produkt", async () => {
-    const { kunde } = { kunde: await testPrisma.kunde.findFirstOrThrow({ where: { kundennummer: "K-1001" } }) };
+    const { kunde } = {
+      kunde: await testPrisma.kunde.findFirstOrThrow({ where: { kundennummer: "K-1001" } }),
+    };
 
     expect((await hostListe({ kunde: kunde.id }, JETZT)).gesamt).toBe(1);
     expect((await hostListe({ kunde: "ohne" }, JETZT)).gesamt).toBe(1);

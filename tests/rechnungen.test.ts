@@ -264,7 +264,9 @@ describe.runIf(datenbankVerfuegbar)("Laufzeiten und Rechnungen", () => {
       await proxmoxRechnungErfassen(laufzeitA.id, EINKAUF);
 
       await einkaufBezahltSetzen(laufzeitA.id, true);
-      let rechnung = await testPrisma.proxmoxRechnung.findUniqueOrThrow({ where: { nummer: EINKAUF.nummer } });
+      let rechnung = await testPrisma.proxmoxRechnung.findUniqueOrThrow({
+        where: { nummer: EINKAUF.nummer },
+      });
       expect(rechnung.bezahlt).toBe(true);
       expect(rechnung.bezahltAm).not.toBeNull();
 

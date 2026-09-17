@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { kennzahlen } from "@/server/queries/hosts";
-import { aktiveKanaele, ueberKanalSenden, type Nachricht } from "./kanaele";
+import { aktiveKanaele, konfigurationLesen, ueberKanalSenden, type Nachricht } from "./kanaele";
 import { alertNachricht, zusammenfassungNachricht, type AlertNachrichtDaten } from "./nachrichten";
 
 /**
@@ -149,7 +149,7 @@ export async function ueberEinenKanalSenden(kanalId: string, nachricht: Nachrich
         typ: eintrag.typ,
         name: eintrag.name,
         aktiv: eintrag.aktiv,
-        konfiguration: eintrag.konfiguration as never,
+        konfiguration: konfigurationLesen(eintrag.typ, eintrag.konfiguration),
       };
     })());
 

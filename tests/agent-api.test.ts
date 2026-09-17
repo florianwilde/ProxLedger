@@ -165,11 +165,7 @@ describe.runIf(datenbankVerfuegbar)("Agent-API", () => {
       ["fehlendem Token", async () => undefined, 401],
       ["unbekanntem Token", async () => "plx_e_unbekannt", 401],
       ["widerrufenem Token", async () => enrollmentTokenAnlegen({ widerrufen: true }), 401],
-      [
-        "abgelaufenem Token",
-        async () => enrollmentTokenAnlegen({ gueltigBis: new Date("2020-01-01") }),
-        401,
-      ],
+      ["abgelaufenem Token", async () => enrollmentTokenAnlegen({ gueltigBis: new Date("2020-01-01") }), 401],
       ["aufgebrauchtem Token", async () => enrollmentTokenAnlegen({ maxNutzungen: 0 }), 401],
     ])("weist Registrierung mit %s ab", async (_name, tokenErzeugen, status) => {
       const token = await tokenErzeugen();
