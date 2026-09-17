@@ -17,6 +17,20 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.3.0] – 2026-09-17
+
+### Hinzugefügt
+- Kunden anlegen, bearbeiten und löschen; Standorte je Kunde verwalten (#006)
+- Seite „Nicht zugeordnete Hosts“ mit Mehrfachauswahl und Zuweisung in einem Schritt (#006)
+- Enrollment-Tokens erzeugen (mit Gültigkeit, Nutzungsgrenze und optionaler Kundenbindung), anzeigen und widerrufen; Host-Tokens widerrufen (#006)
+- Audit-Log-Einträge für alle Änderungen an Kunden, Standorten, Zuweisungen und Tokens (#006)
+
+### Geändert
+- Dashboard, Kundenübersicht, Kunden-Detail und globale Suche arbeiten mit echten Daten statt Beispieldaten (#006)
+
+### Behoben
+- Prisma-Client öffnete in der Produktionsumgebung bei jedem Zugriff einen neuen Verbindungspool (#006)
+
 ## [0.2.0] – 2026-09-17
 
 ### Hinzugefügt

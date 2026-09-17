@@ -1,0 +1,106 @@
+import { prisma } from "@/lib/db";
+import { meldungsGrenze } from "./hosts";
+
+/**
+ * Hosts nach Ablaufdatum mit der Laufzeit, die zu diesem Ablauf gehört.
+ * Gezeigt wird bewusst die Verlängerung (die Laufzeit, die am `nextduedate` beginnt),
+ * denn deren Rechnungen sind offen – nicht die der laufenden Periode.
+ */
+export async function hostsNachAblauf(jetzt: Date = new Date()) {
+  const hosts = await prisma.host.findMany({
+    where: { subNextduedate: { not: null } },
+    orderBy: { subNextduedate: "asc" },
+    include: {
+      kunde: { select: { id: true, name: true } },
+      laufzeiten: {
+        where: { status: "BESTAETIGT" },
+        orderBy: { start: "desc" },
+        include: {
+          proxmoxPosition: { include: { rechnung: { select: { nummer: true, bezahlt: true } } } },
+          kundenPosition: { include: { rechnung: { select: { erstellt: true, bezahlt: true } } } },
+        },
+      },
+    },
+  });
+
+  const grenze = meldungsGrenze(jetzt);
+
+  return hosts.map((host) => {
+    const ablauf = host.subNextduedate;
+    const verlaengerung = host.laufzeiten.find(
+      (laufzeit) => ablauf && laufzeit.start.getTime() === ablauf.getTime(),
+    );
+    const laufend = host.laufzeiten[0];
+    const laufzeit = verlaengerung ?? laufend;
+
+    return {
+      id: host.id,
+      hostname: host.hostname,
+      kunde: host.kunde,
+      subKey: host.subKey,
+      nextduedate: ablauf,
+      meldetNicht: !host.letzterReportAm || host.letzterReportAm < grenze,
+      einkaufBezahlt: laufzeit?.proxmoxPosition ? laufzeit.proxmoxPosition.rechnung.bezahlt : null,
+      verkaufErstellt: laufzeit?.kundenPosition?.rechnung.erstellt ?? false,
+      verkaufBezahlt: laufzeit?.kundenPosition?.rechnung.bezahlt ?? false,
+    };
+  });
+}
+
+/** Offene Rechnungspunkte als Aufgabenliste fürs Dashboard. */
+export async function offeneAufgaben() {
+  const laufzeiten = await prisma.laufzeit.findMany({
+    where: {
+      status: "BESTAETIGT",
+      OR: [
+        { proxmoxPosition: { rechnung: { bezahlt: false } } },
+        { kundenPosition: null },
+        { kundenPosition: { rechnung: { erstellt: false } } },
+      ],
+    },
+    orderBy: { start: "asc" },
+    include: {
+      host: { select: { id: true, hostname: true, kunde: { select: { name: true } } } },
+      proxmoxPosition: { include: { rechnung: true } },
+      kundenPosition: { include: { rechnung: true } },
+    },
+  });
+
+  const aufgaben = [];
+  for (const laufzeit of laufzeiten) {
+    const basis = `${laufzeit.host.hostname} · ${laufzeit.host.kunde?.name ?? "Nicht zugeordnet"}`;
+    const einkauf = laufzeit.proxmoxPosition?.rechnung;
+
+    if (einkauf && !einkauf.bezahlt) {
+      aufgaben.push({
+        id: `${laufzeit.id}-einkauf`,
+        titel: `Proxmox-Rechnung ${einkauf.nummer} bezahlen`,
+        detail: basis,
+        betrag: Number(laufzeit.proxmoxPosition?.nettoBetrag ?? 0),
+        faelligAm: einkauf.faelligAm,
+        dringlichkeit: "gefahr" as const,
+        badgeText: "Einkauf",
+        href: `/hosts/${laufzeit.hostId}`,
+        start: laufzeit.start,
+        ende: laufzeit.ende,
+      });
+    }
+
+    if (einkauf && !laufzeit.kundenPosition?.rechnung.erstellt) {
+      aufgaben.push({
+        id: `${laufzeit.id}-verkauf`,
+        titel: "Kundenrechnung erstellen",
+        detail: basis,
+        betrag: null,
+        faelligAm: null,
+        dringlichkeit: "warnung" as const,
+        badgeText: "Verkauf",
+        href: "/rechnungen",
+        start: laufzeit.start,
+        ende: laufzeit.ende,
+      });
+    }
+  }
+
+  return aufgaben;
+}

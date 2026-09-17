@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContentHeader } from "@/components/layout/ContentHeader";
+import { StandortVerwaltung } from "@/components/kunden/StandortVerwaltung";
 import {
   AblaufBadge,
   EinkaufBadge,
@@ -12,55 +13,51 @@ import { Card } from "@/components/ui/Card";
 import { CopyableCode } from "@/components/ui/CopyableCode";
 import { InfoBox } from "@/components/ui/SmallBox";
 import { formatDatum, formatEuro } from "@/lib/format";
-import { HEUTE, kunden } from "@/mock/data";
-import {
-  PRODUKT_NAME,
-  alertsVonKunde,
-  getKunde,
-  hostMeldetNicht,
-  hostsVonKunde,
-  laufzeitenVonKunde,
-  summenProJahr,
-  summenVonKunde,
-} from "@/mock/queries";
-
-export function generateStaticParams() {
-  return kunden.map((kunde) => ({ id: kunde.id }));
-}
+import { hostZuordnungAufheben } from "@/server/actions/hosts";
+import { kundeMitDetails, laufzeitenVonKunde, summen, summenProJahr } from "@/server/queries/kunden";
+import { meldungsGrenze } from "@/server/queries/hosts";
+import { PRODUKT_TEXT, statusAusDatenbank } from "@/lib/anzeige";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return { title: getKunde(id)?.name ?? "Kunde" };
+  const kunde = await kundeMitDetails(id);
+  return { title: kunde?.name ?? "Kunde" };
 }
 
 export default async function KundenDetailSeite({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const kunde = getKunde(id);
+  const kunde = await kundeMitDetails(id);
   if (!kunde) notFound();
 
-  const eigeneHosts = hostsVonKunde(kunde.id);
-  const laufzeiten = laufzeitenVonKunde(kunde.id);
-  const summen = summenVonKunde(kunde.id);
+  const laufzeiten = await laufzeitenVonKunde(kunde.id);
+  const gesamt = summen(laufzeiten);
   const proJahr = summenProJahr(laufzeiten);
-  const alerts = alertsVonKunde(kunde.id);
+  const heute = new Date();
+  const grenze = meldungsGrenze(heute);
 
   return (
     <>
       <ContentHeader
         titel={kunde.name}
         brotkrumen={[{ titel: "Kunden", href: "/kunden" }, { titel: kunde.name }]}
+        aktion={
+          <Link href={`/kunden/${kunde.id}/bearbeiten`} className="btn btn-sm btn-outline-primary">
+            <i className="bi bi-pencil me-1" aria-hidden="true" />
+            Bearbeiten
+          </Link>
+        }
       />
 
       <div className="app-content">
         <div className="container-fluid">
           <div className="row">
             <div className="col-6 col-lg-3">
-              <InfoBox text="Hosts" wert={String(eigeneHosts.length)} icon="bi-hdd-stack" farbe="info" />
+              <InfoBox text="Hosts" wert={String(kunde.hosts.length)} icon="bi-hdd-stack" farbe="info" />
             </div>
             <div className="col-6 col-lg-3">
               <InfoBox
                 text="Einkauf netto"
-                wert={formatEuro(summen.einkauf)}
+                wert={formatEuro(gesamt.einkauf)}
                 icon="bi-cart"
                 farbe="neutral"
               />
@@ -68,7 +65,7 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
             <div className="col-6 col-lg-3">
               <InfoBox
                 text="Verkauf netto"
-                wert={formatEuro(summen.verkauf)}
+                wert={formatEuro(gesamt.verkauf)}
                 icon="bi-receipt"
                 farbe="primary"
               />
@@ -76,7 +73,7 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
             <div className="col-6 col-lg-3">
               <InfoBox
                 text="Marge"
-                wert={formatEuro(summen.marge)}
+                wert={formatEuro(gesamt.marge)}
                 icon="bi-graph-up-arrow"
                 farbe="success"
               />
@@ -97,15 +94,6 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
                   </dd>
                   <dt className="col-5 fw-normal text-body-secondary">Telefon</dt>
                   <dd className="col-7">{kunde.telefon ?? "–"}</dd>
-                  <dt className="col-5 fw-normal text-body-secondary">Standorte</dt>
-                  <dd className="col-7">
-                    {kunde.standorte.map((s) => (
-                      <div key={s.id}>
-                        {s.name}
-                        {s.ort ? <span className="text-body-secondary"> · {s.ort}</span> : null}
-                      </div>
-                    ))}
-                  </dd>
                 </dl>
                 <hr />
                 <h4 className="h6">Notizen</h4>
@@ -114,12 +102,26 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
                 </p>
               </Card>
 
-              <Card titel="Offene Warnungen" rahmen={alerts.length > 0 ? "danger" : "info"}>
-                {alerts.length === 0 ? (
+              <Card titel="Standorte" rahmen="info">
+                <StandortVerwaltung
+                  kundeId={kunde.id}
+                  standorte={kunde.standorte.map((standort) => ({
+                    id: standort.id,
+                    name: standort.name,
+                    strasse: standort.strasse,
+                    plz: standort.plz,
+                    ort: standort.ort,
+                    hosts: kunde.hosts.filter((host) => host.standortId === standort.id).length,
+                  }))}
+                />
+              </Card>
+
+              <Card titel="Offene Warnungen" rahmen={kunde.alerts.length > 0 ? "danger" : "info"}>
+                {kunde.alerts.length === 0 ? (
                   <p className="mb-0 text-body-secondary">Keine offenen Warnungen.</p>
                 ) : (
                   <ul className="list-unstyled mb-0 small">
-                    {alerts.map((alert) => (
+                    {kunde.alerts.map((alert) => (
                       <li key={alert.id} className="mb-2">
                         <strong>{alert.titel}</strong>
                         <div className="text-body-secondary">{alert.beschreibung}</div>
@@ -131,7 +133,7 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
             </div>
 
             <div className="col-lg-8">
-              <Card titel="Hosts" rahmen="primary" tabelle>
+              <Card titel={`Hosts (${kunde.hosts.length})`} rahmen="primary" tabelle>
                 <div className="table-responsive">
                   <table className="table table-striped align-middle">
                     <thead>
@@ -141,29 +143,54 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
                         <th scope="col">Status</th>
                         <th scope="col">Key</th>
                         <th scope="col">Ablauf</th>
+                        <th scope="col" className="text-end">
+                          Zuordnung
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {eigeneHosts.map((host) => (
+                      {kunde.hosts.map((host) => (
                         <tr key={host.id}>
                           <td>
                             <Link href={`/hosts/${host.id}`} className="fw-semibold text-decoration-none">
                               {host.hostname}
                             </Link>
-                            {hostMeldetNicht(host) ? <KeineMeldungBadge /> : null}
+                            {!host.letzterReportAm || host.letzterReportAm < grenze ? (
+                              <KeineMeldungBadge />
+                            ) : null}
                           </td>
-                          <td>{PRODUKT_NAME[host.produkt]}</td>
+                          <td>{PRODUKT_TEXT[host.produkt]}</td>
                           <td>
-                            <StatusBadge status={host.subscription.status} />
+                            <StatusBadge status={statusAusDatenbank(host.subStatus)} />
                           </td>
                           <td>
-                            <CopyableCode wert={host.subscription.key} />
+                            <CopyableCode wert={host.subKey} />
                           </td>
                           <td>
-                            <AblaufBadge datum={host.subscription.nextduedate} heute={HEUTE} />
+                            <AblaufBadge datum={host.subNextduedate?.toISOString() ?? null} heute={heute} />
+                          </td>
+                          <td className="text-end">
+                            <form action={hostZuordnungAufheben}>
+                              <input type="hidden" name="hostId" value={host.id} />
+                              <button
+                                type="submit"
+                                className="btn btn-sm btn-outline-secondary"
+                                title="Zuordnung zu diesem Kunden aufheben"
+                              >
+                                Lösen
+                              </button>
+                            </form>
                           </td>
                         </tr>
                       ))}
+                      {kunde.hosts.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="text-center text-body-secondary py-4">
+                            Diesem Kunden ist noch kein Host zugewiesen.{" "}
+                            <Link href="/hosts/nicht-zugeordnet">Jetzt zuweisen</Link>
+                          </td>
+                        </tr>
+                      ) : null}
                     </tbody>
                   </table>
                 </div>
@@ -183,66 +210,72 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
                       </tr>
                     </thead>
                     <tbody>
-                      {laufzeiten.map((laufzeit) => {
-                        const host = eigeneHosts.find((h) => h.id === laufzeit.hostId);
-                        return (
-                          <tr key={laufzeit.id}>
-                            <td>
-                              {formatDatum(laufzeit.start)} – {formatDatum(laufzeit.ende)}
-                              {laufzeit.vorschlag ? (
-                                <span className="badge pl-bg-info ms-2">Vorschlag</span>
-                              ) : null}
-                            </td>
-                            <td>{host?.hostname ?? "–"}</td>
-                            <td>
-                              <CopyableCode wert={laufzeit.einkauf?.nummer ?? null} />
-                              <div>
-                                <EinkaufBadge bezahlt={laufzeit.einkauf ? laufzeit.einkauf.bezahlt : null} />
-                              </div>
-                            </td>
-                            <td>{formatEuro(laufzeit.einkauf?.nettoBetrag)}</td>
-                            <td>
-                              <CopyableCode wert={laufzeit.verkauf?.nummer ?? null} />
-                              <div>
-                                <VerkaufBadge
-                                  erstellt={laufzeit.verkauf?.erstellt ?? false}
-                                  bezahlt={laufzeit.verkauf?.bezahlt ?? false}
-                                />
-                              </div>
-                            </td>
-                            <td>{formatEuro(laufzeit.verkauf?.nettoBetrag)}</td>
-                          </tr>
-                        );
-                      })}
+                      {laufzeiten.map((laufzeit) => (
+                        <tr key={laufzeit.id}>
+                          <td>
+                            {formatDatum(laufzeit.start)} – {formatDatum(laufzeit.ende)}
+                            {laufzeit.vorschlag ? (
+                              <span className="badge pl-bg-info ms-2">Vorschlag</span>
+                            ) : null}
+                          </td>
+                          <td>{laufzeit.hostname}</td>
+                          <td>
+                            <CopyableCode wert={laufzeit.einkauf?.nummer ?? null} />
+                            <div>
+                              <EinkaufBadge bezahlt={laufzeit.einkauf ? laufzeit.einkauf.bezahlt : null} />
+                            </div>
+                          </td>
+                          <td>{formatEuro(laufzeit.einkauf?.nettoBetrag)}</td>
+                          <td>
+                            <CopyableCode wert={laufzeit.verkauf?.nummer ?? null} />
+                            <div>
+                              <VerkaufBadge
+                                erstellt={laufzeit.verkauf?.erstellt ?? false}
+                                bezahlt={laufzeit.verkauf?.bezahlt ?? false}
+                              />
+                            </div>
+                          </td>
+                          <td>{formatEuro(laufzeit.verkauf?.nettoBetrag)}</td>
+                        </tr>
+                      ))}
+                      {laufzeiten.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="text-center text-body-secondary py-4">
+                            Noch keine Laufzeiten erfasst.
+                          </td>
+                        </tr>
+                      ) : null}
                     </tbody>
                   </table>
                 </div>
               </Card>
 
-              <Card titel="Summen pro Jahr" rahmen="info" tabelle>
-                <table className="table table-striped align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th scope="col">Jahr</th>
-                      <th scope="col">Einkauf netto</th>
-                      <th scope="col">Verkauf netto</th>
-                      <th scope="col">Marge</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {proJahr.map((jahr) => (
-                      <tr key={jahr.jahr}>
-                        <td>{jahr.jahr}</td>
-                        <td>{formatEuro(jahr.einkauf)}</td>
-                        <td>{formatEuro(jahr.verkauf)}</td>
-                        <td className={jahr.marge >= 0 ? "pl-text-success" : "pl-text-danger"}>
-                          {formatEuro(jahr.marge)}
-                        </td>
+              {proJahr.length > 0 ? (
+                <Card titel="Summen pro Jahr" rahmen="info" tabelle>
+                  <table className="table table-striped align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th scope="col">Jahr</th>
+                        <th scope="col">Einkauf netto</th>
+                        <th scope="col">Verkauf netto</th>
+                        <th scope="col">Marge</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </Card>
+                    </thead>
+                    <tbody>
+                      {proJahr.map((jahr) => (
+                        <tr key={jahr.jahr}>
+                          <td>{jahr.jahr}</td>
+                          <td>{formatEuro(jahr.einkauf)}</td>
+                          <td>{formatEuro(jahr.verkauf)}</td>
+                          <td className={jahr.marge >= 0 ? "pl-text-success" : "pl-text-danger"}>
+                            {formatEuro(jahr.marge)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Card>
+              ) : null}
             </div>
           </div>
         </div>

@@ -1,22 +1,23 @@
 import { formatDatum, formatTageBis, tageBis } from "@/lib/format";
-import { STATUS_TEXT } from "@/mock/queries";
-import type { SubscriptionStatus } from "@/mock/types";
+import { STATUS_TEXT, statusAusDatenbank, type AnzeigeStatus } from "@/lib/anzeige";
 import { FARB_KLASSE, type Farbton } from "./SmallBox";
 
 export function Badge({ farbe, children }: { farbe: Farbton; children: React.ReactNode }) {
   return <span className={`badge ${FARB_KLASSE[farbe]}`}>{children}</span>;
 }
 
-const STATUS_FARBE: Record<SubscriptionStatus, Farbton> = {
+const STATUS_FARBE: Record<AnzeigeStatus, Farbton> = {
   active: "success",
   notfound: "neutral",
   invalid: "danger",
   expired: "danger",
   suspended: "warning",
+  unknown: "neutral",
 };
 
-export function StatusBadge({ status }: { status: SubscriptionStatus }) {
-  return <Badge farbe={STATUS_FARBE[status]}>{STATUS_TEXT[status]}</Badge>;
+export function StatusBadge({ status }: { status: string }) {
+  const anzeige = statusAusDatenbank(status);
+  return <Badge farbe={STATUS_FARBE[anzeige]}>{STATUS_TEXT[anzeige]}</Badge>;
 }
 
 /** Ablaufdatum mit Ampel: rot unter 14 Tagen, gelb unter 30 Tagen, sonst Info. */

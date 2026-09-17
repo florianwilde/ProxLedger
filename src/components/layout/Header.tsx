@@ -2,14 +2,20 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
-import type { SuchEintrag } from "@/mock/suchindex";
-import type { Alert } from "@/mock/types";
-import { SearchDialog } from "./SearchDialog";
+import { SearchDialog, type SuchEintrag } from "./SearchDialog";
 
-const SCHWERE_ICON: Record<Alert["schwere"], string> = {
-  gefahr: "bi-exclamation-octagon-fill pl-text-danger",
-  warnung: "bi-exclamation-triangle-fill pl-text-warning",
-  info: "bi-info-circle-fill text-body-secondary",
+export interface KopfleistenAlert {
+  id: string;
+  titel: string;
+  beschreibung: string;
+  schwere: "INFO" | "WARNUNG" | "GEFAHR";
+  hostId: string | null;
+}
+
+const SCHWERE_ICON: Record<KopfleistenAlert["schwere"], string> = {
+  GEFAHR: "bi-exclamation-octagon-fill pl-text-danger",
+  WARNUNG: "bi-exclamation-triangle-fill pl-text-warning",
+  INFO: "bi-info-circle-fill text-body-secondary",
 };
 
 /** Farbschema aus dem <html>-Attribut lesen, damit Server und Client übereinstimmen. */
@@ -28,7 +34,7 @@ export function Header({
   suchEintraege,
   benutzer,
 }: {
-  alerts: Alert[];
+  alerts: KopfleistenAlert[];
   suchEintraege: SuchEintrag[];
   benutzer: string;
 }) {

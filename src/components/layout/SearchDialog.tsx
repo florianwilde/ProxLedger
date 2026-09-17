@@ -2,7 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import type { SuchEintrag } from "@/mock/suchindex";
+
+export interface SuchEintrag {
+  typ: "Host" | "Kunde" | "Rechnung";
+  titel: string;
+  untertitel: string;
+  href: string;
+  /** Alle durchsuchbaren Werte in Kleinschreibung. */
+  begriffe: string[];
+}
 
 const TYP_FARBE: Record<SuchEintrag["typ"], string> = {
   Host: "pl-bg-info",

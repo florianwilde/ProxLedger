@@ -1,21 +1,35 @@
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { hosts } from "@/mock/data";
-import { dashboardKennzahlen, offeneAlerts } from "@/mock/queries";
-import { suchIndex } from "@/mock/suchindex";
+import { kennzahlen, offeneAlerts, suchIndex } from "@/server/queries/hosts";
+
+/**
+ * Das Dashboard zeigt immer den aktuellen Datenbankstand; beim Bauen darf nichts
+ * vorgerendert werden (sonst öffnet jeder Build-Worker eigene Datenbankverbindungen).
+ */
+export const dynamic = "force-dynamic";
 
 const BENUTZER = "Florian";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const kennzahlen = dashboardKennzahlen();
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [zahlen, alerts, suche] = await Promise.all([kennzahlen(), offeneAlerts(), suchIndex()]);
 
   return (
     <div className="app-wrapper">
-      <Header alerts={offeneAlerts()} suchEintraege={suchIndex()} benutzer={BENUTZER} />
+      <Header
+        alerts={alerts.map((alert) => ({
+          id: alert.id,
+          titel: alert.titel,
+          beschreibung: alert.beschreibung,
+          schwere: alert.schwere,
+          hostId: alert.hostId,
+        }))}
+        suchEintraege={suche}
+        benutzer={BENUTZER}
+      />
       <Sidebar
-        hostsAnzahl={hosts.length}
-        offeneRechnungspunkte={kennzahlen.offeneRechnungspunkte}
+        hostsAnzahl={zahlen.hostsGesamt}
+        offeneRechnungspunkte={zahlen.offeneRechnungspunkte}
         benutzer={BENUTZER}
       />
       <main className="app-main">{children}</main>

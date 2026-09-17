@@ -1,15 +1,25 @@
+import Link from "next/link";
 import { ContentHeader } from "@/components/layout/ContentHeader";
+import { ZuweisungsFormular } from "@/components/hosts/ZuweisungsFormular";
 import { Callout } from "@/components/ui/Callout";
 import { Card } from "@/components/ui/Card";
-import { CopyableCode } from "@/components/ui/CopyableCode";
-import { formatDatumZeit } from "@/lib/format";
-import { kunden } from "@/mock/data";
-import { PRODUKT_NAME, nichtZugeordneteHosts } from "@/mock/queries";
+import { prisma } from "@/lib/db";
+import { hostsOhneKunde } from "@/server/queries/hosts";
 
 export const metadata = { title: "Nicht zugeordnete Hosts" };
 
-export default function NichtZugeordnetSeite() {
-  const liste = nichtZugeordneteHosts();
+export default async function NichtZugeordnetSeite() {
+  const [hosts, kunden] = await Promise.all([
+    hostsOhneKunde(),
+    prisma.kunde.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        standorte: { select: { id: true, name: true }, orderBy: { name: "asc" } },
+      },
+    }),
+  ]);
 
   return (
     <>
@@ -20,83 +30,40 @@ export default function NichtZugeordnetSeite() {
 
       <div className="app-content">
         <div className="container-fluid">
-          <Callout titel="Schnellzuweisung" farbe="info">
-            Mehrere Hosts auswählen und gemeinsam einem Kunden zuweisen. Im Prototyp ist das Formular noch
-            ohne Funktion – die Zuweisung folgt in #006.
-          </Callout>
+          {hosts.length === 0 ? (
+            <Callout titel="Alles zugeordnet" farbe="info">
+              Jeder gemeldete Host gehört zu einem Kunden. Neu registrierte Hosts erscheinen automatisch hier.
+            </Callout>
+          ) : (
+            <Callout titel="Schnellzuweisung" farbe="warning">
+              Hosts auswählen, Kunde wählen und in einem Schritt zuweisen. Wer Hosts direkt vorzuordnen
+              möchte, erzeugt unter <Link href="/einstellungen/tokens">Agent-Tokens</Link> einen
+              Enrollment-Token mit Kundenbindung – damit landen neue Hosts sofort beim richtigen Kunden.
+            </Callout>
+          )}
 
-          <Card titel={`${liste.length} Hosts ohne Kunde`} rahmen="warning" tabelle>
-            <div className="table-responsive">
-              <table className="table table-striped align-middle">
-                <thead>
-                  <tr>
-                    <th scope="col">
-                      <input type="checkbox" className="form-check-input" aria-label="Alle auswählen" />
-                    </th>
-                    <th scope="col">Host</th>
-                    <th scope="col">Produkt</th>
-                    <th scope="col">Server-ID</th>
-                    <th scope="col">Key</th>
-                    <th scope="col">Erste Meldung</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {liste.map((host) => (
-                    <tr key={host.id}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          aria-label={`${host.hostname} auswählen`}
-                          defaultChecked
-                        />
-                      </td>
-                      <td className="fw-semibold">{host.hostname}</td>
-                      <td>{PRODUKT_NAME[host.produkt]}</td>
-                      <td>
-                        <CopyableCode wert={host.serverId} />
-                      </td>
-                      <td>
-                        <CopyableCode wert={host.subscription.key} />
-                      </td>
-                      <td>{formatDatumZeit(host.letzterReport)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
+          {kunden.length === 0 ? (
+            <Callout titel="Noch kein Kunde vorhanden" farbe="danger">
+              Zum Zuweisen wird mindestens ein Kunde benötigt.{" "}
+              <Link href="/kunden/neu">Jetzt einen Kunden anlegen.</Link>
+            </Callout>
+          ) : null}
 
-          <Card titel="Ausgewählte Hosts zuweisen">
-            <div className="row g-2 align-items-end">
-              <div className="col-md-5">
-                <label className="form-label" htmlFor="kunde">
-                  Kunde
-                </label>
-                <select id="kunde" className="form-select">
-                  {kunden.map((kunde) => (
-                    <option key={kunde.id}>{kunde.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-5">
-                <label className="form-label" htmlFor="standort">
-                  Standort (optional)
-                </label>
-                <select id="standort" className="form-select">
-                  <option>– kein Standort –</option>
-                  {kunden[0].standorte.map((standort) => (
-                    <option key={standort.id}>{standort.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <button type="button" className="btn btn-primary w-100" disabled>
-                  Zuweisen
-                </button>
-              </div>
-            </div>
-          </Card>
+          {hosts.length > 0 ? (
+            <Card titel={`${hosts.length} Hosts ohne Kunde`} rahmen="warning" tabelle>
+              <ZuweisungsFormular
+                hosts={hosts.map((host) => ({
+                  id: host.id,
+                  hostname: host.hostname,
+                  produkt: host.produkt,
+                  serverId: host.serverId,
+                  subKey: host.subKey,
+                  erstmalsGesehenAm: host.erstmalsGesehenAm.toISOString(),
+                }))}
+                kunden={kunden}
+              />
+            </Card>
+          ) : null}
         </div>
       </div>
     </>

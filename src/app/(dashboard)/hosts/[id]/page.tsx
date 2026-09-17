@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/Card";
 import { CopyableCode } from "@/components/ui/CopyableCode";
 import { Tabs } from "@/components/ui/Tabs";
 import { formatDatum, formatDatumZeit, formatEuro, formatUptime, formatZahl } from "@/lib/format";
-import { HEUTE, hosts } from "@/mock/data";
+import { HEUTE } from "@/mock/data";
 import {
   PRODUKT_NAME,
   alertsVonHost,
@@ -23,10 +23,6 @@ import {
   laufzeitenVonHost,
   reportsVonHost,
 } from "@/mock/queries";
-
-export function generateStaticParams() {
-  return hosts.map((host) => ({ id: host.id }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
