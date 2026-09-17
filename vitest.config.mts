@@ -8,5 +8,8 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts", "src/**/*.test.ts"],
     environment: "node",
+    globalSetup: ["tests/global-setup.ts"],
+    // Datenbanktests teilen sich eine Datenbank und dürfen sich nicht überholen.
+    fileParallelism: false,
   },
 });

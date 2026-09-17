@@ -1,0 +1,23 @@
+# PostgreSQL für die lokale Entwicklung. Die vollständige Compose-Datei
+# (App + Worker + Datenbank) entsteht in #014.
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: proxledger-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: proxledger
+      POSTGRES_PASSWORD: proxledger
+      POSTGRES_DB: proxledger
+    ports:
+      - "5433:5432"
+    volumes:
+      - proxledger-dev-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U proxledger"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  proxledger-dev-db:
