@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 4 h 28 min
+**Gesamt:** 4 h 53 min
 
 | Issue | Zeit |
 |---|---|
@@ -18,6 +18,7 @@
 | #009 Jahresbahn und Ablauf-Kalender | 0 h 15 min |
 | #010 Export CSV und PDF | 0 h 20 min |
 | #011 Warnregeln | 0 h 30 min |
+| #012 Benachrichtigungen | 0 h 25 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -30,12 +31,13 @@
 | v0.5.0 | 0 h 35 min | **abgeschlossen**
 | v0.6.0 | 0 h 35 min | **abgeschlossen**
 | v0.7.0 | 0 h 30 min | **abgeschlossen**
+| v0.8.0 | 0 h 25 min | **abgeschlossen**
 
 ---
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.7.0
+**Version:** 0.8.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -66,6 +68,9 @@
 - Meilenstein v0.6.0 abgeschlossen
 - #011 abgeschlossen: zehn Warnregeln als reine Funktionen, Abgleich mit offenen Warnungen, Worker mit stündlichem Zeitplan, Auswertung nach jedem Report, Warnungsliste und Einstellungsseite; 123 Tests
 - Meilenstein v0.7.0 abgeschlossen
+- #012 abgeschlossen: SMTP (Microsoft 365), generischer Webhook mit Signatur, Zusammenfassung, Versandprotokoll, Testversand; keine Doppelmeldungen dank Prüfung gegen das Protokoll
+- Issue #021 angelegt: Zugangsdaten liegen noch unverschlüsselt in der Datenbank
+- Meilenstein v0.8.0 abgeschlossen; 134 Tests
 
 ### Entscheidungen
 - **Warnstufen im Fingerabdruck** (`…:7`): Der Wechsel 30 → 14 → 7 schließt die alte Warnung und öffnet eine neue. Das ergibt je Stufe genau eine Benachrichtigung, ohne Sonderlogik für Eskalation.
@@ -95,4 +100,4 @@
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
 ### Nächster Schritt
-- #012 Benachrichtigungen: SMTP über Microsoft 365, Webhook, Zusammenfassung, keine Doppelten
+- #013 Authentifizierung: OIDC über authentik, lokaler Admin, Audit-Log-Ansicht

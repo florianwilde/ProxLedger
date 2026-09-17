@@ -15,8 +15,8 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#009](009-kundenuebersicht-dashboard-jahresbahn.md) | Kundenübersicht, Dashboard und Jahresbahn | erledigt | v0.6.0 | 8 h | 0 h 15 min |
 | [#010](010-export.md) | Export CSV und PDF | erledigt | v0.6.0 | 5 h | 0 h 20 min |
 | [#011](011-warnregeln.md) | Warnregeln | erledigt | v0.7.0 | 8 h | 0 h 30 min |
-| [#012](012-benachrichtigungen.md) | Benachrichtigungen | in Arbeit | v0.8.0 | 6 h | – |
-| [#013](013-authentifizierung.md) | Authentifizierung und Audit-Log | offen | v0.9.0 | 6 h | – |
+| [#012](012-benachrichtigungen.md) | Benachrichtigungen | erledigt | v0.8.0 | 6 h | 0 h 25 min |
+| [#013](013-authentifizierung.md) | Authentifizierung und Audit-Log | in Arbeit | v0.9.0 | 6 h | – |
 | [#014](014-deployment.md) | Deployment und Dokumentation | offen | v0.10.0 | 8 h | – |
 | [#015](015-feinschliff-v1.md) | Feinschliff für 1.0 | offen | v1.0.0 | 6 h | – |
 | [#016](016-anleitung-screenshots.md) | Benutzerhandbuch mit Screenshots | offen | v0.10.0 | 5 h | – |
@@ -24,4 +24,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#018](018-agent-feldtest.md) | Agent auf echten Proxmox-Hosts prüfen | offen | v0.2.1 | 2 h | – |
 | [#019](019-ci-pipeline.md) | CI-Pipeline | offen | v0.10.0 | 3 h | – |
 | [#020](020-gitea-issue-abgleich.md) | Issues nach Gitea übertragen | erledigt | v0.4.1 | 2 h | 0 h 10 min |
-| | **Summe** | | | **114 h** | **4 h 28 min** |
+| [#021](021-geheimnisse-verschluesseln.md) | Zugangsdaten verschlüsselt speichern | offen | v0.9.0 | 2 h | – |
+| | **Summe** | | | **116 h** | **4 h 53 min** |
