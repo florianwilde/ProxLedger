@@ -19,10 +19,10 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#013](013-authentifizierung.md) | Authentifizierung und Audit-Log | erledigt | v0.9.0 | 6 h | 0 h 30 min |
 | [#014](014-deployment.md) | Deployment und Dokumentation | erledigt | v0.10.0 | 8 h | 0 h 40 min |
 | [#015](015-feinschliff-v1.md) | Feinschliff für 1.0 | erledigt | v0.11.0 | 6 h | 0 h 35 min |
-| [#016](016-anleitung-screenshots.md) | Benutzerhandbuch mit Screenshots | offen | v0.10.0 | 5 h | – |
-| [#017](017-favicon-dateien.md) | Favicon-Dateien erzeugen | offen | v0.6.0 | 1 h | – |
+| [#016](016-anleitung-screenshots.md) | Benutzerhandbuch mit Screenshots | erledigt | v0.12.0 | 5 h | 0 h 30 min |
+| [#017](017-favicon-dateien.md) | Favicon-Dateien erzeugen | in Arbeit | v0.6.0 | 1 h | – |
 | [#018](018-agent-feldtest.md) | Agent auf echten Proxmox-Hosts prüfen | offen | v0.2.1 | 2 h | – |
 | [#019](019-ci-pipeline.md) | CI-Pipeline | offen | v0.10.0 | 3 h | – |
 | [#020](020-gitea-issue-abgleich.md) | Issues nach Gitea übertragen | erledigt | v0.4.1 | 2 h | 0 h 10 min |
 | [#021](021-geheimnisse-verschluesseln.md) | Zugangsdaten verschlüsselt speichern | offen | v0.9.0 | 2 h | – |
-| | **Summe** | | | **116 h** | **6 h 38 min** |
+| | **Summe** | | | **116 h** | **7 h 08 min** |
