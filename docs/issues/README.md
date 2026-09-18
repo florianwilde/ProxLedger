@@ -29,4 +29,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#023](023-feldtest-pbs-pmg.md) | Feldtest auf PBS und PMG | offen | v1.0.0 | 2 h | 0 h 35 min (PBS erledigt, PMG offen) |
 | [#024](024-owasp-haertung.md) | Härtung nach OWASP | erledigt | v0.15.0 | 4 h | 0 h 45 min |
 | [#025](025-einstellungen.md) | Einstellungen im Dashboard | erledigt | v0.16.0 | 5 h | 1 h 10 min |
-| | **Summe** | | | **130 h** | **11 h 38 min** |
+| [#026](026-auslieferung.md) | Auslieferung finalisieren | erledigt | v0.17.0 | 3 h | 0 h 40 min |
+| | **Summe** | | | **133 h** | **12 h 18 min** |

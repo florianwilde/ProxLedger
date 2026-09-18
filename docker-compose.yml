@@ -81,8 +81,16 @@ services:
       APP_URL: ${APP_URL:-http://localhost:3000}
       WORKER_CRON: ${WORKER_CRON:-0 * * * *}
       ZUSAMMENFASSUNG_CRON: ${ZUSAMMENFASSUNG_CRON:-0 7 * * *}
+      AUFRAEUM_CRON: ${AUFRAEUM_CRON:-30 3 * * *}
     volumes:
       - uploads:/data
+    healthcheck:
+      # Der Worker spricht kein HTTP; geprüft wird schlicht, ob der Prozess noch da ist.
+      test: ["CMD-SHELL", "pgrep -f dist/worker.mjs > /dev/null"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
 volumes:
   datenbank:

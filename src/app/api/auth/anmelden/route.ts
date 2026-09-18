@@ -1,4 +1,5 @@
 import { cookies, headers } from "next/headers";
+import { eigeneAdresse } from "@/lib/adresse";
 import { clientIp } from "@/lib/ratelimit";
 import { cookieOptionen, SITZUNGS_COOKIE, sitzungErzeugen } from "@/lib/sitzung";
 import { AnmeldeFehler, mitPasswortAnmelden } from "@/server/auth/benutzer";
@@ -38,6 +39,7 @@ export function herkunftStimmt(request: Request): boolean {
 
 export async function POST(request: Request) {
   const formular = await request.formData();
+  const { dashboardUrl } = await einstellungen();
   const email = formular.get("email")?.toString().trim() ?? "";
   const passwort = formular.get("passwort")?.toString() ?? "";
   const zielEingabe = formular.get("ziel")?.toString() || "/";
@@ -45,7 +47,7 @@ export async function POST(request: Request) {
   const ziel = zielEingabe.startsWith("/") && !zielEingabe.startsWith("//") ? zielEingabe : "/";
 
   function zurueckZurAnmeldung(meldung: string) {
-    const adresse = new URL("/login", request.url);
+    const adresse = eigeneAdresse(request, "/login", dashboardUrl);
     adresse.searchParams.set("fehler", meldung);
     if (ziel !== "/") adresse.searchParams.set("ziel", ziel);
     return Response.redirect(adresse, 303);
@@ -75,7 +77,7 @@ export async function POST(request: Request) {
     );
     (await cookies()).set(SITZUNGS_COOKIE, token, cookieOptionen(sitzungsdauerStunden));
 
-    return Response.redirect(new URL(ziel, request.url), 303);
+    return Response.redirect(eigeneAdresse(request, ziel, dashboardUrl), 303);
   } catch (fehler) {
     if (fehler instanceof AnmeldeFehler) return zurueckZurAnmeldung(fehler.message);
     console.error("Anmeldung fehlgeschlagen:", fehler);

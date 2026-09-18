@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { herkunftStimmt } from "@/app/api/auth/anmelden/route";
+import { eigeneAdresse } from "@/lib/adresse";
 import type { GeleseneSitzung } from "@/lib/sitzung";
 import { sitzungBewerten } from "@/server/auth/sitzungspflicht";
 
@@ -70,5 +71,37 @@ describe("Herkunft der Anmeldung", () => {
     expect(
       herkunftStimmt(anfrage({ origin: "https://dashboard.kunde.de", "x-forwarded-host": "dashboard.kunde.de" })),
     ).toBe(true);
+  });
+});
+
+describe("Öffentliche Adresse", () => {
+  // APP_URL kommt sonst aus der .env der Entwicklungsumgebung und verfälscht die Rückfallstufen.
+  beforeEach(() => {
+    vi.stubEnv("APP_URL", "");
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  const anfrageMit = (kopfzeilen: Record<string, string>) =>
+    new Request("http://0a5963a591df:3000/api/auth/anmelden", { method: "POST", headers: kopfzeilen });
+
+  it("nimmt die eingetragene Adresse, nicht die interne des Containers", () => {
+    const adresse = eigeneAdresse(anfrageMit({}), "/hosts", "https://proxledger.example.de");
+    expect(adresse.toString()).toBe("https://proxledger.example.de/hosts");
+  });
+
+  it("fällt auf die Kopfzeilen des Reverse Proxy zurück", () => {
+    const anfrage = anfrageMit({ "x-forwarded-host": "dashboard.kunde.de", "x-forwarded-proto": "https" });
+    expect(eigeneAdresse(anfrage, "/").toString()).toBe("https://dashboard.kunde.de/");
+  });
+
+  it("nimmt notfalls die Anfrage selbst", () => {
+    expect(eigeneAdresse(anfrageMit({}), "/").host).toBe("0a5963a591df:3000");
+  });
+
+  it("übergeht einen unbrauchbaren Eintrag, statt zu scheitern", () => {
+    const anfrage = anfrageMit({ "x-forwarded-host": "dashboard.kunde.de" });
+    expect(eigeneAdresse(anfrage, "/", "keine-adresse").host).toBe("dashboard.kunde.de");
   });
 });
