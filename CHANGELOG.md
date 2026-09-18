@@ -17,6 +17,15 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.19.0] – 2026-09-19
+
+### Hinzugefügt
+- `docs/betrieb/`: Inbetriebnahme, Reverse Proxy (nginx Proxy Manager und netbird), OIDC mit authentik und Sicherung – jeweils Schritt für Schritt (#029)
+
+### Behoben
+- Die OIDC-Rückkehradresse berücksichtigte die im Dashboard eingetragene Adresse nicht, sondern nur `APP_URL` (#029)
+- Beim Einlösen des OIDC-Codes wurde hinter einem Reverse Proxy die interne Adresse verwendet; der Tausch wäre am Anbieter gescheitert (#029)
+
 ## [0.18.0] – 2026-09-19
 
 ### Hinzugefügt

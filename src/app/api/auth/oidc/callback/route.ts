@@ -26,7 +26,12 @@ export async function GET(request: Request) {
   }
 
   try {
-    const angaben = await anmeldungAbschliessen(einstellungen, new URL(request.url), pruefwert, zustand);
+    // Hinter einem Reverse Proxy ist `request.url` die interne Adresse. Der Anbieter hat aber die
+    // öffentliche als Rückkehradresse hinterlegt – mit der internen scheitert der Tausch des Codes.
+    const angekommen = new URL(request.url);
+    const oeffentlich = eigeneAdresse(request, `${angekommen.pathname}${angekommen.search}`, dashboardUrl);
+
+    const angaben = await anmeldungAbschliessen(einstellungen, oeffentlich, pruefwert, zustand);
     const benutzer = await mitOidcAnmelden(angaben.subject, angaben.email, angaben.name);
 
     const { sitzungsdauerStunden } = await systemEinstellungen();

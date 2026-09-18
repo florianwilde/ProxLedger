@@ -1,4 +1,5 @@
 import * as client from "openid-client";
+import { einstellungen as systemEinstellungen } from "@/server/einstellungen";
 
 /**
  * Anmeldung über OIDC (getestet mit authentik). Die Einrichtung erfolgt über Umgebungsvariablen,
@@ -28,8 +29,13 @@ export function oidcEinstellungen(): OidcEinstellungen | null {
   };
 }
 
-export function rueckkehrAdresse(): string {
-  const basis = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+/**
+ * Adresse, an die der Anbieter zurückschickt. Sie muss beim Anbieter **wortgleich** hinterlegt sein.
+ * Vorrang hat die eingetragene Dashboard-Adresse, dann `APP_URL` (#029).
+ */
+export async function rueckkehrAdresse(): Promise<string> {
+  const { dashboardUrl } = await systemEinstellungen();
+  const basis = (dashboardUrl || process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
   return `${basis}/api/auth/oidc/callback`;
 }
 
@@ -55,7 +61,7 @@ export async function anmeldungStarten(einstellungen: OidcEinstellungen): Promis
   const zustand = client.randomState();
 
   const url = client.buildAuthorizationUrl(konfig, {
-    redirect_uri: rueckkehrAdresse(),
+    redirect_uri: await rueckkehrAdresse(),
     scope: "openid email profile",
     code_challenge: herausforderung,
     code_challenge_method: "S256",

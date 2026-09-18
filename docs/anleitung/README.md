@@ -24,6 +24,9 @@ auch mit Hosts hinter NAT.
 
 ---
 
+> **Einrichtung statt Bedienung?** Reverse Proxy, OIDC und Sicherung stehen in
+> [docs/betrieb/](../betrieb/README.md). Dieses Handbuch beschreibt die tägliche Arbeit.
+
 ## 1. Installation
 
 ### Mit Docker

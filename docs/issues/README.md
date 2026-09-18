@@ -32,4 +32,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#026](026-auslieferung.md) | Auslieferung finalisieren | erledigt | v0.17.0 | 3 h | 0 h 40 min |
 | [#027](027-rollen-benutzerverwaltung.md) | Rollen und Benutzerverwaltung | erledigt | v0.18.0 | 6 h | 1 h 20 min |
 | [#028](028-passkeys.md) | Anmeldung mit Passkeys | erledigt | v0.18.0 | 4 h | 0 h 45 min |
-| | **Summe** | | | **143 h** | **14 h 23 min** |
+| [#029](029-betriebsdokumentation.md) | Einrichtungsdokumentation | erledigt | v0.19.0 | 3 h | 0 h 40 min |
+| | **Summe** | | | **146 h** | **15 h 03 min** |

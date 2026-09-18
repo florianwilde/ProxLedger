@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 14 h 23 min
+**Gesamt:** 15 h 03 min
 
 | Issue | Zeit |
 |---|---|
@@ -34,6 +34,7 @@
 | #026 Auslieferung | 0 h 40 min |
 | #027 Rollen und Benutzerverwaltung | 1 h 20 min |
 | #028 Passkeys | 0 h 45 min |
+| #029 Einrichtungsdokumentation | 0 h 40 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -56,7 +57,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.18.0
+**Version:** 0.19.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -157,6 +158,9 @@
 - Rollen und Benutzerverwaltung (#027): Die Einschränkung sitzt in den Abfragen selbst, damit keine Seite vergessen kann, sie weiterzugeben. Sechs Tests prüfen, dass ein Kundenkonto weder fremde Hosts noch Einkaufspreise sieht
 - Dabei aufgefallen: Neu angelegte OIDC-Konten hätten die Modellvorgabe ADMIN geerbt – behoben, mit eigener Einstellung und Test
 - Passkeys (#028): passwortlos, mehrere je Konto, Aufgabe in einem kurzlebigen Cookie. Nur über HTTPS nutzbar – die Seite sagt es, statt still zu scheitern
+
+- Einrichtungsdokumentation (#029): Beim Aufschreiben des OIDC-Wegs fielen zwei Fehler auf, die nur hinter einem Reverse Proxy auftreten – Rückkehradresse und Code-Einlösung nahmen die interne Adresse. Beides behoben
+- Erkenntnis: Eine Anleitung Schritt für Schritt aufzuschreiben findet Fehler, die kein Test findet, weil sie nur in einer bestimmten Betriebsform auftreten
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
