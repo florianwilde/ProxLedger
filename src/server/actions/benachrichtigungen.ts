@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { verschluesseln } from "@/lib/geheimnisse";
 import { protokolliere } from "@/server/audit";
+import { sitzungErforderlich } from "@/server/auth/sitzungspflicht";
 import type { EmailKonfiguration, WebhookKonfiguration } from "@/server/notifications/kanaele";
 import { testNachricht } from "@/server/notifications/nachrichten";
 import { ueberEinenKanalSenden, zusammenfassungSenden } from "@/server/notifications/versand";
@@ -22,6 +23,7 @@ export async function emailKanalSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const id = formular.get("id")?.toString() || null;
   const host = formular.get("host")?.toString().trim() ?? "";
   const port = Number(formular.get("port") ?? 587);
@@ -78,6 +80,7 @@ export async function webhookKanalSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const id = formular.get("id")?.toString() || null;
   const url = formular.get("url")?.toString().trim() ?? "";
 
@@ -116,6 +119,7 @@ export async function webhookKanalSpeichern(
 }
 
 export async function kanalLoeschen(formular: FormData) {
+  await sitzungErforderlich();
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -126,6 +130,7 @@ export async function kanalLoeschen(formular: FormData) {
 
 /** Verschickt eine Testnachricht über einen Kanal. */
 export async function testSenden(formular: FormData): Promise<void> {
+  await sitzungErforderlich();
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -140,6 +145,7 @@ export async function testSenden(formular: FormData): Promise<void> {
 
 /** Zeitraum der Zusammenfassung speichern (täglich, wöchentlich oder aus). */
 export async function zusammenfassungSpeichern(formular: FormData) {
+  await sitzungErforderlich();
   const zeitraum = formular.get("zeitraum")?.toString() ?? "aus";
 
   await prisma.einstellung.upsert({
@@ -154,6 +160,7 @@ export async function zusammenfassungSpeichern(formular: FormData) {
 
 /** Zusammenfassung sofort verschicken – praktisch zum Ausprobieren. */
 export async function zusammenfassungJetztSenden(formular: FormData): Promise<void> {
+  await sitzungErforderlich();
   const zeitraum = formular.get("zeitraum")?.toString() === "woechentlich" ? "woechentlich" : "taeglich";
   await zusammenfassungSenden(zeitraum);
   neuLaden();

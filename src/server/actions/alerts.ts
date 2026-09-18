@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { protokolliere } from "@/server/audit";
+import { sitzungErforderlich } from "@/server/auth/sitzungspflicht";
 import { alertsAbgleichen } from "@/server/alerts/abgleich";
 import { REGELN } from "@/server/alerts/regeln";
 import type { AktionsErgebnis } from "./kunden";
@@ -15,6 +16,7 @@ function neuLaden() {
 
 /** Warnung quittieren: sie bleibt offen, ist aber als gesehen markiert. */
 export async function alertQuittieren(formular: FormData) {
+  await sitzungErforderlich();
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -25,6 +27,7 @@ export async function alertQuittieren(formular: FormData) {
 
 /** Warnung von Hand schließen; taucht der Fall weiter auf, öffnet der nächste Abgleich sie erneut. */
 export async function alertSchliessen(formular: FormData) {
+  await sitzungErforderlich();
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -35,6 +38,7 @@ export async function alertSchliessen(formular: FormData) {
 
 /** Auswertung sofort anstoßen, ohne auf den Worker zu warten. */
 export async function alertsJetztPruefen(): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const ergebnis = await alertsAbgleichen();
   neuLaden();
   return {
@@ -47,6 +51,7 @@ export async function warnregelnSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   for (const regel of REGELN) {
     const aktiv = formular.get(`aktiv:${regel.name}`) === "on";
     const schwellwerte: Record<string, number | number[]> = {};

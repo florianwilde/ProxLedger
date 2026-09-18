@@ -27,4 +27,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#021](021-geheimnisse-verschluesseln.md) | Zugangsdaten verschlüsselt speichern | erledigt | v0.13.1 | 2 h | 0 h 20 min |
 | [#022](022-cluster-abgleich.md) | Cluster-Abgleich | erledigt | v0.14.0 | 3 h | 0 h 25 min |
 | [#023](023-feldtest-pbs-pmg.md) | Feldtest auf PBS und PMG | offen | v1.0.0 | 2 h | 0 h 35 min (PBS erledigt, PMG offen) |
-| | **Summe** | | | **121 h** | **9 h 43 min** |
+| [#024](024-owasp-haertung.md) | Härtung nach OWASP | erledigt | v0.15.0 | 4 h | 0 h 45 min |
+| | **Summe** | | | **125 h** | **10 h 28 min** |

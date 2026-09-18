@@ -3,11 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { protokolliere } from "@/server/audit";
+import { sitzungErforderlich } from "@/server/auth/sitzungspflicht";
 import { hostsZuweisenService, ZuweisungsFehler } from "@/server/services/zuweisung";
 import type { AktionsErgebnis } from "./kunden";
 
 /** Weist mehrere Hosts in einem Schritt einem Kunden zu. */
 export async function hostsZuweisen(_vorher: AktionsErgebnis, formular: FormData): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const hostIds = formular.getAll("hostId").map(String).filter(Boolean);
   const kundeId = formular.get("kundeId")?.toString() || null;
   const standortId = formular.get("standortId")?.toString() || null;
@@ -30,6 +32,7 @@ export async function hostsZuweisen(_vorher: AktionsErgebnis, formular: FormData
 
 /** Hebt die Zuordnung eines einzelnen Hosts auf. */
 export async function hostZuordnungAufheben(formular: FormData) {
+  await sitzungErforderlich();
   const hostId = formular.get("hostId")?.toString();
   if (!hostId) return;
 

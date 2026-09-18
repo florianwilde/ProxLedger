@@ -25,12 +25,14 @@ describe("Sitzungen", () => {
     });
 
     const sitzung = await sitzungLesen(token);
-    expect(sitzung).toEqual({
+    expect(sitzung).toMatchObject({
       benutzerId: "b1",
       email: "admin@example.de",
       name: "Florian",
       herkunft: "passwort",
     });
+    // Der Ausstellungszeitpunkt entscheidet, ob ein Widerruf die Sitzung trifft (#024).
+    expect(sitzung?.ausgestelltAm.getTime()).toBeLessThanOrEqual(Date.now());
   });
 
   it("weist ein verändertes oder fremd signiertes Token ab", async () => {

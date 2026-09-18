@@ -456,6 +456,8 @@ model Benutzer {
   oidcSubject   String?   @unique
   aktiv         Boolean   @default(true)
   letzterLoginAm DateTime?
+  /// Alle Sitzungen, die vor diesem Zeitpunkt ausgestellt wurden, gelten als ungültig (#024).
+  sitzungenUngueltigAb DateTime?
   erstelltAm    DateTime  @default(now())
   geaendertAm   DateTime  @updatedAt
 

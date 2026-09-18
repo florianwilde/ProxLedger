@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { protokolliere } from "@/server/audit";
+import { sitzungErforderlich } from "@/server/auth/sitzungspflicht";
 
 export interface AktionsErgebnis {
   fehler?: string;
@@ -28,6 +29,7 @@ const kundeSchema = z.object({
 
 /** Legt einen Kunden an oder ändert ihn; `id` im Formular entscheidet darüber. */
 export async function kundeSpeichern(_vorher: AktionsErgebnis, formular: FormData): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const id = leerZuNull(formular.get("id"));
   const eingabe = kundeSchema.safeParse({
     name: formular.get("name")?.toString().trim() ?? "",
@@ -66,6 +68,7 @@ export async function kundeSpeichern(_vorher: AktionsErgebnis, formular: FormDat
 }
 
 export async function kundeLoeschen(formular: FormData) {
+  await sitzungErforderlich();
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -91,6 +94,7 @@ export async function standortSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const id = leerZuNull(formular.get("id"));
   const eingabe = standortSchema.safeParse({
     kundeId: formular.get("kundeId")?.toString() ?? "",
@@ -116,6 +120,7 @@ export async function standortSpeichern(
 }
 
 export async function standortLoeschen(formular: FormData) {
+  await sitzungErforderlich();
   const id = formular.get("id")?.toString();
   const kundeId = formular.get("kundeId")?.toString();
   if (!id) return;

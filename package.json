@@ -1,6 +1,6 @@
 {
   "name": "proxledger",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -26,7 +26,8 @@
     "lasttest": "tsx scripts/lasttest.ts",
     "screenshots": "node scripts/screenshots.mjs",
     "icons": "node scripts/icons.mjs",
-    "pruefe:doku": "node scripts/pruefe-doku.mjs"
+    "pruefe:doku": "node scripts/pruefe-doku.mjs",
+    "benutzer": "tsx scripts/benutzer.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.1",
@@ -65,5 +66,9 @@
   "description": "Proxmox Subscription Dashboard",
   "engines": {
     "node": ">=24"
+  },
+  "overrides": {
+    "mysql2": "^3.24.4",
+    "deepmerge-ts": "^8.0.0"
   }
 }

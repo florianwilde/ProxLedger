@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { anhangSpeichern, UploadFehler } from "@/lib/uploads";
+import { sitzungErforderlich } from "@/server/auth/sitzungspflicht";
 import {
   einkaufBezahltSetzen,
   kundenrechnungErfassen,
@@ -48,6 +49,7 @@ async function ausfuehren(arbeit: () => Promise<string | void>): Promise<Aktions
 }
 
 export async function laufzeitBestaetigenAktion(formular: FormData) {
+  await sitzungErforderlich();
   const id = formular.get("laufzeitId")?.toString();
   if (!id) return;
   await laufzeitBestaetigen(id);
@@ -55,6 +57,7 @@ export async function laufzeitBestaetigenAktion(formular: FormData) {
 }
 
 export async function laufzeitVerwerfenAktion(formular: FormData) {
+  await sitzungErforderlich();
   const id = formular.get("laufzeitId")?.toString();
   if (!id) return;
   await laufzeitVerwerfen(id);
@@ -63,6 +66,7 @@ export async function laufzeitVerwerfenAktion(formular: FormData) {
 
 /** Häkchen aus der Rechnungstabelle. */
 export async function statusUmschalten(formular: FormData): Promise<void> {
+  await sitzungErforderlich();
   const laufzeitId = formular.get("laufzeitId")?.toString();
   const feld = formular.get("feld")?.toString();
   const wert = formular.get("wert")?.toString() === "true";
@@ -84,6 +88,7 @@ export async function proxmoxRechnungSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const laufzeitId = formular.get("laufzeitId")?.toString();
   if (!laufzeitId) return { fehler: "Laufzeit fehlt." };
 
@@ -121,6 +126,7 @@ export async function kundenrechnungSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const laufzeitId = formular.get("laufzeitId")?.toString();
   if (!laufzeitId) return { fehler: "Laufzeit fehlt." };
 
@@ -151,6 +157,7 @@ export async function laufzeitAnlegenAktion(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const hostId = formular.get("hostId")?.toString();
   const key = formular.get("key")?.toString().trim();
   const start = datum(formular.get("start"));

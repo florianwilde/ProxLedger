@@ -9,6 +9,32 @@ export const dynamic = "force-dynamic";
  * Anmeldung als gewöhnliches Formular. Bewusst kein Server-Action-Weg: So funktioniert die
  * Anmeldung auch ohne JavaScript, und das Sitzungs-Cookie hängt an einer normalen Antwort.
  */
+/**
+ * Prüft, ob das Formular von der eigenen Oberfläche kam.
+ *
+ * Ohne diese Prüfung könnte eine fremde Seite ein Anmeldeformular auf dieses Dashboard abschicken
+ * und das Opfer unbemerkt in ein untergeschobenes Konto anmelden (Login-CSRF, OWASP A01).
+ * Server Actions in Next.js prüfen das selbst; dieser Endpunkt ist ein gewöhnliches Formular
+ * und muss es daher selbst tun.
+ */
+export function herkunftStimmt(request: Request): boolean {
+  const herkunft = request.headers.get("origin");
+  // Formulare ohne Origin (etwa curl oder alte Browser) werden nicht ausgeschlossen –
+  // der Schutz richtet sich gegen fremde Seiten, die immer einen Origin senden.
+  if (!herkunft) return true;
+
+  const erlaubt = new Set<string>();
+  if (process.env.APP_URL) erlaubt.add(new URL(process.env.APP_URL).host);
+  const gastgeber = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  if (gastgeber) erlaubt.add(gastgeber);
+
+  try {
+    return erlaubt.has(new URL(herkunft).host);
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   const formular = await request.formData();
   const email = formular.get("email")?.toString().trim() ?? "";
@@ -22,6 +48,10 @@ export async function POST(request: Request) {
     adresse.searchParams.set("fehler", meldung);
     if (ziel !== "/") adresse.searchParams.set("ziel", ziel);
     return Response.redirect(adresse, 303);
+  }
+
+  if (!herkunftStimmt(request)) {
+    return zurueckZurAnmeldung("Die Anmeldung kam nicht von dieser Adresse.");
   }
 
   if (!email || !passwort) {

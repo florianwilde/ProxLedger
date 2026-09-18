@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { protokolliere } from "@/server/audit";
+import { sitzungErforderlich } from "@/server/auth/sitzungspflicht";
 import type { AktionsErgebnis } from "./kunden";
 
 /** Speichert Notizen und Tags eines Hosts. */
@@ -10,6 +11,7 @@ export async function hostNotizenSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
+  await sitzungErforderlich();
   const hostId = formular.get("hostId")?.toString();
   if (!hostId) return { fehler: "Host nicht gefunden." };
 
@@ -39,6 +41,7 @@ export async function hostNotizenSpeichern(
 
 /** Ordnet einen einzelnen Host einem Kunden zu (aus der Detailansicht heraus). */
 export async function hostKundeSetzen(formular: FormData) {
+  await sitzungErforderlich();
   const hostId = formular.get("hostId")?.toString();
   const kundeId = formular.get("kundeId")?.toString() || null;
   const standortId = formular.get("standortId")?.toString() || null;
