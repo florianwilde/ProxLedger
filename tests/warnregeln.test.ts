@@ -18,6 +18,8 @@ function host(überschreibungen: Partial<HostDaten> = {}): HostDaten {
   return {
     id: "h1",
     hostname: "pve-01",
+    clusterName: null,
+    clusterMitglieder: [],
     kundeId: "k1",
     kundeName: "Brandl Elektrotechnik GmbH",
     subKey: "pve1c-aaaa",
@@ -70,9 +72,9 @@ function ausRegel(k: RegelKontext, name: string) {
 }
 
 describe("Warnregeln", () => {
-  it("prüft alle zehn Regeln, wenn nichts abgeschaltet ist", () => {
-    expect(REGELN).toHaveLength(10);
-    expect(new Set(REGELN.map((r) => r.name)).size).toBe(10);
+  it("prüft alle elf Regeln, wenn nichts abgeschaltet ist", () => {
+    expect(REGELN).toHaveLength(11);
+    expect(new Set(REGELN.map((r) => r.name)).size).toBe(11);
   });
 
   describe("Subscription läuft ab", () => {
@@ -294,6 +296,63 @@ describe("Warnregeln", () => {
         laufzeiten: [laufzeit({ verkaufBezahlt: false, verkaufDatum: inTagen(-29) })],
       });
       expect(ausRegel(k, "kundenrechnung-unbezahlt")).toHaveLength(0);
+    });
+  });
+
+  describe("Cluster-Knoten ohne Agent", () => {
+    it("meldet einen Knoten, der im Cluster steht, sich aber nicht meldet", () => {
+      const k = kontext({
+        hosts: [
+          host({
+            id: "h1",
+            hostname: "pve-node-01",
+            clusterName: "rz5",
+            clusterMitglieder: ["pve-node-01", "pve-node-02", "pve-node-03"],
+          }),
+          host({ id: "h2", hostname: "pve-node-02", clusterName: "rz5", clusterMitglieder: [] }),
+        ],
+      });
+
+      const kandidaten = ausRegel(k, "cluster-knoten-ohne-agent");
+      expect(kandidaten).toHaveLength(1);
+      expect(kandidaten[0].beschreibung).toContain("pve-node-03");
+      expect(kandidaten[0].fingerprint).toBe("cluster-knoten-ohne-agent:rz5:pve-node-03");
+    });
+
+    it("meldet nichts, wenn alle Knoten melden", () => {
+      const mitglieder = ["pve-node-01", "pve-node-02"];
+      const k = kontext({
+        hosts: [
+          host({ id: "h1", hostname: "pve-node-01", clusterName: "rz5", clusterMitglieder: mitglieder }),
+          host({ id: "h2", hostname: "pve-node-02", clusterName: "rz5", clusterMitglieder: mitglieder }),
+        ],
+      });
+      expect(ausRegel(k, "cluster-knoten-ohne-agent")).toHaveLength(0);
+    });
+
+    it("beachtet Groß- und Kleinschreibung nicht", () => {
+      const k = kontext({
+        hosts: [
+          host({ id: "h1", hostname: "PVE-Node-01", clusterName: "rz5", clusterMitglieder: ["pve-node-01"] }),
+        ],
+      });
+      expect(ausRegel(k, "cluster-knoten-ohne-agent")).toHaveLength(0);
+    });
+
+    it("meldet nichts für Hosts ohne Cluster", () => {
+      const k = kontext({ hosts: [host({ clusterName: null, clusterMitglieder: [] })] });
+      expect(ausRegel(k, "cluster-knoten-ohne-agent")).toHaveLength(0);
+    });
+
+    it("meldet jeden fehlenden Knoten nur einmal, auch wenn mehrere ihn melden", () => {
+      const mitglieder = ["pve-node-01", "pve-node-02", "pve-node-03"];
+      const k = kontext({
+        hosts: [
+          host({ id: "h1", hostname: "pve-node-01", clusterName: "rz5", clusterMitglieder: mitglieder }),
+          host({ id: "h2", hostname: "pve-node-02", clusterName: "rz5", clusterMitglieder: mitglieder }),
+        ],
+      });
+      expect(ausRegel(k, "cluster-knoten-ohne-agent")).toHaveLength(1);
     });
   });
 

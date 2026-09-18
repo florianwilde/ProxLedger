@@ -113,6 +113,8 @@ model Host {
   serverId    String?
   clusterName String?
   nodeName    String?
+  /// Namen aller Knoten des Clusters laut corosync – auch solche ohne eigenen Agent (#022).
+  clusterMitglieder String[] @default([])
   ips         String[] @default([])
   sockets     Int?
   cpuModell   String?

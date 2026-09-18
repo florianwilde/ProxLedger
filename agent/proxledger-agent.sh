@@ -16,7 +16,8 @@ AGENT_VERSION="0.2.0"
 CONFIG_DATEI="${PROXLEDGER_CONFIG:-/etc/proxledger/agent.conf}"
 SPOOL_VERZEICHNIS="${PROXLEDGER_SPOOL:-/var/lib/proxledger/spool}"
 SPOOL_MAXIMUM=30
-WARTEZEITEN=(30 120 480)
+# Wartezeiten zwischen den Versuchen; für Tests über PROXLEDGER_WARTEZEITEN kürzbar.
+read -r -a WARTEZEITEN <<<"${PROXLEDGER_WARTEZEITEN:-30 120 480}"
 
 # --------------------------------------------------------------------- Protokoll
 
@@ -128,8 +129,10 @@ feld_lesen() {
 }
 
 produkt_version() {
+  # Bei PVE hängt die Kernel-Angabe mit im String ("… (running kernel: …)").
+  # Der Kernel wird separat gemeldet, deshalb hier abschneiden.
   case "$1" in
-    pve) pveversion 2>/dev/null | head -n1 ;;
+    pve) pveversion 2>/dev/null | head -n1 | sed 's/ (running kernel.*//' ;;
     pbs) proxmox-backup-manager version 2>/dev/null | head -n1 ;;
     pmg) pmgversion 2>/dev/null | head -n1 ;;
     *) printf '' ;;
@@ -147,6 +150,14 @@ ip_adressen() {
 cluster_name() {
   if command -v pvecm >/dev/null 2>&1; then
     pvecm status 2>/dev/null | sed -n 's/^[[:space:]]*Name:[[:space:]]*//p' | head -n1
+  fi
+}
+
+# Namen aller Cluster-Mitglieder laut corosync. Auch Knoten ohne Agent stehen hier –
+# daraus erkennt das Dashboard vergessene Knoten (#022).
+cluster_mitglieder() {
+  if command -v pvecm >/dev/null 2>&1; then
+    pvecm nodes 2>/dev/null | awk '/^[[:space:]]*[0-9]+[[:space:]]+[0-9]+/ {print $3}' | sed 's/ *(local)//'
   fi
 }
 
@@ -220,6 +231,7 @@ report_erzeugen() {
     "ips": $(ip_adressen | json_liste),
     "clusterName": $(json_text "$(cluster_name)"),
     "nodeName": $(json_text "$(node_name)"),
+    "clusterMitglieder": $(cluster_mitglieder | json_liste),
     "kernel": $(json_text "$(uname -r 2>/dev/null)"),
     "uptimeSekunden": $(json_zahl "$(uptime_sekunden)"),
     "cpuModell": $(json_text "$(cpu_modell)"),
