@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 9 h 08 min
+**Gesamt:** 9 h 43 min
 
 | Issue | Zeit |
 |---|---|
@@ -28,6 +28,7 @@
 | #021 Geheimnisse verschlüsseln | 0 h 20 min |
 | #018 Feldtest auf echten Hosts | 0 h 40 min |
 | #022 Cluster-Abgleich | 0 h 25 min |
+| #023 Feldtest PBS | 0 h 35 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -50,7 +51,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.14.0
+**Version:** 0.14.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -133,6 +134,10 @@
 - #022 abgeschlossen: Cluster-Abgleich – jeder Agent meldet die Mitglieder, das Dashboard warnt bei Knoten ohne Agent
 - **Fehler im eigenen Werkzeug gefunden:** Alle Handbuch-Bilder waren in Wahrheit die Anmeldeseite. Firefox verwirft eine selbst angelegte Cookie-Datei stillschweigend. Jetzt läuft ein lokaler Vermittler mit, und das Skript bricht ab, wenn alle Aufnahmen gleich groß sind.
 
+- Feldtest auf einem echten Proxmox Backup Server (#023): der Agent hätte dort **nichts** gelesen – PBS gibt eine Rahmentabelle aus, kein `feld: wert`. Behoben, mit den echten Ausgaben als Testfälle
+- Der erfundene PBS-Testfall hatte den Fehler verdeckt. Lehre: ausgedachte Testdaten bestätigen nur die eigene Annahme
+- Uninstall zum ersten Mal auf einem echten Host geprüft – restlos sauber, damit ist #018 vollständig
+
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
-- Für 1.0.0 fehlen noch: Feldtest auf PBS und PMG, Uninstall auf einem echten Host
+- Für 1.0.0 fehlt noch: PMG (kein Host verfügbar) und der Fall „aktive Subscription auf PBS“ (#023)

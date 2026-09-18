@@ -12,7 +12,7 @@
 set -o nounset
 set -o pipefail
 
-AGENT_VERSION="0.2.0"
+AGENT_VERSION="0.2.1"
 CONFIG_DATEI="${PROXLEDGER_CONFIG:-/etc/proxledger/agent.conf}"
 SPOOL_VERZEICHNIS="${PROXLEDGER_SPOOL:-/var/lib/proxledger/spool}"
 SPOOL_MAXIMUM=30
@@ -106,21 +106,39 @@ produkt_erkennen() {
 }
 
 subscription_ausgabe() {
+  local ausgabe=""
   case "$1" in
+    # PVE kennt --output-format nicht (geprueft auf 9.2), liefert aber "feld: wert".
     pve) pvesubscription get 2>/dev/null ;;
-    pbs) proxmox-backup-manager subscription get 2>/dev/null ;;
+    # PBS gibt ohne --output-format eine Rahmentabelle aus, aus der sich schlecht lesen laesst.
+    # JSON kann es (geprueft auf 4.2); aeltere Fassungen faengt die Tabellenauswertung ab.
+    pbs)
+      ausgabe=$(proxmox-backup-manager subscription get --output-format json 2>/dev/null)
+      [ -n "$ausgabe" ] || ausgabe=$(proxmox-backup-manager subscription get 2>/dev/null)
+      printf '%s' "$ausgabe"
+      ;;
     pmg) pmgsubscription get 2>/dev/null ;;
     *) printf '' ;;
   esac
 }
 
-# Liest ein Feld aus der Subscription-Ausgabe. Unterstützt "feld: wert" und JSON.
+# Liest ein Feld aus der Subscription-Ausgabe. Unterstuetzt "feld: wert", JSON und die
+# Rahmentabelle von PBS ("| feld | wert |" mit Unicode-Strichen).
 feld_lesen() {
   local feld="$1" text="$2" wert
   wert=$(printf '%s\n' "$text" | sed -n "s/^[[:space:]]*${feld}[[:space:]]*:[[:space:]]*//p" | head -n1)
   if [ -z "$wert" ]; then
     wert=$(printf '%s\n' "$text" |
       sed -n "s/.*\"${feld}\"[[:space:]]*:[[:space:]]*\"\{0,1\}\([^\",}]*\)\"\{0,1\}.*/\1/p" | head -n1)
+  fi
+  if [ -z "$wert" ]; then
+    # Tabellenzeile: Trennzeichen ist U+2502; awk zerlegt daran und liefert die zweite Spalte.
+    wert=$(printf '%s\n' "$text" |
+      awk -F'\xe2\x94\x82' -v feld="$feld" '
+        NF >= 3 {
+          name = $2; gsub(/^[ \t]+|[ \t]+$/, "", name)
+          if (name == feld) { wert = $3; gsub(/^[ \t]+|[ \t]+$/, "", wert); print wert; exit }
+        }')
   fi
   # Umschließende Anführungszeichen und Leerzeichen entfernen.
   wert=${wert%\"}
@@ -133,7 +151,9 @@ produkt_version() {
   # Der Kernel wird separat gemeldet, deshalb hier abschneiden.
   case "$1" in
     pve) pveversion 2>/dev/null | head -n1 | sed 's/ (running kernel.*//' ;;
-    pbs) proxmox-backup-manager version 2>/dev/null | head -n1 ;;
+    # PBS haengt die laufende Fassung an ("… 4.2.6-1 running version: 4.2.1");
+    # gemeldet wird die installierte.
+    pbs) proxmox-backup-manager version 2>/dev/null | head -n1 | sed 's/ running version.*//' ;;
     pmg) pmgversion 2>/dev/null | head -n1 ;;
     *) printf '' ;;
   esac
@@ -395,8 +415,15 @@ aktion_test() {
   [ "$(printf '%s' "$antwort" | tail -n1)" = "200" ]
 }
 
+# Ist $1 eine neuere Fassung als $2? `sort -V` vergleicht Versionsnummern der Reihe nach.
+version_neuer() {
+  [ "$1" != "$2" ] && [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -n1)" = "$1" ]
+}
+
 version_pruefen() {
-  if [ -n "${NEUESTE_VERSION:-}" ] && [ "$NEUESTE_VERSION" != "$AGENT_VERSION" ]; then
+  # Nur melden, wenn das Dashboard wirklich eine neuere Fassung kennt. Sonst warnt ein Agent,
+  # der einer Testinstallation vorauseilt, gegen sich selbst (im Feldtest #023 aufgefallen).
+  if [ -n "${NEUESTE_VERSION:-}" ] && version_neuer "$NEUESTE_VERSION" "$AGENT_VERSION"; then
     protokoll notice "Neue Agent-Version verfügbar: ${NEUESTE_VERSION} (installiert: ${AGENT_VERSION})."
     if [ "$AUTO_UPDATE" = "yes" ]; then
       aktion_update

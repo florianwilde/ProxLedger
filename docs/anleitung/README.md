@@ -113,6 +113,12 @@ Der Installer erkennt selbst, ob es sich um Proxmox VE, Backup Server oder Mail 
 registriert den Host, legt die Konfiguration unter `/etc/proxledger/agent.conf` (Rechte 600) ab,
 richtet einen systemd-Timer ein und schickt sofort den ersten Report.
 
+> **Stand der Erprobung:** Proxmox VE (9.2, mit und ohne Subscription, einzeln und im Cluster) und
+> Proxmox Backup Server (4.2, ohne Subscription) sind auf echten Hosts geprüft. Für **Mail Gateway**
+> stand bisher kein Host zur Verfügung – dort beruht die Auswertung noch auf Annahmen, und bei PBS hat
+> sich genau so eine Annahme als falsch erwiesen. Bitte den ersten PMG-Host nach der Installation
+> kurz gegenprüfen (`proxledger-agent --dry-run` zeigt, was gemeldet würde).
+
 Nützliche Befehle auf dem Host:
 
 | Befehl | Zweck |

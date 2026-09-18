@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest";
 import { POST as enrollPost } from "@/app/api/agent/v1/enroll/route";
+import { AGENT_VERSION } from "@/server/agent/http";
 import { POST as reportPost } from "@/app/api/agent/v1/report/route";
 import { agentRateLimit, enrollRateLimit } from "@/lib/ratelimit";
 import { erzeugeToken } from "@/lib/tokens";
@@ -17,6 +18,36 @@ let stubVerzeichnis: string;
 function befehlErsetzen(name: string, ausgabe: string) {
   const datei = path.join(stubVerzeichnis, name);
   writeFileSync(datei, `#!/usr/bin/env bash\ncat <<'ENDE'\n${ausgabe}\nENDE\n`);
+  chmodSync(datei, 0o755);
+}
+
+/**
+ * Ahmt `proxmox-backup-manager` nach: Das Werkzeug beantwortet `version` anders als
+ * `subscription get`, und auf `--output-format json` antwortet es anders als ohne.
+ * Genau daran hängt die Auswertung im Agent.
+ */
+function pbsErsetzen(antworten: { json: string; tabelle: string; version: string }) {
+  const datei = path.join(stubVerzeichnis, "proxmox-backup-manager");
+  writeFileSync(
+    datei,
+    [
+      "#!/usr/bin/env bash",
+      'if [ "$1" = "version" ]; then',
+      "cat <<'VERSION'",
+      antworten.version,
+      "VERSION",
+      'elif [[ "$*" == *--output-format*json* ]]; then',
+      "cat <<'JSON'",
+      antworten.json,
+      "JSON",
+      "else",
+      "cat <<'TEXT'",
+      antworten.tabelle,
+      "TEXT",
+      "fi",
+      "",
+    ].join("\n"),
+  );
   chmodSync(datei, 0o755);
 }
 
@@ -42,6 +73,23 @@ regdate: 2025-09-24 00:00:00
 nextduedate: 2026-09-24
 sockets: 1
 level: c`;
+
+// Echte Ausgaben von einem Proxmox Backup Server 4.2 ohne Subscription (Feldtest #023).
+const PBS_TABELLE = `┌──────────┬──────────────────────────────────────────────────────────┐
+│ Name     │ Value                                                    │
+╞══════════╪══════════════════════════════════════════════════════════╡
+│ status   │ notfound                                                 │
+├──────────┼──────────────────────────────────────────────────────────┤
+│ message  │ There is no subscription key                             │
+├──────────┼──────────────────────────────────────────────────────────┤
+│ serverid │ 69AED6ABA8A34EBE9AE1075333BBF8FE                         │
+├──────────┼──────────────────────────────────────────────────────────┤
+│ url      │ https://www.proxmox.com/en/proxmox-backup-server/pricing │
+└──────────┴──────────────────────────────────────────────────────────┘`;
+
+const PBS_VERSION = "proxmox-backup-server 4.2.6-1 running version: 4.2.1";
+
+const PBS_JSON = `{"message":"There is no subscription key","serverid":"69AED6ABA8A34EBE9AE1075333BBF8FE","status":"notfound","url":"https://www.proxmox.com/en/proxmox-backup-server/pricing"}`;
 
 describe("Agent-Skript", () => {
   beforeEach(() => {
@@ -75,7 +123,7 @@ describe("Agent-Skript", () => {
       host: Record<string, unknown>;
     };
 
-    expect(report.agentVersion).toBe("0.2.0");
+    expect(report.agentVersion).toBe(AGENT_VERSION);
     expect(report.reportId).toMatch(/.{8,}/);
     expect(report.erhobenAm).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
     expect(report.produkt).toEqual({ typ: "pve", version: "pve-manager/8.3.2/dc2b2f4e" });
@@ -144,6 +192,39 @@ productname: Proxmox "VE" \\ Subscription	mit Tab`,
     });
   });
 
+  it("liest einen PBS ohne Subscription (echte Ausgaben, JSON bevorzugt)", () => {
+    pbsErsetzen({ json: PBS_JSON, tabelle: PBS_TABELLE, version: PBS_VERSION });
+
+    const report = reportErzeugen() as {
+      produkt: { typ: string };
+      subscription: Record<string, unknown>;
+      host: { clusterMitglieder: string[] };
+    };
+
+    expect(report.produkt.typ).toBe("pbs");
+    expect(report.subscription.status).toBe("notfound");
+    expect(report.subscription.serverid).toBe("69AED6ABA8A34EBE9AE1075333BBF8FE");
+    expect(report.subscription.key).toBeNull();
+    expect(report.subscription.sockets).toBeNull();
+    // Ohne pvecm bleibt die Mitgliederliste leer – PBS kennt keinen Cluster in diesem Sinne.
+    expect(report.host.clusterMitglieder).toEqual([]);
+  });
+
+  it("liest die Rahmentabelle, falls ein PBS kein JSON ausgibt", () => {
+    // Ältere Fassungen könnten das JSON-Format nicht kennen; dann bleibt nur die Tabelle.
+    befehlErsetzen("proxmox-backup-manager", PBS_TABELLE);
+
+    const report = reportErzeugen() as { subscription: Record<string, unknown> };
+    expect(report.subscription.status).toBe("notfound");
+    expect(report.subscription.serverid).toBe("69AED6ABA8A34EBE9AE1075333BBF8FE");
+  });
+
+  it("meldet die PBS-Version ohne die laufende Fassung", () => {
+    pbsErsetzen({ json: PBS_JSON, tabelle: PBS_TABELLE, version: PBS_VERSION });
+    const report = reportErzeugen() as { produkt: { version: string } };
+    expect(report.produkt.version).toBe("proxmox-backup-server 4.2.6-1");
+  });
+
   it("meldet die Cluster-Mitglieder", () => {
     befehlErsetzen("pvesubscription", PVE_SUBSCRIPTION);
     befehlErsetzen(
@@ -169,7 +250,7 @@ productname: Proxmox "VE" \\ Subscription	mit Tab`,
 
   it("gibt die Version aus", () => {
     const ausgabe = execFileSync("bash", [AGENT, "--version"], { encoding: "utf8" }).trim();
-    expect(ausgabe).toBe("0.2.0");
+    expect(ausgabe).toBe(AGENT_VERSION);
   });
 
   describe.runIf(datenbankVerfuegbar)("Zusammenspiel mit der Agent-API", () => {

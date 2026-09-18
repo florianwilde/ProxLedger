@@ -17,6 +17,16 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.14.1] – 2026-09-18
+
+### Behoben
+- Auf Proxmox Backup Server las der Agent **keine einzige Angabe** aus: `proxmox-backup-manager subscription get` gibt eine Rahmentabelle aus, keine `feld: wert`-Zeilen. Jetzt wird für PBS `--output-format json` genutzt, und die Tabelle wird als Rückfall ausgewertet (#023)
+- Die PBS-Version enthielt die laufende Fassung ein zweites Mal (#023)
+- Der Agent meldete eine „neue Version“, auch wenn die installierte neuer war als die des Dashboards (#023)
+
+### Geändert
+- Agent-Version 0.2.1; die Tests prüfen die Versionsangabe jetzt gegen die Konstante des Dashboards statt gegen eine abgeschriebene Zahl (#023)
+
 ## [0.14.0] – 2026-09-18
 
 ### Hinzugefügt

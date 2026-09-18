@@ -15,7 +15,7 @@ auf echten Hosts laufen.
 - [x] Ausgabeformate von `pvesubscription get`, `proxmox-backup-manager subscription get` und
       `pmgsubscription get` mit den Annahmen im Skript abgleichen
 - [x] Verhalten ohne Subscription geprüft (Status `notfound`, alle übrigen Felder fehlen und werden zu null)
-- [x] Timer und Spool-Nachsendung geprüft; Uninstall steht noch aus (Agents laufen vorerst weiter)
+- [x] Timer, Spool-Nachsendung und Uninstall geprüft (Uninstall am 18.09.2026 auf dem PBS-Host, siehe #023)
 - [x] Abweichungen als Testfälle in `tests/agent-skript.test.ts` übernehmen
 
 ## Akzeptanzkriterien
@@ -60,4 +60,4 @@ funktioniert (Report gepuffert bei unerreichbarem Dashboard, beim nächsten Lauf
 6. **Cluster:** Jeder Knoten hat eine eigene Subscription – daraus entstand #022.
 
 **Noch offen:** PBS und PMG – dafür ist #023 angelegt. PBS-Hosts stellt Florian bereit, allerdings nur
-unlizenziert; für PMG gibt es derzeit keinen Host. Ebenfalls offen: ein echter Uninstall-Durchlauf.
+unlizenziert; für PMG gibt es derzeit keinen Host. Der Uninstall-Durchlauf ist inzwischen erledigt (#023).
