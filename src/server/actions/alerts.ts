@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { protokolliere } from "@/server/audit";
-import { sitzungErforderlich } from "@/server/auth/sitzungspflicht";
+import { sichtbarerKunde, sitzungErforderlich } from "@/server/auth/sitzungspflicht";
 import { alertsAbgleichen } from "@/server/alerts/abgleich";
 import { REGELN } from "@/server/alerts/regeln";
 import type { AktionsErgebnis } from "./kunden";
@@ -16,18 +16,26 @@ function neuLaden() {
 
 /** Warnung quittieren: sie bleibt offen, ist aber als gesehen markiert. */
 export async function alertQuittieren(formular: FormData) {
-  await sitzungErforderlich();
+  await sitzungErforderlich("mitarbeiten");
   const id = formular.get("id")?.toString();
   if (!id) return;
 
-  await prisma.alert.update({ where: { id }, data: { quittiertAm: new Date() } });
+  // Ein Kundenkonto darf nur eigene Warnungen quittieren. Bedingung und Schreiben in einem
+  // Schritt: So kann zwischen Prüfung und Änderung nichts dazwischenkommen.
+  const nurKunde = await sichtbarerKunde();
+  const ergebnis = await prisma.alert.updateMany({
+    where: { id, ...(nurKunde ? { host: { kundeId: nurKunde } } : {}) },
+    data: { quittiertAm: new Date() },
+  });
+  if (ergebnis.count === 0) return;
+
   await protokolliere("alert.quittiert", "Alert", id, {});
   neuLaden();
 }
 
 /** Warnung von Hand schließen; taucht der Fall weiter auf, öffnet der nächste Abgleich sie erneut. */
 export async function alertSchliessen(formular: FormData) {
-  await sitzungErforderlich();
+  await sitzungErforderlich("fachlichSchreiben");
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -38,7 +46,7 @@ export async function alertSchliessen(formular: FormData) {
 
 /** Auswertung sofort anstoßen, ohne auf den Worker zu warten. */
 export async function alertsJetztPruefen(): Promise<AktionsErgebnis> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const ergebnis = await alertsAbgleichen();
   neuLaden();
   return {
@@ -51,7 +59,7 @@ export async function warnregelnSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   for (const regel of REGELN) {
     const aktiv = formular.get(`aktiv:${regel.name}`) === "on";
     const schwellwerte: Record<string, number | number[]> = {};

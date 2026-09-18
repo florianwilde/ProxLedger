@@ -36,6 +36,11 @@ export const einstellungenSchema = z.object({
   oidcDomaenen: z.string().default(""),
   /** Darf sich jemand ohne vorhandenes Konto über OIDC anmelden? */
   oidcKontenAnlegen: z.boolean().default(true),
+  /**
+   * Rolle für automatisch angelegte OIDC-Konten. Vorgabe ist bewusst TECHNIKER und nicht ADMIN:
+   * Wer sich beim Identitätsanbieter anmelden kann, soll nicht nebenbei Administrator werden (#027).
+   */
+  oidcStandardRolle: z.enum(["ADMIN", "TECHNIKER", "KUNDE"]).default("TECHNIKER"),
   /** 0 = unbegrenzt aufbewahren. */
   aufbewahrungReportsTage: z.number().int().min(0).max(3650).default(365),
   aufbewahrungAuditTage: z.number().int().min(0).max(3650).default(730),

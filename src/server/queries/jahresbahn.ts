@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/db";
+import { sichtbarerKunde } from "@/server/auth/sitzungspflicht";
 
 /** Hosts mit Ablaufdatum, gruppiert nach Kunde – Grundlage für Jahresbahn und Ablauf-Kalender. */
 export async function ablaufDaten(jetzt: Date = new Date()) {
+  const nurKunde = await sichtbarerKunde();
+
   const hosts = await prisma.host.findMany({
-    where: { subNextduedate: { not: null } },
+    where: { subNextduedate: { not: null }, ...(nurKunde ? { kundeId: nurKunde } : {}) },
     orderBy: [{ subNextduedate: "asc" }],
     select: {
       id: true,

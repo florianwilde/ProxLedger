@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { sichtbarerKunde } from "@/server/auth/sitzungspflicht";
 
 /** Frist, nach der ein Host als „meldet sich nicht“ gilt (konfigurierbar ab #011). */
 export const MELDUNG_FRIST_STUNDEN = 48;
@@ -8,6 +9,10 @@ export function meldungsGrenze(jetzt: Date = new Date()): Date {
 }
 
 export async function hostsOhneKunde() {
+  // Ein Kundenkonto hat hier nichts zu suchen: Nicht zugeordnete Hosts gehören per Definition
+  // noch niemandem, dürfen also auch niemandem gezeigt werden.
+  if (await sichtbarerKunde()) return [];
+
   return prisma.host.findMany({
     where: { kundeId: null },
     orderBy: { erstmalsGesehenAm: "desc" },
@@ -15,35 +20,48 @@ export async function hostsOhneKunde() {
 }
 
 export async function hostAnzahl() {
-  return prisma.host.count();
+  const kundeId = await sichtbarerKunde();
+  return prisma.host.count({ where: kundeId ? { kundeId } : {} });
 }
 
 /** Kennzahlen für Dashboard-Kacheln und Sidebar-Badges. */
 export async function kennzahlen(jetzt: Date = new Date()) {
   const in30Tagen = new Date(jetzt.getTime() + 30 * 86_400_000);
+  const kundeId = await sichtbarerKunde();
+  const hostSicht = kundeId ? { kundeId } : {};
+  const laufzeitSicht = kundeId ? { host: { kundeId } } : {};
 
   const [gesamt, aktiv, ohneKunde, baldAblaufend, ohneMeldung, offeneAlerts] = await Promise.all([
-    prisma.host.count(),
-    prisma.host.count({ where: { subStatus: "ACTIVE" } }),
-    prisma.host.count({ where: { kundeId: null } }),
-    prisma.host.count({ where: { subNextduedate: { gte: jetzt, lte: in30Tagen } } }),
+    prisma.host.count({ where: hostSicht }),
+    prisma.host.count({ where: { ...hostSicht, subStatus: "ACTIVE" } }),
+    kundeId ? Promise.resolve(0) : prisma.host.count({ where: { kundeId: null } }),
+    prisma.host.count({ where: { ...hostSicht, subNextduedate: { gte: jetzt, lte: in30Tagen } } }),
     prisma.host.count({
-      where: { OR: [{ letzterReportAm: null }, { letzterReportAm: { lt: meldungsGrenze(jetzt) } }] },
+      where: {
+        ...hostSicht,
+        OR: [{ letzterReportAm: null }, { letzterReportAm: { lt: meldungsGrenze(jetzt) } }],
+      },
     }),
-    prisma.alert.count({ where: { erledigtAm: null } }),
+    prisma.alert.count({ where: { erledigtAm: null, ...(kundeId ? { host: { kundeId } } : {}) } }),
   ]);
 
   const [offeneEinkaufsrechnungen, fehlendeKundenrechnungen] = await Promise.all([
-    prisma.laufzeit.count({
-      where: { status: "BESTAETIGT", proxmoxPosition: { rechnung: { bezahlt: false } } },
-    }),
-    prisma.laufzeit.count({
-      where: {
-        status: "BESTAETIGT",
-        proxmoxPosition: { isNot: null },
-        OR: [{ kundenPosition: null }, { kundenPosition: { rechnung: { erstellt: false } } }],
-      },
-    }),
+    // Einkaufsrechnungen gehen ein Kundenkonto nichts an.
+    kundeId
+      ? Promise.resolve(0)
+      : prisma.laufzeit.count({
+          where: { status: "BESTAETIGT", proxmoxPosition: { rechnung: { bezahlt: false } } },
+        }),
+    kundeId
+      ? Promise.resolve(0)
+      : prisma.laufzeit.count({
+          where: {
+            ...laufzeitSicht,
+            status: "BESTAETIGT",
+            proxmoxPosition: { isNot: null },
+            OR: [{ kundenPosition: null }, { kundenPosition: { rechnung: { erstellt: false } } }],
+          },
+        }),
   ]);
 
   return {
@@ -61,8 +79,10 @@ export async function kennzahlen(jetzt: Date = new Date()) {
 }
 
 export async function offeneAlerts(anzahl = 20) {
+  const kundeId = await sichtbarerKunde();
+
   return prisma.alert.findMany({
-    where: { erledigtAm: null },
+    where: { erledigtAm: null, ...(kundeId ? { host: { kundeId } } : {}) },
     orderBy: [{ schwere: "asc" }, { geoeffnetAm: "desc" }],
     take: anzahl,
   });
@@ -70,8 +90,11 @@ export async function offeneAlerts(anzahl = 20) {
 
 /** Einträge für die globale Suche (Strg+K). */
 export async function suchIndex() {
+  const kundeId = await sichtbarerKunde();
+
   const [hosts, kunden, proxmoxRechnungen, kundenrechnungen] = await Promise.all([
     prisma.host.findMany({
+      where: kundeId ? { kundeId } : {},
       select: {
         id: true,
         hostname: true,
@@ -84,13 +107,17 @@ export async function suchIndex() {
       },
     }),
     prisma.kunde.findMany({
+      where: kundeId ? { id: kundeId } : {},
       select: { id: true, name: true, kundennummer: true, ansprechpartner: true, email: true },
     }),
-    prisma.proxmoxRechnung.findMany({
-      select: { id: true, nummer: true, positionen: { select: { laufzeit: { select: { hostId: true } } } } },
-    }),
+    // Proxmox-Rechnungen sind Einkauf – für ein Kundenkonto gibt es sie schlicht nicht.
+    kundeId
+      ? Promise.resolve([])
+      : prisma.proxmoxRechnung.findMany({
+          select: { id: true, nummer: true, positionen: { select: { laufzeit: { select: { hostId: true } } } } },
+        }),
     prisma.kundenrechnung.findMany({
-      where: { nummer: { not: null } },
+      where: { nummer: { not: null }, ...(kundeId ? { kundeId } : {}) },
       select: { id: true, nummer: true, kunde: { select: { id: true, name: true } } },
     }),
   ]);

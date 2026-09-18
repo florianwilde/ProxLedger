@@ -18,6 +18,7 @@ auch mit Hosts hinter NAT.
 8. [Benachrichtigungen einrichten](#8-benachrichtigungen-einrichten)
 9. [Exporte](#9-exporte)
 9a. [Einstellungen](#9a-einstellungen)
+9b. [Benutzer, Rollen und Passkeys](#9b-benutzer-rollen-und-passkeys)
 10. [Sicherung und Aktualisierung](#10-sicherung-und-aktualisierung)
 11. [Fehlersuche](#11-fehlersuche)
 
@@ -338,6 +339,46 @@ Zeitzone gilt für PDF, CSV und Benachrichtigungen.
 
 > `APP_SECRET` und `DATABASE_URL` stehen bewusst **nicht** hier: Beide werden gebraucht, bevor die
 > Anwendung die Datenbank überhaupt lesen kann.
+
+---
+
+## 9b. Benutzer, Rollen und Passkeys
+
+Unter *Einstellungen → Benutzer* legen Administratoren Konten an und vergeben eine von drei Rollen:
+
+![Benutzerverwaltung](bilder/benutzer.png)
+
+| Rolle | Darf |
+|---|---|
+| **Administrator** | alles, einschließlich Benutzer und Systemeinstellungen |
+| **Techniker** | alles Fachliche: Hosts, Kunden, Rechnungen, Tokens, Warnregeln – aber keine Benutzer |
+| **Kunde** | nur die Hosts und Rechnungen des eigenen Kunden, **ohne Einkaufspreise und Marge**; darf Notizen schreiben und Warnungen quittieren |
+
+Ein Kundenkonto ist an genau einen Kunden gebunden – das Feld erscheint, sobald die Rolle „Kunde“
+gewählt ist. Die Einschränkung sitzt in den Abfragen selbst, nicht in der Anzeige: Was ein Kundenkonto
+nicht sehen darf, steht auch nicht im ausgelieferten HTML.
+
+Ein Passwort ist beim Anlegen freiwillig. Ohne Passwort entsteht ein Konto, das sich nur über OIDC oder
+einen Passkey anmeldet. **Ein neues Passwort beendet alle laufenden Sitzungen dieses Kontos**, ebenso
+das Sperren.
+
+### Passkeys
+
+Ein Passkey ersetzt das Passwort: Der Browser bestätigt die Anmeldung mit Fingerabdruck, Gesicht, PIN
+oder einem Sicherheitsschlüssel. Jeder Benutzer verwaltet seine eigenen unter *Meine Passkeys*:
+
+![Passkeys](bilder/passkeys.png)
+
+Zwei Dinge sind wichtig:
+
+1. **Passkeys brauchen HTTPS.** Nur `localhost` ist ausgenommen. Wird das Dashboard über `http://`
+   im LAN aufgerufen, weist die Seite darauf hin und der Knopf bleibt gesperrt.
+2. **Der Passkey hängt an der Adresse.** Wer später von `http://server:3000` auf
+   `https://proxledger.firma.de` wechselt, muss neu registrieren. Deshalb zuerst den Reverse Proxy
+   einrichten, dann Passkeys anlegen.
+
+Passwort, OIDC und Passkey stehen gleichberechtigt nebeneinander – der lokale Zugang bleibt als
+Rückweg immer nutzbar.
 
 ---
 

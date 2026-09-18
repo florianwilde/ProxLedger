@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { darfEinkaufSehen, sichtbarerKunde } from "@/server/auth/sitzungspflicht";
 import { meldungsGrenze } from "./hosts";
 
 /**
@@ -7,8 +8,11 @@ import { meldungsGrenze } from "./hosts";
  * denn deren Rechnungen sind offen – nicht die der laufenden Periode.
  */
 export async function hostsNachAblauf(jetzt: Date = new Date()) {
+  const nurKunde = await sichtbarerKunde();
+  const einkaufSichtbar = await darfEinkaufSehen();
+
   const hosts = await prisma.host.findMany({
-    where: { subNextduedate: { not: null } },
+    where: { subNextduedate: { not: null }, ...(nurKunde ? { kundeId: nurKunde } : {}) },
     orderBy: { subNextduedate: "asc" },
     include: {
       kunde: { select: { id: true, name: true } },
@@ -40,7 +44,8 @@ export async function hostsNachAblauf(jetzt: Date = new Date()) {
       subKey: host.subKey,
       nextduedate: ablauf,
       meldetNicht: !host.letzterReportAm || host.letzterReportAm < grenze,
-      einkaufBezahlt: laufzeit?.proxmoxPosition ? laufzeit.proxmoxPosition.rechnung.bezahlt : null,
+      einkaufBezahlt:
+        einkaufSichtbar && laufzeit?.proxmoxPosition ? laufzeit.proxmoxPosition.rechnung.bezahlt : null,
       verkaufErstellt: laufzeit?.kundenPosition?.rechnung.erstellt ?? false,
       verkaufBezahlt: laufzeit?.kundenPosition?.rechnung.bezahlt ?? false,
     };
@@ -53,6 +58,9 @@ export async function hostsNachAblauf(jetzt: Date = new Date()) {
  * Liste steht unter „Rechnungen“.
  */
 export async function offeneAufgaben(grenze = 12) {
+  // Die Aufgabenliste ist der Arbeitsvorrat des Systemhauses – für Kundenkonten bleibt sie leer.
+  if (await sichtbarerKunde()) return { aufgaben: [], gesamt: 0 };
+
   const laufzeiten = await prisma.laufzeit.findMany({
     where: {
       status: "BESTAETIGT",

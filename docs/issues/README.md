@@ -30,4 +30,6 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#024](024-owasp-haertung.md) | Härtung nach OWASP | erledigt | v0.15.0 | 4 h | 0 h 45 min |
 | [#025](025-einstellungen.md) | Einstellungen im Dashboard | erledigt | v0.16.0 | 5 h | 1 h 10 min |
 | [#026](026-auslieferung.md) | Auslieferung finalisieren | erledigt | v0.17.0 | 3 h | 0 h 40 min |
-| | **Summe** | | | **133 h** | **12 h 18 min** |
+| [#027](027-rollen-benutzerverwaltung.md) | Rollen und Benutzerverwaltung | erledigt | v0.18.0 | 6 h | 1 h 20 min |
+| [#028](028-passkeys.md) | Anmeldung mit Passkeys | erledigt | v0.18.0 | 4 h | 0 h 45 min |
+| | **Summe** | | | **143 h** | **14 h 23 min** |

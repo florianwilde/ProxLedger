@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 12 h 18 min
+**Gesamt:** 14 h 23 min
 
 | Issue | Zeit |
 |---|---|
@@ -32,6 +32,8 @@
 | #024 OWASP-Härtung | 0 h 45 min |
 | #025 Einstellungen | 1 h 10 min |
 | #026 Auslieferung | 0 h 40 min |
+| #027 Rollen und Benutzerverwaltung | 1 h 20 min |
+| #028 Passkeys | 0 h 45 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -54,7 +56,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.17.0
+**Version:** 0.18.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -151,6 +153,10 @@
 - Auslieferung finalisiert (#026): Docker-Weg mit Update-Skript, dazu Skripte nach Art der Helper-Scripts für einen LXC ohne Docker
 - Recherche dazu: Das Gerüst der community-scripts liegt inzwischen in einem eigenen Repository, und neue Skripte gehören zuerst nach ProxmoxVED. Eine Einreichung setzt öffentlichen Quelltext voraus – deshalb vorerst intern
 - Roadmap geschrieben: Bis 1.0.0 fehlt kein Code mehr, sondern Erprobung (PMG, PBS mit Lizenz, ein Monat Dauerbetrieb, einmal eine Sicherung zurückspielen)
+
+- Rollen und Benutzerverwaltung (#027): Die Einschränkung sitzt in den Abfragen selbst, damit keine Seite vergessen kann, sie weiterzugeben. Sechs Tests prüfen, dass ein Kundenkonto weder fremde Hosts noch Einkaufspreise sieht
+- Dabei aufgefallen: Neu angelegte OIDC-Konten hätten die Modellvorgabe ADMIN geerbt – behoben, mit eigener Einstellung und Test
+- Passkeys (#028): passwortlos, mehrere je Konto, Aufgabe in einem kurzlebigen Cookie. Nur über HTTPS nutzbar – die Seite sagt es, statt still zu scheitern
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

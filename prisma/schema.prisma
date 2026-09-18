@@ -72,6 +72,7 @@ model Kunde {
   alerts           Alert[]
 
   @@index([name])
+  benutzer  Benutzer[]
 }
 
 model Standort {
@@ -448,12 +449,23 @@ model Benachrichtigungskanal {
 // ---------------------------------------------------------------- Benutzer und Protokoll
 
 /// Alle Benutzer sind Administratoren; eine Nur-Lese-Rolle ist bewusst nicht vorgesehen.
+/// Was jemand darf. ADMIN alles, TECHNIKER alles Fachliche, KUNDE nur die eigenen Daten (#027).
+enum Rolle {
+  ADMIN
+  TECHNIKER
+  KUNDE
+}
+
 model Benutzer {
   id            String    @id @default(cuid())
   email         String    @unique
   name          String
   passwortHash  String?
   oidcSubject   String?   @unique
+  /// Bestehende Konten waren vor der Einführung der Rollen uneingeschränkt – daher ADMIN.
+  rolle         Rolle     @default(ADMIN)
+  /// Nur für die Rolle KUNDE: an welchen Kunden das Konto gebunden ist.
+  kundeId       String?
   aktiv         Boolean   @default(true)
   letzterLoginAm DateTime?
   /// Alle Sitzungen, die vor diesem Zeitpunkt ausgestellt wurden, gelten als ungültig (#024).
@@ -462,6 +474,28 @@ model Benutzer {
   geaendertAm   DateTime  @updatedAt
 
   auditEintraege AuditEintrag[]
+  kunde          Kunde?        @relation(fields: [kundeId], references: [id], onDelete: SetNull)
+  passkeys       Passkey[]
+
+  @@index([kundeId])
+}
+
+/// Ein registrierter Passkey (WebAuthn). Ein Konto darf mehrere haben – Rechner und Telefon (#028).
+model Passkey {
+  id           String    @id @default(cuid())
+  benutzerId   String
+  /// Kennung des Schlüssels, base64url wie vom Browser geliefert.
+  credentialId String    @unique
+  publicKey    Bytes
+  zaehler      BigInt    @default(0)
+  transports   String[]  @default([])
+  bezeichnung  String
+  erstelltAm   DateTime  @default(now())
+  zuletztAm    DateTime?
+
+  benutzer Benutzer @relation(fields: [benutzerId], references: [id], onDelete: Cascade)
+
+  @@index([benutzerId])
 }
 
 model AuditEintrag {

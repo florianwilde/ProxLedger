@@ -15,8 +15,13 @@ Die Gliederung folgt den OWASP Top 10 (2021).
 - Die Anmeldung prüft den `Origin`, damit keine fremde Seite jemanden unbemerkt in ein untergeschobenes
   Konto anmeldet (Login-CSRF). Für Server Actions erledigt das Next.js selbst.
 
-**Nicht vorhanden:** Rollen. Wer angemeldet ist, darf alles. Für ein Werkzeug, das ein Systemhaus intern
-betreibt, ist das vertretbar – für mehrere Mandanten wäre es das nicht.
+**Rollen** (#027): Administrator, Techniker und Kunde. Jede Aktion nennt das Recht, das sie verlangt;
+die Rechte stehen an einer Stelle (`src/server/auth/rollen.ts`). Kundenkonten sind an einen Kunden
+gebunden, und die Einschränkung sitzt in den Abfragen – nicht in der Anzeige. Einkaufspreise und Marge
+werden für sie schon beim Abfragen entfernt, stehen also nicht im ausgelieferten HTML.
+
+**Weiterhin nicht vorhanden:** Mandantenfähigkeit im eigentlichen Sinn. Mehrere Systemhäuser in einer
+Installation wären ein Umbau, kein Anbau.
 
 ## A02 – Kryptografische Fehler
 
@@ -70,8 +75,13 @@ gespeicherten Zugangsdaten unlesbar. Er gehört in die Sicherung.
 - Anmeldung wahlweise per Passwort oder OIDC (authentik, mit PKCE und `state`).
 - Jede Anmeldung – erfolgreich oder nicht – landet im Audit-Log.
 
-**Nicht vorhanden:** Zwei-Faktor-Anmeldung. Wer sie braucht, stellt OIDC davor und schaltet die
-Passwortanmeldung ab.
+- **Passkeys** (WebAuthn, #028) als dritter, gleichwertiger Weg. Passwortlos, an die Domäne gebunden,
+  mehrere je Konto. Setzt HTTPS voraus (außer auf `localhost`).
+- Automatisch angelegte OIDC-Konten bekommen die eingestellte Rolle – Vorgabe *Techniker*, nicht
+  Administrator.
+
+**Nicht vorhanden:** klassische Zwei-Faktor-Anmeldung mit Einmalkennwort. Ein Passkey ersetzt beides
+in einem Schritt; wer einen zweiten Faktor zum Passwort erzwingen will, stellt OIDC davor.
 
 ## A08 – Datenintegrität
 

@@ -17,7 +17,7 @@ export async function enrollmentTokenErzeugen(
   _vorher: TokenErgebnis,
   formular: FormData,
 ): Promise<TokenErgebnis> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const bezeichnung = formular.get("bezeichnung")?.toString().trim() || null;
   const kundeId = formular.get("kundeId")?.toString() || null;
   const standortId = formular.get("standortId")?.toString() || null;
@@ -60,7 +60,7 @@ export async function enrollmentTokenErzeugen(
 }
 
 export async function enrollmentTokenWiderrufen(formular: FormData) {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -70,7 +70,7 @@ export async function enrollmentTokenWiderrufen(formular: FormData) {
 }
 
 export async function hostTokenWiderrufen(formular: FormData) {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const id = formular.get("id")?.toString();
   const hostId = formular.get("hostId")?.toString();
   if (!id) return;

@@ -23,7 +23,7 @@ export async function einstellungenSpeichernAktion(
   _zustand: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("verwaltung");
 
   const vorher = await einstellungen();
 
@@ -42,6 +42,7 @@ export async function einstellungenSpeichernAktion(
     anmeldeversuche: zahl(formular, "anmeldeversuche"),
     oidcDomaenen: text(formular, "oidcDomaenen"),
     oidcKontenAnlegen: schalter(formular, "oidcKontenAnlegen"),
+    oidcStandardRolle: text(formular, "oidcStandardRolle") || vorher.oidcStandardRolle,
     aufbewahrungReportsTage: zahl(formular, "aufbewahrungReportsTage"),
     aufbewahrungAuditTage: zahl(formular, "aufbewahrungAuditTage"),
 

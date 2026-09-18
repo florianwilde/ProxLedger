@@ -9,7 +9,7 @@ import type { AktionsErgebnis } from "./kunden";
 
 /** Weist mehrere Hosts in einem Schritt einem Kunden zu. */
 export async function hostsZuweisen(_vorher: AktionsErgebnis, formular: FormData): Promise<AktionsErgebnis> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("fachlichSchreiben");
   const hostIds = formular.getAll("hostId").map(String).filter(Boolean);
   const kundeId = formular.get("kundeId")?.toString() || null;
   const standortId = formular.get("standortId")?.toString() || null;
@@ -32,7 +32,7 @@ export async function hostsZuweisen(_vorher: AktionsErgebnis, formular: FormData
 
 /** Hebt die Zuordnung eines einzelnen Hosts auf. */
 export async function hostZuordnungAufheben(formular: FormData) {
-  await sitzungErforderlich();
+  await sitzungErforderlich("fachlichSchreiben");
   const hostId = formular.get("hostId")?.toString();
   if (!hostId) return;
 
