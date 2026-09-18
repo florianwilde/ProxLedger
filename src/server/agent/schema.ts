@@ -36,6 +36,7 @@ export const reportSchema = z.object({
       ips: z.array(z.string().max(64)).max(32).nullish(),
       clusterName: nullbarerText,
       nodeName: nullbarerText,
+      clusterMitglieder: z.array(z.string().max(255)).max(64).nullish(),
       kernel: nullbarerText,
       uptimeSekunden: z.number().int().nonnegative().nullish(),
       cpuModell: nullbarerText,

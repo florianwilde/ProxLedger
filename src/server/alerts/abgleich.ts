@@ -30,6 +30,8 @@ export async function kontextLaden(jetzt: Date = new Date()): Promise<RegelKonte
     hosts: hosts.map((host) => ({
       id: host.id,
       hostname: host.hostname,
+      clusterName: host.clusterName,
+      clusterMitglieder: host.clusterMitglieder,
       kundeId: host.kundeId,
       kundeName: host.kunde?.name ?? null,
       subKey: host.subKey,

@@ -46,6 +46,16 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
     select: { id: true, name: true },
   });
 
+  // Welche Cluster-Mitglieder melden sich selbst? Fehlende Knoten haben keinen Agent (#022).
+  const geschwister =
+    host.clusterMitglieder.length > 0
+      ? await prisma.host.findMany({
+          where: { hostname: { in: host.clusterMitglieder, mode: "insensitive" } },
+          select: { id: true, hostname: true, subStatus: true, letzterReportAm: true },
+        })
+      : [];
+  const meldende = new Map(geschwister.map((eintrag) => [eintrag.hostname.toLowerCase(), eintrag]));
+
   const jetzt = new Date();
   const meldetNicht = !host.letzterReportAm || host.letzterReportAm < meldungsGrenze(jetzt);
   const socketAbweichung =
@@ -113,6 +123,31 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                 <Zeile bezeichnung="Cluster / Node">
                   {host.clusterName ? `${host.clusterName} / ${host.nodeName ?? "?"}` : "–"}
                 </Zeile>
+                {host.clusterMitglieder.length > 0 ? (
+                  <Zeile bezeichnung={`Cluster-Knoten (${host.clusterMitglieder.length})`}>
+                    <span className="d-inline-block text-start">
+                      {host.clusterMitglieder.map((mitglied) => {
+                        const eintrag = meldende.get(mitglied.toLowerCase());
+                        return (
+                          <span key={mitglied} className="d-block small">
+                            {eintrag ? (
+                              <Link href={`/hosts/${eintrag.id}`} className="text-decoration-none">
+                                {mitglied}
+                              </Link>
+                            ) : (
+                              mitglied
+                            )}{" "}
+                            {eintrag ? (
+                              <Badge farbe="success">meldet sich</Badge>
+                            ) : (
+                              <Badge farbe="warning">kein Agent</Badge>
+                            )}
+                          </span>
+                        );
+                      })}
+                    </span>
+                  </Zeile>
+                ) : null}
                 <Zeile bezeichnung="IP-Adressen">{host.ips.join(", ") || "–"}</Zeile>
                 <Zeile bezeichnung="CPU">{host.cpuModell ?? "–"}</Zeile>
                 <Zeile bezeichnung="Sockets (lizenziert / physisch)">

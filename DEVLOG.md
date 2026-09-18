@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 8 h 03 min
+**Gesamt:** 9 h 08 min
 
 | Issue | Zeit |
 |---|---|
@@ -26,6 +26,8 @@
 | #017 Favicons | 0 h 15 min |
 | #019 CI-Pipeline | 0 h 20 min |
 | #021 Geheimnisse verschlüsseln | 0 h 20 min |
+| #018 Feldtest auf echten Hosts | 0 h 40 min |
+| #022 Cluster-Abgleich | 0 h 25 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -48,7 +50,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.13.1
+**Version:** 0.14.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -127,6 +129,10 @@
 - Der Agent wurde noch auf keinem echten Proxmox-Host installiert; die Tests arbeiten mit nachgebauten Befehlen.
 - Offen: Rolle „readonly“ zusätzlich zu Admin? (vorläufig vorgesehen)
 
+- #018 abgeschlossen: Feldtest auf zwei echten PVE-9.2-Hosts (einer mit, einer ohne Subscription, einer im Cluster); Installation, Timer, Zwischenspeicher und Nachsenden geprüft
+- #022 abgeschlossen: Cluster-Abgleich – jeder Agent meldet die Mitglieder, das Dashboard warnt bei Knoten ohne Agent
+- **Fehler im eigenen Werkzeug gefunden:** Alle Handbuch-Bilder waren in Wahrheit die Anmeldeseite. Firefox verwirft eine selbst angelegte Cookie-Datei stillschweigend. Jetzt läuft ein lokaler Vermittler mit, und das Skript bricht ab, wenn alle Aufnahmen gleich groß sind.
+
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
-- Für 1.0.0 fehlt vor allem der Feldtest auf echten Proxmox-Hosts (#018)
+- Für 1.0.0 fehlen noch: Feldtest auf PBS und PMG, Uninstall auf einem echten Host

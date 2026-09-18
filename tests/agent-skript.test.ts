@@ -144,6 +144,29 @@ productname: Proxmox "VE" \\ Subscription	mit Tab`,
     });
   });
 
+  it("meldet die Cluster-Mitglieder", () => {
+    befehlErsetzen("pvesubscription", PVE_SUBSCRIPTION);
+    befehlErsetzen(
+      "pvecm",
+      `Membership information
+----------------------
+    Nodeid      Votes Name
+         1          1 hv-rz5-pve-01 (local)
+         2          1 hv-rz5-pve-02
+         3          1 hv-rz5-pve-03`,
+    );
+
+    const report = reportErzeugen() as { host: { clusterMitglieder: string[] } };
+    expect(report.host.clusterMitglieder).toEqual(["hv-rz5-pve-01", "hv-rz5-pve-02", "hv-rz5-pve-03"]);
+  });
+
+  it("meldet eine leere Liste, wenn der Host in keinem Cluster ist", () => {
+    befehlErsetzen("pvesubscription", PVE_SUBSCRIPTION);
+
+    const report = reportErzeugen() as { host: { clusterMitglieder: string[] } };
+    expect(report.host.clusterMitglieder).toEqual([]);
+  });
+
   it("gibt die Version aus", () => {
     const ausgabe = execFileSync("bash", [AGENT, "--version"], { encoding: "utf8" }).trim();
     expect(ausgabe).toBe("0.2.0");

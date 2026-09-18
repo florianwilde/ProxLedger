@@ -22,6 +22,8 @@ export interface AlertKandidat {
 export interface HostDaten {
   id: string;
   hostname: string;
+  clusterName: string | null;
+  clusterMitglieder: string[];
   kundeId: string | null;
   kundeName: string | null;
   subKey: string | null;
@@ -287,6 +289,39 @@ const hostOhneKunde: Regel = {
   },
 };
 
+const clusterKnotenOhneAgent: Regel = {
+  name: "cluster-knoten-ohne-agent",
+  beschreibung: "Ein Cluster-Knoten meldet sich nicht beim Dashboard",
+  standardSchwellwerte: {},
+  pruefe(kontext) {
+    // Alle gemeldeten Hostnamen – ein Knoten gilt als bekannt, wenn er selbst meldet.
+    const meldende = new Set(kontext.hosts.map((host) => host.hostname.toLowerCase()));
+
+    const fehlende = new Map<string, { cluster: string; melder: HostDaten }>();
+    for (const host of kontext.hosts) {
+      if (!host.clusterName) continue;
+      for (const mitglied of host.clusterMitglieder) {
+        const name = mitglied.trim();
+        if (!name || meldende.has(name.toLowerCase())) continue;
+        if (!fehlende.has(name.toLowerCase())) {
+          fehlende.set(name.toLowerCase(), { cluster: host.clusterName, melder: host });
+        }
+      }
+    }
+
+    return [...fehlende.entries()].map(([name, eintrag]) => ({
+      fingerprint: `cluster-knoten-ohne-agent:${eintrag.cluster}:${name}`,
+      regel: "cluster-knoten-ohne-agent",
+      schwere: "WARNUNG" as AlertSchwere,
+      titel: "Cluster-Knoten ohne Agent",
+      beschreibung: `${name} gehört zum Cluster ${eintrag.cluster} (gemeldet von ${eintrag.melder.hostname}), meldet sich aber nicht – dort fehlt der Agent`,
+      hostId: eintrag.melder.id,
+      kundeId: eintrag.melder.kundeId,
+      laufzeitId: null,
+    }));
+  },
+};
+
 const proxmoxRechnungFaellig: Regel = {
   name: "proxmox-rechnung-faellig",
   beschreibung: "Proxmox-Rechnung ist unbezahlt und wird fällig",
@@ -378,6 +413,7 @@ export const REGELN: Regel[] = [
   serverIdGeaendert,
   keyMehrfach,
   hostOhneKunde,
+  clusterKnotenOhneAgent,
   proxmoxRechnungFaellig,
   kundenrechnungFehlt,
   kundenrechnungUnbezahlt,

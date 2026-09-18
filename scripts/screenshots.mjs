@@ -2,25 +2,35 @@
 /**
  * Erzeugt die Bilder für das Handbuch (docs/anleitung/bilder/).
  *
- *   npm run screenshots            # heller Modus, Desktop
- *   npm run screenshots -- --alle  # zusätzlich dunkler Modus und Mobilansicht
+ *   npm run screenshots                       # heller Modus, Desktop
+ *   npm run screenshots -- --alle             # zusätzlich dunkler Modus und Mobilansicht
+ *   npm run screenshots -- --seite name=/pfad # zusätzlich eine bestimmte Seite
  *
  * Voraussetzung: Das Dashboard läuft (npm start) und die Datenbank enthält Daten.
  * Die Anmeldung erledigt das Skript selbst, indem es ein Sitzungs-Cookie erzeugt
  * und in ein eigenes Firefox-Profil schreibt – so bleibt der Schutz der Anwendung unangetastet.
  */
 
-import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { spawn } from "node:child_process";
+import { createServer } from "node:http";
+import { existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import { request as httpAnfrage } from "node:http";
 import { SignJWT } from "jose";
 import "dotenv/config";
 
 const BASIS = process.env.SCREENSHOT_URL ?? "http://localhost:3000";
 const ZIEL = path.join(process.cwd(), "docs", "anleitung", "bilder");
 const ALLE = process.argv.includes("--alle");
+
+/** Zusätzliche Seiten von der Befehlszeile: --seite name=/pfad */
+const ZUSATZ = process.argv
+  .filter((wert, i) => process.argv[i - 1] === "--seite")
+  .map((eintrag) => {
+    const [name, ...rest] = eintrag.split("=");
+    return { name, pfad: rest.join("="), titel: "zusätzlich" };
+  });
 
 // Firefox aus dem Snap-Paket kommt nicht an versteckte Verzeichnisse – daher im Home sichtbar ablegen.
 const PROFIL_BASIS = path.join(homedir(), "proxledger-screenshots");
@@ -60,8 +70,40 @@ async function sitzungsToken() {
     .sign(new TextEncoder().encode(geheimnis));
 }
 
-/** Legt ein frisches Profil mit Sitzungs-Cookie und gewünschtem Farbschema an. */
-function profilVorbereiten(name, token, dunkel) {
+/**
+ * Kleiner Vermittler vor dem Dashboard: Er reicht jede Anfrage weiter und hängt die Sitzung
+ * als Kopfzeile an. Damit braucht der Browser kein Cookie – das Einschleusen in das Firefox-Profil
+ * erwies sich als unzuverlässig (Firefox verwirft fremd erzeugte Cookie-Dateien stillschweigend,
+ * die Aufnahmen zeigten dann kommentarlos die Anmeldeseite).
+ */
+function vermittlerStarten(token) {
+  const ziel = new URL(BASIS);
+
+  const server = createServer((anfrage, antwort) => {
+    const weiterleitung = {
+      hostname: ziel.hostname,
+      port: ziel.port || 80,
+      path: anfrage.url,
+      method: anfrage.method,
+      headers: { ...anfrage.headers, host: ziel.host, cookie: `pl_sitzung=${token}` },
+    };
+
+    const verbindung = httpAnfrage(weiterleitung, (antwortVomServer) => {
+      antwort.writeHead(antwortVomServer.statusCode ?? 502, antwortVomServer.headers);
+      antwortVomServer.pipe(antwort);
+    });
+
+    verbindung.on("error", () => antwort.writeHead(502).end("Dashboard nicht erreichbar"));
+    anfrage.pipe(verbindung);
+  });
+
+  return new Promise((fertig) => {
+    server.listen(0, "127.0.0.1", () => fertig({ server, port: server.address().port }));
+  });
+}
+
+/** Legt ein Profil mit dem gewünschten Farbschema an. */
+function profilVorbereiten(name, dunkel) {
   const verzeichnis = path.join(PROFIL_BASIS, name);
   rmSync(verzeichnis, { recursive: true, force: true });
   mkdirSync(verzeichnis, { recursive: true });
@@ -76,55 +118,33 @@ function profilVorbereiten(name, token, dunkel) {
     ].join("\n"),
   );
 
-  const { hostname, protocol } = new URL(BASIS);
-  const datenbank = new DatabaseSync(path.join(verzeichnis, "cookies.sqlite"));
-  datenbank.exec(`
-    CREATE TABLE moz_cookies (
-      id INTEGER PRIMARY KEY, originAttributes TEXT NOT NULL DEFAULT '', name TEXT, value TEXT,
-      host TEXT, path TEXT, expiry INTEGER, lastAccessed INTEGER, creationTime INTEGER,
-      isSecure INTEGER, isHttpOnly INTEGER, inBrowserElement INTEGER DEFAULT 0,
-      sameSite INTEGER DEFAULT 0, schemeMap INTEGER DEFAULT 0,
-      isPartitionedAttributeSet INTEGER DEFAULT 0, updateTime INTEGER DEFAULT 0,
-      CONSTRAINT moz_uniqueid UNIQUE (name, host, path, originAttributes)
-    )`);
-
-  const jetzt = Date.now();
-  datenbank
-    .prepare(
-      `INSERT INTO moz_cookies
-       (originAttributes,name,value,host,path,expiry,lastAccessed,creationTime,isSecure,isHttpOnly,inBrowserElement,sameSite,schemeMap,isPartitionedAttributeSet,updateTime)
-       VALUES ('', 'pl_sitzung', ?, ?, '/', ?, ?, ?, ?, 1, 0, 1, ?, 0, ?)`,
-    )
-    .run(
-      token,
-      hostname,
-      Math.floor(jetzt / 1000) + 3600,
-      jetzt * 1000,
-      jetzt * 1000,
-      protocol === "https:" ? 1 : 0,
-      protocol === "https:" ? 2 : 1,
-      jetzt * 1000,
-    );
-  datenbank.close();
-
   return verzeichnis;
 }
 
-function aufnehmen(profil, pfad, datei, breite, hoehe) {
-  execFileSync(
-    "firefox",
-    [
-      "--profile",
-      profil,
-      "--headless",
-      "--window-size",
-      `${breite},${hoehe}`,
-      "--screenshot",
-      datei,
-      `${BASIS}${pfad}`,
-    ],
-    { stdio: "ignore", timeout: 120_000 },
-  );
+/**
+ * Nimmt eine Seite auf. Bewusst asynchron: Der Vermittler läuft im selben Prozess, und ein
+ * blockierender Aufruf würde ihn währenddessen stumm schalten – Firefox liefe in die Zeitüberschreitung.
+ */
+function aufnehmen(profil, pfad, datei, breite, hoehe, adresse) {
+  return new Promise((fertig, fehlgeschlagen) => {
+    const vorgang = spawn(
+      "firefox",
+      [
+        "--profile",
+        profil,
+        "--headless",
+        "--window-size",
+        `${breite},${hoehe}`,
+        "--screenshot",
+        datei,
+        `${adresse}${pfad}`,
+      ],
+      { stdio: "ignore", timeout: 120_000 },
+    );
+
+    vorgang.on("error", fehlgeschlagen);
+    vorgang.on("close", () => fertig());
+  });
 }
 
 async function main() {
@@ -133,35 +153,47 @@ async function main() {
 
   mkdirSync(ZIEL, { recursive: true });
   const token = await sitzungsToken();
+  const { server, port } = await vermittlerStarten(token);
+  const adresse = `http://127.0.0.1:${port}`;
 
-  const hell = profilVorbereiten("hell", token, false);
+  const hell = profilVorbereiten("hell", false);
   console.log(`Bilder nach ${ZIEL}`);
 
   // Die Anmeldeseite zeigt sich auch mit gültiger Sitzung, sie ist öffentlich.
-  aufnehmen(hell, "/login", path.join(ZIEL, "login.png"), 1280, 900);
+  await aufnehmen(hell, "/login", path.join(ZIEL, "login.png"), 1280, 900, BASIS);
   console.log("  login.png");
 
-  for (const seite of SEITEN) {
-    aufnehmen(hell, seite.pfad, path.join(ZIEL, `${seite.name}.png`), 1680, 1150);
+  for (const seite of [...SEITEN, ...ZUSATZ]) {
+    await aufnehmen(hell, seite.pfad, path.join(ZIEL, `${seite.name}.png`), 1680, 1150, adresse);
     console.log(`  ${seite.name}.png – ${seite.titel}`);
   }
 
   if (ALLE) {
-    const dunkel = profilVorbereiten("dunkel", token, true);
+    const dunkel = profilVorbereiten("dunkel", true);
     for (const seite of ["dashboard", "hosts", "rechnungen", "warnungen"]) {
       const eintrag = SEITEN.find((s) => s.name === seite);
-      aufnehmen(dunkel, eintrag.pfad, path.join(ZIEL, `${seite}-dunkel.png`), 1680, 1150);
+      await aufnehmen(dunkel, eintrag.pfad, path.join(ZIEL, `${seite}-dunkel.png`), 1680, 1150, adresse);
       console.log(`  ${seite}-dunkel.png`);
     }
 
     for (const seite of ["dashboard", "hosts"]) {
       const eintrag = SEITEN.find((s) => s.name === seite);
-      aufnehmen(hell, eintrag.pfad, path.join(ZIEL, `mobil-${seite}.png`), 390, 1500);
+      await aufnehmen(hell, eintrag.pfad, path.join(ZIEL, `mobil-${seite}.png`), 390, 1500, adresse);
       console.log(`  mobil-${seite}.png`);
     }
   }
 
+  server.close();
   if (existsSync(PROFIL_BASIS)) rmSync(PROFIL_BASIS, { recursive: true, force: true });
+
+  // Sicherung gegen stillen Fehlschlag: Alle Aufnahmen gleich groß heißt, jede zeigt die Anmeldeseite.
+  const groessen = SEITEN.map((seite) => statSync(path.join(ZIEL, `${seite.name}.png`)).size);
+  if (new Set(groessen).size === 1) {
+    throw new Error(
+      "Alle Aufnahmen sind gleich groß – vermutlich zeigt jede die Anmeldeseite. Sitzung prüfen.",
+    );
+  }
+
   console.log("Fertig.");
 }
 

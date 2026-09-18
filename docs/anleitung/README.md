@@ -11,6 +11,7 @@ auch mit Hosts hinter NAT.
 2. [Erste Anmeldung](#2-erste-anmeldung)
 3. [Agent auf einem Host ausrollen](#3-agent-auf-einem-host-ausrollen)
 4. [Hosts einem Kunden zuweisen](#4-hosts-einem-kunden-zuweisen)
+4a. [Cluster](#4a-cluster)
 5. [Kunden und Standorte pflegen](#5-kunden-und-standorte-pflegen)
 6. [Laufzeiten und Rechnungen](#6-laufzeiten-und-rechnungen)
 7. [Warnungen](#7-warnungen)
@@ -154,6 +155,22 @@ genau die Zuordnung, die im Proxmox-Shop fehlt.
 
 Alle Filter stehen in der Adresse: Eine gefilterte Liste lässt sich als Lesezeichen speichern oder
 weitergeben, und der Zurück-Knopf funktioniert wie erwartet.
+
+---
+
+## 4a. Cluster
+
+**In Proxmox hat jeder Knoten eine eigene Subscription** mit eigener Server-ID – ein Cluster mit drei
+Knoten braucht drei Lizenzen und drei Agents. Ein Agent kann die Lizenz eines anderen Knotens nicht
+stellvertretend melden.
+
+Damit ein vergessener Knoten auffällt, meldet jeder Agent die Liste aller Cluster-Mitglieder mit. Das
+Dashboard vergleicht sie mit den Hosts, die sich tatsächlich melden:
+
+![Host in einem Cluster](bilder/host-detail-cluster.png)
+
+Hier laufen auf `hv-rz5-pve-02` und `hv-rz5-pve-03` noch keine Agents – das Dashboard sagt es zweimal
+deutlich. Sobald dort installiert wird, schließen sich die Warnungen von selbst.
 
 ---
 

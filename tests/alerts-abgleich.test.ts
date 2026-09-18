@@ -30,7 +30,7 @@ describe.runIf(datenbankVerfuegbar)("Abgleich der Warnungen", () => {
 
   it("legt die Standard-Einstellungen für alle Regeln an", async () => {
     const einstellungen = await testPrisma.warnregelEinstellung.findMany();
-    expect(einstellungen).toHaveLength(10);
+    expect(einstellungen).toHaveLength(11);
     const ablauf = einstellungen.find((e) => e.regel === "subscription-laeuft-ab");
     expect(ablauf?.schwellwerte).toEqual({ tage: [30, 14, 7] });
   });

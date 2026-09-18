@@ -17,6 +17,17 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.14.0] – 2026-09-18
+
+### Hinzugefügt
+- Der Agent meldet die Mitglieder seines Proxmox-Clusters; das Dashboard warnt bei Knoten ohne eigenen Agent (#022)
+- Host-Detail zeigt alle Cluster-Knoten mit Zustand „meldet sich“ oder „kein Agent“ (#022)
+- Wartezeiten zwischen Sendeversuchen über `PROXLEDGER_WARTEZEITEN` einstellbar, damit sich der Zwischenspeicher testen lässt (#018)
+
+### Behoben
+- Die Produktversion enthielt bei Proxmox VE den Kernel ein zweites Mal (#018)
+- Die Bilder des Handbuchs zeigten allesamt die Anmeldeseite: Firefox verwirft fremd erzeugte Cookie-Dateien stillschweigend. Das Skript nutzt jetzt einen lokalen Vermittler, der die Sitzung mitschickt, und bricht ab, wenn alle Aufnahmen gleich groß sind (#016)
+
 ## [0.13.1] – 2026-09-17
 
 ### Sicherheit

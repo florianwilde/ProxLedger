@@ -195,6 +195,7 @@ export async function verarbeiteReport(
           serverId: serverId ?? host.serverId,
           clusterName: eingabe.host.clusterName ?? host.clusterName,
           nodeName: eingabe.host.nodeName ?? host.nodeName,
+          clusterMitglieder: eingabe.host.clusterMitglieder ?? host.clusterMitglieder,
           ips: eingabe.host.ips ?? host.ips,
           sockets: eingabe.host.sockets ?? host.sockets,
           cpuModell: eingabe.host.cpuModell ?? host.cpuModell,
