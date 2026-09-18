@@ -76,10 +76,16 @@ Traefik liegen in [`deploy/reverse-proxy/`](../../deploy/reverse-proxy/).
 
 ![Anmeldeseite](bilder/login.png)
 
-Anmelden mit der E-Mail-Adresse und dem Passwort aus der `.env`. Ist ein Anmeldedienst über OIDC
-eingerichtet (`OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`), erscheint zusätzlich ein Knopf
-„Mit authentik anmelden“. Der lokale Zugang bleibt absichtlich immer nutzbar – falls der Anmeldedienst
-einmal ausfällt, kommst du trotzdem hinein.
+Es gibt drei gleichwertige Wege hinein:
+
+- **Passkey** – der Knopf ganz oben. Der Browser fragt nach Fingerabdruck, Gesicht oder PIN. Anlegen
+  lässt sich einer unter *Meine Passkeys* ([Kapitel 9b](#9b-benutzer-rollen-und-passkeys)).
+- **Passwort** – E-Mail-Adresse und Passwort aus der `.env` bzw. aus der Benutzerverwaltung.
+- **OIDC** – ist ein Anmeldedienst eingerichtet, erscheint zusätzlich „Mit authentik anmelden“
+  (Einrichtung: [docs/betrieb/authentik.md](../betrieb/authentik.md)).
+
+Der lokale Zugang bleibt absichtlich immer nutzbar – falls der Anmeldedienst einmal ausfällt, kommst du
+trotzdem hinein.
 
 Nach der Anmeldung landest du auf dem Dashboard:
 
