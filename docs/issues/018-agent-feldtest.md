@@ -59,4 +59,5 @@ funktioniert (Report gepuffert bei unerreichbarem Dashboard, beim nächsten Lauf
    sonst dauert ein Test des Zwischenspeichers zehneinhalb Minuten.
 6. **Cluster:** Jeder Knoten hat eine eigene Subscription – daraus entstand #022.
 
-**Noch offen:** PBS und PMG (keine Hosts verfügbar), Uninstall auf einem echten Host.
+**Noch offen:** PBS und PMG – dafür ist #023 angelegt. PBS-Hosts stellt Florian bereit, allerdings nur
+unlizenziert; für PMG gibt es derzeit keinen Host. Ebenfalls offen: ein echter Uninstall-Durchlauf.
