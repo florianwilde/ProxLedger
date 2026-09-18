@@ -122,12 +122,22 @@ sie sich mit eigenen Tokens ausweisen.
 - **Lokaler Zugang:** E-Mail und Passwort aus dem Seed (`ADMIN_EMAIL`, `ADMIN_PASSWORD`). Fünf Fehlversuche
   je Kennung und Viertelstunde, danach Sperre (einstellbar unter *Einstellungen → System*).
   Benutzer sperren oder Passwort setzen: `npm run benutzer -- sperren <email>`.
-- **OIDC (z. B. authentik):** `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` setzen. Rückkehradresse
+- **Passkey:** passwortlos über WebAuthn, mehrere je Konto, Verwaltung unter *Meine Passkeys*. Setzt HTTPS voraus (außer `localhost`).
+- **OIDC (z. B. authentik):** `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` setzen – Schritt für Schritt in [docs/betrieb/authentik.md](docs/betrieb/authentik.md). Rückkehradresse
   ist `<APP_URL>/api/auth/oidc/callback`. Ohne diese Werte erscheint nur der lokale Zugang – der bleibt
   absichtlich immer nutzbar, falls der Anmeldedienst ausfällt. Unter *Einstellungen → System* lässt sich
   einschränken, welche E-Mail-Domänen zugelassen sind und ob unbekannte Konten angelegt werden dürfen.
 - **`APP_SECRET`** (mindestens 32 Zeichen) signiert die Sitzungs-Cookies. Ändert sich der Wert, sind alle
   Sitzungen ungültig.
+
+## Einrichtung im Betrieb
+
+| Anleitung | Inhalt |
+|---|---|
+| [Inbetriebnahme](docs/betrieb/inbetriebnahme.md) | von null zum meldenden Host, in der richtigen Reihenfolge |
+| [Reverse Proxy](docs/betrieb/reverse-proxy.md) | HTTPS mit nginx Proxy Manager, privates Netz mit netbird |
+| [authentik](docs/betrieb/authentik.md) | Anmeldung über OIDC, samt Fehlerbildern |
+| [Sicherung](docs/betrieb/sicherung.md) | was gesichert wird – und wie man es zurückspielt |
 
 ## Einstellungen
 
