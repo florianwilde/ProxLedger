@@ -28,4 +28,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#022](022-cluster-abgleich.md) | Cluster-Abgleich | erledigt | v0.14.0 | 3 h | 0 h 25 min |
 | [#023](023-feldtest-pbs-pmg.md) | Feldtest auf PBS und PMG | offen | v1.0.0 | 2 h | 0 h 35 min (PBS erledigt, PMG offen) |
 | [#024](024-owasp-haertung.md) | Härtung nach OWASP | erledigt | v0.15.0 | 4 h | 0 h 45 min |
-| | **Summe** | | | **125 h** | **10 h 28 min** |
+| [#025](025-einstellungen.md) | Einstellungen im Dashboard | erledigt | v0.16.0 | 5 h | 1 h 10 min |
+| | **Summe** | | | **130 h** | **11 h 38 min** |

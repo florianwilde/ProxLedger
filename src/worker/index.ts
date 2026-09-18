@@ -2,6 +2,7 @@ import { Cron } from "croner";
 import "dotenv/config";
 import { prisma } from "@/lib/db";
 import { alertsAbgleichen, warnregelnSicherstellen } from "@/server/alerts/abgleich";
+import { altdatenLoeschen } from "@/server/aufraeumen";
 import { neueAlertsMelden, zusammenfassungSenden } from "@/server/notifications/versand";
 
 /**
@@ -14,6 +15,7 @@ import { neueAlertsMelden, zusammenfassungSenden } from "@/server/notifications/
 const ZEITZONE = "Europe/Berlin";
 const ZEITPLAN = process.env.WORKER_CRON ?? "0 * * * *"; // stündlich zur vollen Stunde
 const ZUSAMMENFASSUNG_ZEITPLAN = process.env.ZUSAMMENFASSUNG_CRON ?? "0 7 * * *"; // täglich 07:00 Uhr
+const AUFRAEUM_ZEITPLAN = process.env.AUFRAEUM_CRON ?? "30 3 * * *"; // nachts, wenn nichts los ist
 
 function protokoll(nachricht: string) {
   console.log(`[${new Date().toISOString()}] ${nachricht}`);
@@ -60,10 +62,21 @@ async function zusammenfassung() {
   }
 }
 
+async function aufraeumen() {
+  try {
+    const ergebnis = await altdatenLoeschen();
+    if (ergebnis.reports > 0 || ergebnis.protokoll > 0) {
+      protokoll(`Aufgeräumt: ${ergebnis.reports} Reports, ${ergebnis.protokoll} Protokolleinträge gelöscht.`);
+    }
+  } catch (fehler) {
+    console.error("Aufräumen fehlgeschlagen:", fehler);
+  }
+}
+
 async function start() {
   await warnregelnSicherstellen();
   protokoll(
-    `Worker gestartet. Auswertung "${ZEITPLAN}", Zusammenfassung "${ZUSAMMENFASSUNG_ZEITPLAN}" (${ZEITZONE}).`,
+    `Worker gestartet. Auswertung "${ZEITPLAN}", Zusammenfassung "${ZUSAMMENFASSUNG_ZEITPLAN}", Aufräumen "${AUFRAEUM_ZEITPLAN}" (${ZEITZONE}).`,
   );
 
   // Einmal sofort, damit nach einem Neustart nicht bis zur nächsten vollen Stunde gewartet wird.
@@ -72,6 +85,7 @@ async function start() {
   const aufgaben = [
     new Cron(ZEITPLAN, { timezone: ZEITZONE }, durchlauf),
     new Cron(ZUSAMMENFASSUNG_ZEITPLAN, { timezone: ZEITZONE }, zusammenfassung),
+    new Cron(AUFRAEUM_ZEITPLAN, { timezone: ZEITZONE }, aufraeumen),
   ];
 
   for (const signal of ["SIGINT", "SIGTERM"] as const) {

@@ -48,6 +48,7 @@ const SEITEN = [
   { name: "tokens", pfad: "/einstellungen/tokens", titel: "Agent-Tokens" },
   { name: "benachrichtigungen", pfad: "/einstellungen/benachrichtigungen", titel: "Benachrichtigungen" },
   { name: "audit", pfad: "/einstellungen/audit", titel: "Protokoll" },
+  { name: "system", pfad: "/einstellungen/system", titel: "Systemeinstellungen" },
 ];
 
 async function sitzungsToken() {

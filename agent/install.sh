@@ -16,9 +16,17 @@ set -o nounset
 set -o pipefail
 
 DASHBOARD_URL="${PROXLEDGER_URL:-@@DASHBOARD_URL@@}"
+# Melderhythmus und Streuung setzt das Dashboard beim Ausliefern ein (Einstellungen → System).
+# Wird das Skript unverändert aus dem Quelltext ausgeführt, bleiben die Platzhalter stehen;
+# dann gelten die Vorgaben.
+TIMER_ONCALENDAR="@@TIMER_ONCALENDAR@@"
+TIMER_STREUUNG="@@TIMER_STREUUNG@@"
+case "$TIMER_ONCALENDAR" in *@@*) TIMER_ONCALENDAR="daily" ;; esac
+case "$TIMER_STREUUNG" in *@@*) TIMER_STREUUNG="4h" ;; esac
 TOKEN=""
 CA_CERT=""
-AUTO_UPDATE="no"
+AUTO_UPDATE="@@AUTO_UPDATE@@"
+case "$AUTO_UPDATE" in yes | no) ;; *) AUTO_UPDATE="no" ;; esac
 AKTION="install"
 
 CONFIG_VERZEICHNIS="/etc/proxledger"
@@ -202,14 +210,14 @@ ProtectSystem=full
 ProtectHome=true
 UNIT
 
-cat >"${SYSTEMD_VERZEICHNIS}/proxledger.timer" <<'UNIT'
+cat >"${SYSTEMD_VERZEICHNIS}/proxledger.timer" <<UNIT
 [Unit]
-Description=Täglicher ProxLedger-Report
+Description=ProxLedger-Report
 
 [Timer]
-OnCalendar=daily
-# Verteilt die Meldungen aller Hosts über vier Stunden.
-RandomizedDelaySec=4h
+OnCalendar=${TIMER_ONCALENDAR}
+# Verteilt die Meldungen aller Hosts über diesen Zeitraum.
+RandomizedDelaySec=${TIMER_STREUUNG}
 Persistent=true
 Unit=proxledger.service
 
@@ -219,7 +227,7 @@ UNIT
 
 systemctl daemon-reload
 systemctl enable --now proxledger.timer >/dev/null
-erfolg "systemd-Timer aktiviert (täglich, zufällig um bis zu 4 Stunden versetzt)."
+erfolg "systemd-Timer aktiviert (${TIMER_ONCALENDAR}, zufällig um bis zu ${TIMER_STREUUNG} versetzt)."
 
 hinweis "Sende ersten Report …"
 if "$AGENT_PFAD" --report; then

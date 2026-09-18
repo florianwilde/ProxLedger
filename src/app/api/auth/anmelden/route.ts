@@ -2,6 +2,7 @@ import { cookies, headers } from "next/headers";
 import { clientIp } from "@/lib/ratelimit";
 import { cookieOptionen, SITZUNGS_COOKIE, sitzungErzeugen } from "@/lib/sitzung";
 import { AnmeldeFehler, mitPasswortAnmelden } from "@/server/auth/benutzer";
+import { einstellungen } from "@/server/einstellungen";
 
 export const dynamic = "force-dynamic";
 
@@ -62,13 +63,17 @@ export async function POST(request: Request) {
     const kopfzeilen = await headers();
     const benutzer = await mitPasswortAnmelden(email, passwort, clientIp(kopfzeilen));
 
-    const token = await sitzungErzeugen({
-      benutzerId: benutzer.id,
-      email: benutzer.email,
-      name: benutzer.name,
-      herkunft: "passwort",
-    });
-    (await cookies()).set(SITZUNGS_COOKIE, token, cookieOptionen());
+    const { sitzungsdauerStunden } = await einstellungen();
+    const token = await sitzungErzeugen(
+      {
+        benutzerId: benutzer.id,
+        email: benutzer.email,
+        name: benutzer.name,
+        herkunft: "passwort",
+      },
+      sitzungsdauerStunden,
+    );
+    (await cookies()).set(SITZUNGS_COOKIE, token, cookieOptionen(sitzungsdauerStunden));
 
     return Response.redirect(new URL(ziel, request.url), 303);
   } catch (fehler) {

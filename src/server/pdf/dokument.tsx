@@ -121,14 +121,17 @@ export function Bericht({
   untertitel,
   children,
   quer = false,
+  firma,
 }: {
   titel: string;
   untertitel?: string;
   children: React.ReactNode;
   quer?: boolean;
+  /** Firmenangaben und Zeitzone aus den Einstellungen (#025). */
+  firma?: { name: string; anschrift: string; email: string; zeitzone: string };
 }) {
   const erstellt = new Intl.DateTimeFormat("de-DE", {
-    timeZone: "Europe/Berlin",
+    timeZone: firma?.zeitzone || "Europe/Berlin",
     dateStyle: "long",
   }).format(new Date());
 
@@ -138,8 +141,11 @@ export function Bericht({
         <View style={stile.kopf} fixed>
           <Logo />
           <View style={stile.kopfText}>
-            <Text style={stile.marke}>ProxLedger</Text>
-            <Text style={stile.untertitel}>Proxmox Subscription Dashboard</Text>
+            <Text style={stile.marke}>{firma?.name || "ProxLedger"}</Text>
+            <Text style={stile.untertitel}>
+              {firma?.anschrift ? firma.anschrift.replace(/\n/g, " · ") : "Proxmox Subscription Dashboard"}
+            </Text>
+            {firma?.email ? <Text style={stile.untertitel}>{firma.email}</Text> : null}
           </View>
         </View>
 

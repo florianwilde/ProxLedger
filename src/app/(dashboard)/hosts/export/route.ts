@@ -3,6 +3,7 @@ import { csvAntwort, csvDatei } from "@/lib/csv";
 import { formatDatum } from "@/lib/format";
 import { Bericht, pdfAntwort, Tabelle } from "@/server/pdf/dokument";
 import { hostListe, type HostFilter } from "@/server/queries/hostliste";
+import { einstellungen } from "@/server/einstellungen";
 
 type ExportHost = Awaited<ReturnType<typeof hostListe>>["hosts"][number];
 
@@ -34,8 +35,12 @@ export async function GET(request: Request) {
   const datum = new Date().toISOString().slice(0, 10);
 
   if (new URL(request.url).searchParams.get("format") === "pdf") {
+    const { firmaName, firmaAnschrift, firmaEmail, zeitzone } = await einstellungen();
+    const firmaAngaben = { name: firmaName, anschrift: firmaAnschrift, email: firmaEmail, zeitzone };
+
     return pdfAntwort(
       Bericht({
+      firma: firmaAngaben,
         titel: "Host-Liste",
         untertitel: `${alle.length} Hosts`,
         quer: true,
