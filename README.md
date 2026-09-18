@@ -3,8 +3,10 @@
 Zentrales Dashboard für den Subscription-Status aller Proxmox-Hosts (VE, Backup Server, Mail Gateway).
 Auf jedem Host meldet ein schlanker Agent täglich per HTTPS seinen Status (Push-Modell) – auch aus Kundennetzen hinter NAT.
 
-> **Status:** in Entwicklung. Der Funktionsumfang steht, der Agent wurde aber noch nicht auf echten
-> Proxmox-Hosts erprobt (#018).
+> **Status:** einsatzbereit. Der Agent ist auf echten Hosts erprobt – Proxmox VE 9.2 mit und ohne
+> Subscription, im Cluster und einzeln, sowie Proxmox Backup Server 4.2 (#018, #023).
+> Ungeprüft: Mail Gateway und eine aktive Subscription auf PBS. Was bis 1.0 fehlt, steht in
+> [docs/roadmap.md](docs/roadmap.md).
 
 ## Schnellstart
 
@@ -20,14 +22,27 @@ docker compose up -d
 Beim ersten Start legt der Dienst `migrate` das Schema an und erzeugt den Administrator aus der `.env`.
 Danach ist das Dashboard unter `APP_URL` erreichbar.
 
-**Auf einem Proxmox-Host** legt der Installer einen fertigen LXC-Container an:
+Aktualisieren geht mit einem Befehl – er sichert vorher, baut neu, migriert und prüft zum Schluss,
+ob das Dashboard wieder antwortet:
 
 ```bash
-bash deploy/lxc-installer.sh
+bash deploy/update.sh
 ```
 
-Er fragt Ressourcen und Netzwerk ab, installiert Docker, holt den Quelltext, erzeugt Zufallspasswörter
-und startet alles. Am Ende stehen Adresse, Benutzer und Passwort auf dem Bildschirm.
+**Auf einem Proxmox-Host** gibt es zwei Wege zu einem fertigen LXC-Container:
+
+```bash
+bash deploy/lxc-installer.sh          # eigener Installer: Container mit Docker darin
+```
+
+```bash
+# Nach Art der Proxmox VE Helper-Scripts: Container mit Node und PostgreSQL direkt darin
+bash -c "$(curl -fsSL https://<git>/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
+```
+
+Der zweite Weg folgt den Konventionen von [community-scripts.org](https://community-scripts.org) und
+braucht kein Docker; Einzelheiten und die Voraussetzungen für eine Einreichung stehen in
+[deploy/community-scripts/README.md](deploy/community-scripts/README.md).
 
 ### Agent ausrollen
 
@@ -105,12 +120,27 @@ Die Oberfläche ist vollständig geschützt; die Agent-API und die Skript-Auslie
 sie sich mit eigenen Tokens ausweisen.
 
 - **Lokaler Zugang:** E-Mail und Passwort aus dem Seed (`ADMIN_EMAIL`, `ADMIN_PASSWORD`). Fünf Fehlversuche
-  je Kennung und Viertelstunde, danach Sperre.
+  je Kennung und Viertelstunde, danach Sperre (einstellbar unter *Einstellungen → System*).
+  Benutzer sperren oder Passwort setzen: `npm run benutzer -- sperren <email>`.
 - **OIDC (z. B. authentik):** `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` setzen. Rückkehradresse
   ist `<APP_URL>/api/auth/oidc/callback`. Ohne diese Werte erscheint nur der lokale Zugang – der bleibt
-  absichtlich immer nutzbar, falls der Anmeldedienst ausfällt.
+  absichtlich immer nutzbar, falls der Anmeldedienst ausfällt. Unter *Einstellungen → System* lässt sich
+  einschränken, welche E-Mail-Domänen zugelassen sind und ob unbekannte Konten angelegt werden dürfen.
 - **`APP_SECRET`** (mindestens 32 Zeichen) signiert die Sitzungs-Cookies. Ändert sich der Wert, sind alle
   Sitzungen ungültig.
+
+## Einstellungen
+
+Die meisten Betriebswerte stehen unter *Einstellungen → System* und wirken sofort: Dashboard-Adresse,
+Melderhythmus und Selbstaktualisierung der Agents, Steuersatz, Zahlungsziel und Aufschlag,
+Sitzungsdauer und Anmeldeversuche, OIDC-Beschränkungen, Aufbewahrungsfristen sowie Firmenangaben und
+Zeitzone für die PDF-Ausgaben.
+
+In der Umgebung bleiben nur `APP_SECRET` und `DATABASE_URL` – beide werden gebraucht, bevor die
+Anwendung die Datenbank lesen kann.
+
+Wie die Anwendung gegen die OWASP Top 10 dasteht (einschließlich der Punkte, die bewusst offen
+bleiben), steht in [docs/sicherheit.md](docs/sicherheit.md).
 
 ## Exporte
 

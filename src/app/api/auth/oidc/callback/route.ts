@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { eigeneAdresse } from "@/lib/adresse";
 import { cookieOptionen, SITZUNGS_COOKIE, sitzungErzeugen } from "@/lib/sitzung";
 import { mitOidcAnmelden } from "@/server/auth/benutzer";
 import { anmeldungAbschliessen, oidcEinstellungen } from "@/server/auth/oidc";
@@ -18,8 +19,10 @@ export async function GET(request: Request) {
     speicher.delete(name);
   }
 
+  const { dashboardUrl } = await systemEinstellungen();
+
   if (!einstellungen || !pruefwert || !zustand) {
-    return Response.redirect(new URL("/login?fehler=oidc", request.url), 302);
+    return Response.redirect(eigeneAdresse(request, "/login?fehler=oidc", dashboardUrl), 302);
   }
 
   try {
@@ -38,9 +41,9 @@ export async function GET(request: Request) {
     );
     speicher.set(SITZUNGS_COOKIE, token, cookieOptionen(sitzungsdauerStunden));
 
-    return Response.redirect(new URL(ziel.startsWith("/") ? ziel : "/", request.url), 302);
+    return Response.redirect(eigeneAdresse(request, ziel.startsWith("/") ? ziel : "/", dashboardUrl), 302);
   } catch (fehler) {
     console.error("OIDC-Rückkehr fehlgeschlagen:", fehler);
-    return Response.redirect(new URL("/login?fehler=oidc", request.url), 302);
+    return Response.redirect(eigeneAdresse(request, "/login?fehler=oidc", dashboardUrl), 302);
   }
 }

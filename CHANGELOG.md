@@ -17,6 +17,20 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.17.0] – 2026-09-19
+
+### Hinzugefügt
+- `deploy/update.sh`: sichert, baut neu, migriert und prüft, ob das Dashboard wieder antwortet (#026)
+- Installationsskripte nach Art der Proxmox VE Helper-Scripts unter `deploy/community-scripts/` – Container mit Node und PostgreSQL, ohne Docker (#026)
+- `docs/roadmap.md`: was bis 1.0.0 fehlt und was danach lohnt (#026)
+- Zustandsprüfung für den Worker im Docker-Stack (#026)
+
+### Behoben
+- Nach der Anmeldung führte die Weiterleitung im Container auf den internen Containernamen (`http://<container-id>:3000`) statt auf die erreichbare Adresse – hinter einem Reverse Proxy landete man damit im Nichts. Beim Prüfen des Docker-Stapels aufgefallen (#026)
+
+### Geändert
+- README auf den tatsächlichen Stand gebracht: Der Feldtest ist erledigt, der Hinweis „noch nicht erprobt“ war überholt (#026)
+
 ## [0.16.0] – 2026-09-18
 
 ### Hinzugefügt
