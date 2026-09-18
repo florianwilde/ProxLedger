@@ -64,7 +64,7 @@ export async function mitPasswortAnmelden(
  */
 export async function mitOidcAnmelden(subject: string, email: string, name: string): Promise<BenutzerModel> {
   const normalisiert = email.toLowerCase().trim();
-  const { oidcDomaenen, oidcKontenAnlegen } = await einstellungen();
+  const { oidcDomaenen, oidcKontenAnlegen, oidcStandardRolle } = await einstellungen();
 
   if (!domaeneErlaubt(normalisiert, oidcDomaenen)) {
     await protokolliere("anmeldung.abgelehnt", "Benutzer", null, { email: normalisiert, grund: "domaene" });
@@ -94,6 +94,7 @@ export async function mitOidcAnmelden(subject: string, email: string, name: stri
           email: normalisiert,
           name: name || normalisiert,
           oidcSubject: subject,
+          rolle: oidcStandardRolle,
           letzterLoginAm: new Date(),
         },
       });
@@ -101,6 +102,7 @@ export async function mitOidcAnmelden(subject: string, email: string, name: stri
   await protokolliere("anmeldung.erfolgreich", "Benutzer", benutzer.id, {
     weg: "oidc",
     neuAngelegt: vorhanden === null,
+    ...(vorhanden === null ? { rolle: oidcStandardRolle } : {}),
   });
 
   return benutzer;

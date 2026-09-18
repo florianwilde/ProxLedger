@@ -1,5 +1,6 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { darfEinkaufSehen, sichtbarerKunde } from "@/server/auth/sitzungspflicht";
 
 export interface RechnungsFilter {
   status?: "offen" | "erledigt" | "alle" | "vorschlaege";
@@ -58,8 +59,12 @@ function bedingung(filter: RechnungsFilter): Prisma.LaufzeitWhereInput {
 }
 
 export async function rechnungsListe(filter: RechnungsFilter) {
+  const nurKunde = await sichtbarerKunde();
+  const einkaufSichtbar = await darfEinkaufSehen();
+  const where = nurKunde ? { AND: [bedingung(filter), { host: { kundeId: nurKunde } }] } : bedingung(filter);
+
   const laufzeiten = await prisma.laufzeit.findMany({
-    where: bedingung(filter),
+    where,
     orderBy: [{ start: "desc" }],
     include: {
       host: { select: { id: true, hostname: true, kunde: { select: { id: true, name: true } } } },
@@ -69,7 +74,10 @@ export async function rechnungsListe(filter: RechnungsFilter) {
   });
 
   const zeilen = laufzeiten.map((laufzeit) => {
-    const einkauf = laufzeit.proxmoxPosition ? Number(laufzeit.proxmoxPosition.nettoBetrag) : null;
+    // Einkaufspreis und Marge sind nichts für ein Kundenkonto. Sie werden hier entfernt,
+    // nicht erst in der Anzeige – sonst stünden sie im ausgelieferten HTML.
+    const einkauf =
+      einkaufSichtbar && laufzeit.proxmoxPosition ? Number(laufzeit.proxmoxPosition.nettoBetrag) : null;
     const verkauf = laufzeit.kundenPosition ? Number(laufzeit.kundenPosition.nettoBetrag) : null;
 
     return {
@@ -81,10 +89,11 @@ export async function rechnungsListe(filter: RechnungsFilter) {
       start: laufzeit.start,
       ende: laufzeit.ende,
       vorschlag: laufzeit.status === "VORSCHLAG",
-      einkaufNummer: laufzeit.proxmoxPosition?.rechnung.nummer ?? null,
+      einkaufNummer: einkaufSichtbar ? (laufzeit.proxmoxPosition?.rechnung.nummer ?? null) : null,
       einkaufBetrag: einkauf,
-      einkaufBezahlt: laufzeit.proxmoxPosition ? laufzeit.proxmoxPosition.rechnung.bezahlt : null,
-      einkaufFaelligAm: laufzeit.proxmoxPosition?.rechnung.faelligAm ?? null,
+      einkaufBezahlt:
+        einkaufSichtbar && laufzeit.proxmoxPosition ? laufzeit.proxmoxPosition.rechnung.bezahlt : null,
+      einkaufFaelligAm: einkaufSichtbar ? (laufzeit.proxmoxPosition?.rechnung.faelligAm ?? null) : null,
       verkaufNummer: laufzeit.kundenPosition?.rechnung.nummer ?? null,
       verkaufBetrag: verkauf,
       verkaufErstellt: laufzeit.kundenPosition?.rechnung.erstellt ?? false,
@@ -111,15 +120,22 @@ export type RechnungsZeile = Awaited<ReturnType<typeof rechnungsListe>>["zeilen"
 
 /** Jahre, für die Laufzeiten vorliegen – für den Zeitraum-Filter. */
 export async function laufzeitJahre(): Promise<string[]> {
-  const laufzeiten = await prisma.laufzeit.findMany({ select: { start: true } });
+  const nurKunde = await sichtbarerKunde();
+  const laufzeiten = await prisma.laufzeit.findMany({
+    where: nurKunde ? { host: { kundeId: nurKunde } } : {},
+    select: { start: true },
+  });
   return [...new Set(laufzeiten.map((l) => String(l.start.getUTCFullYear())))].sort((a, b) =>
     b.localeCompare(a),
   );
 }
 
 export async function laufzeitDetail(id: string) {
-  return prisma.laufzeit.findUnique({
-    where: { id },
+  const nurKunde = await sichtbarerKunde();
+  const einkaufSichtbar = await darfEinkaufSehen();
+
+  const laufzeit = await prisma.laufzeit.findFirst({
+    where: nurKunde ? { id, host: { kundeId: nurKunde } } : { id },
     include: {
       host: {
         select: {
@@ -145,8 +161,14 @@ export async function laufzeitDetail(id: string) {
       },
     },
   });
+
+  if (!laufzeit) return null;
+  // Für Kundenkonten fällt der gesamte Einkaufsteil weg.
+  return einkaufSichtbar ? laufzeit : { ...laufzeit, proxmoxPosition: null };
 }
 
 export async function anzahlVorschlaege() {
+  // Vorschläge sind Arbeitsvorrat für das Systemhaus, kein Thema für Kundenkonten.
+  if (await sichtbarerKunde()) return 0;
   return prisma.laufzeit.count({ where: { status: "VORSCHLAG" } });
 }

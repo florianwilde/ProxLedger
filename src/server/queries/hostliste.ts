@@ -1,6 +1,7 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { meldungsGrenze } from "./hosts";
+import { sichtbarerKunde } from "@/server/auth/sitzungspflicht";
 
 export interface HostFilter {
   q?: string;
@@ -98,7 +99,7 @@ const SORTIERUNGEN: Record<string, Prisma.HostOrderByWithRelationInput> = {
 };
 
 export async function hostListe(filter: HostFilter, jetzt: Date = new Date()) {
-  const where = bedingung(filter, jetzt);
+  const where = await eingeschraenkt(bedingung(filter, jetzt));
   const seite = Math.max(1, filter.seite ?? 1);
   const orderBy = SORTIERUNGEN[filter.sortierung ?? "hostname"] ?? SORTIERUNGEN.hostname;
 
@@ -133,10 +134,23 @@ export async function hostListe(filter: HostFilter, jetzt: Date = new Date()) {
   };
 }
 
+/**
+ * Schränkt eine Host-Bedingung auf den Kunden ein, dessen Konto angemeldet ist.
+ * Für Admin und Techniker bleibt sie unverändert.
+ */
+export async function eingeschraenkt(where: Prisma.HostWhereInput): Promise<Prisma.HostWhereInput> {
+  const kundeId = await sichtbarerKunde();
+  return kundeId ? { AND: [where, { kundeId }] } : where;
+}
+
 /** Alle Daten der Host-Detailansicht in einem Rutsch. */
 export async function hostMitDetails(id: string) {
-  return prisma.host.findUnique({
-    where: { id },
+  const kundeId = await sichtbarerKunde();
+
+  return prisma.host.findFirst({
+    // findFirst statt findUnique: So lässt sich die Kundenbindung in dieselbe Abfrage legen,
+    // statt den Host erst zu laden und danach wegzuwerfen.
+    where: kundeId ? { id, kundeId } : { id },
     include: {
       kunde: { select: { id: true, name: true } },
       standort: { select: { id: true, name: true, ort: true } },
@@ -161,7 +175,9 @@ export type HostDetail = NonNullable<Awaited<ReturnType<typeof hostMitDetails>>>
 
 /** Auswahllisten für die Filterleiste. */
 export async function filterOptionen() {
+  const kundeId = await sichtbarerKunde();
   const kunden = await prisma.kunde.findMany({
+    where: kundeId ? { id: kundeId } : {},
     orderBy: { name: "asc" },
     select: { id: true, name: true },
   });

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AnmeldeFormular } from "@/components/auth/AnmeldeFormular";
+import { PasskeyAnmeldung } from "@/components/auth/PasskeyAnmeldung";
 import { Logo } from "@/components/Logo";
 import { oidcEinstellungen } from "@/server/auth/oidc";
 
@@ -43,9 +44,13 @@ export default async function AnmeldeSeite({ searchParams }: { searchParams: Suc
                   <i className="bi bi-box-arrow-in-right me-1" aria-hidden="true" />
                   Mit {oidc.bezeichnung} anmelden
                 </Link>
-                <div className="text-center text-body-secondary small mb-3">oder mit Passwort</div>
+                <div className="text-center text-body-secondary small mb-3">oder</div>
               </>
             ) : null}
+
+            <PasskeyAnmeldung ziel={ziel} />
+
+            <div className="text-center text-body-secondary small mb-3">oder mit Passwort</div>
 
             <AnmeldeFormular ziel={ziel} />
           </div>

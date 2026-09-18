@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { SearchDialog, type SuchEintrag } from "./SearchDialog";
+import type { Rolle } from "@/generated/prisma/enums";
+import { ROLLEN_TEXT } from "@/server/auth/rollen";
 
 export interface KopfleistenAlert {
   id: string;
@@ -33,10 +35,12 @@ export function Header({
   alerts,
   suchEintraege,
   benutzer,
+  rolle,
 }: {
   alerts: KopfleistenAlert[];
   suchEintraege: SuchEintrag[];
   benutzer: string;
+  rolle: Rolle;
 }) {
   const [sucheOffen, setSucheOffen] = useState(false);
   const [glockeOffen, setGlockeOffen] = useState(false);
@@ -209,10 +213,12 @@ export function Header({
               <span className="d-none d-sm-inline">{benutzer}</span>
             </button>
             <div className={`dropdown-menu dropdown-menu-end shadow ${benutzerOffen ? "show" : ""}`}>
-              <span className="dropdown-header">Angemeldet als {benutzer}</span>
+              <span className="dropdown-header">
+                Angemeldet als {benutzer} · {ROLLEN_TEXT[rolle]}
+              </span>
               <div className="dropdown-divider" />
-              <Link href="/einstellungen/system" className="dropdown-item">
-                Einstellungen
+              <Link href="/einstellungen/passkeys" className="dropdown-item">
+                Meine Passkeys
               </Link>
               <a className="dropdown-item" href="/api/auth/abmelden">
                 Abmelden

@@ -241,6 +241,23 @@ export function SystemFormular({ werte, appUrl }: { werte: Einstellungen; appUrl
             </div>
 
             <Feld
+              name="oidcStandardRolle"
+              beschriftung="Rolle für neue OIDC-Konten"
+              hinweis="Gilt nur für Konten, die bei der ersten Anmeldung automatisch entstehen."
+            >
+              <select
+                className="form-select"
+                id="oidcStandardRolle"
+                name="oidcStandardRolle"
+                defaultValue={werte.oidcStandardRolle}
+              >
+                <option value="TECHNIKER">Techniker</option>
+                <option value="KUNDE">Kunde</option>
+                <option value="ADMIN">Administrator</option>
+              </select>
+            </Feld>
+
+            <Feld
               name="aufbewahrungReportsTage"
               beschriftung="Reports aufbewahren (Tage)"
               hinweis="0 heißt: unbegrenzt. Der aktuelle Stand jedes Hosts bleibt immer erhalten."

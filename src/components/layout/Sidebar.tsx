@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogoMitSchriftzug } from "@/components/Logo";
+import type { Rolle } from "@/generated/prisma/enums";
+import { darf } from "@/server/auth/rollen";
 
 interface MenuEintrag {
   href: string;
@@ -17,11 +19,13 @@ export function Sidebar({
   offeneRechnungspunkte,
   offeneWarnungen,
   benutzer,
+  rolle,
 }: {
   hostsAnzahl: number;
   offeneRechnungspunkte: number;
   offeneWarnungen: number;
   benutzer: string;
+  rolle: Rolle;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -35,7 +39,7 @@ export function Sidebar({
       icon: "bi-hdd-stack",
       badge: { text: String(hostsAnzahl), klasse: "pl-bg-info" },
     },
-    { href: "/kunden", titel: "Kunden", icon: "bi-people" },
+    ...(rolle === "KUNDE" ? [] : [{ href: "/kunden", titel: "Kunden", icon: "bi-people" }]),
     {
       href: "/rechnungen",
       titel: "Rechnungen",
@@ -54,12 +58,24 @@ export function Sidebar({
     },
   ];
 
+  // Das Menü zeigt nur, was die Rolle auch darf. Der Schutz liegt trotzdem in den Seiten
+  // und Aktionen selbst – ein ausgeblendeter Eintrag ist keine Zugriffskontrolle (#027).
   const einstellungen: MenuEintrag[] = [
-    { href: "/einstellungen/tokens", titel: "Agent-Tokens", icon: "bi-key" },
-    { href: "/einstellungen/warnregeln", titel: "Warnregeln", icon: "bi-shield-exclamation" },
-    { href: "/einstellungen/benachrichtigungen", titel: "Benachrichtigungen", icon: "bi-bell" },
-    { href: "/einstellungen/audit", titel: "Protokoll", icon: "bi-list-check" },
-    { href: "/einstellungen/system", titel: "System", icon: "bi-sliders" },
+    ...(darf(rolle, "betrieb")
+      ? [
+          { href: "/einstellungen/tokens", titel: "Agent-Tokens", icon: "bi-key" },
+          { href: "/einstellungen/warnregeln", titel: "Warnregeln", icon: "bi-shield-exclamation" },
+          { href: "/einstellungen/benachrichtigungen", titel: "Benachrichtigungen", icon: "bi-bell" },
+        ]
+      : []),
+    ...(darf(rolle, "verwaltung")
+      ? [
+          { href: "/einstellungen/benutzer", titel: "Benutzer", icon: "bi-person-gear" },
+          { href: "/einstellungen/audit", titel: "Protokoll", icon: "bi-list-check" },
+          { href: "/einstellungen/system", titel: "System", icon: "bi-sliders" },
+        ]
+      : []),
+    { href: "/einstellungen/passkeys", titel: "Meine Passkeys", icon: "bi-fingerprint" },
   ];
 
   function istAktiv(href: string) {

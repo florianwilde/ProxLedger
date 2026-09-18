@@ -1,9 +1,13 @@
 import { prisma } from "@/lib/db";
+import { darfEinkaufSehen, sichtbarerKunde } from "@/server/auth/sitzungspflicht";
 
 /** Abfragen rund um Kunden. Beträge kommen als Decimal aus der Datenbank und werden hier zu Zahlen. */
 
 export async function kundenListe() {
+  const nurKunde = await sichtbarerKunde();
+
   const kunden = await prisma.kunde.findMany({
+    where: nurKunde ? { id: nurKunde } : {},
     orderBy: { name: "asc" },
     include: {
       standorte: true,
@@ -42,6 +46,9 @@ export async function kundenListe() {
 }
 
 export async function kundeMitDetails(id: string) {
+  const nurKunde = await sichtbarerKunde();
+  if (nurKunde && nurKunde !== id) return null;
+
   return prisma.kunde.findUnique({
     where: { id },
     include: {
@@ -54,6 +61,10 @@ export async function kundeMitDetails(id: string) {
 
 /** Laufzeiten eines Kunden samt Rechnungsangaben, aufbereitet für Tabellen und Summen. */
 export async function laufzeitenVonKunde(kundeId: string) {
+  const nurKunde = await sichtbarerKunde();
+  if (nurKunde && nurKunde !== kundeId) return [];
+  const einkaufSichtbar = await darfEinkaufSehen();
+
   const laufzeiten = await prisma.laufzeit.findMany({
     where: { host: { kundeId } },
     orderBy: { start: "desc" },
@@ -72,7 +83,8 @@ export async function laufzeitenVonKunde(kundeId: string) {
     start: laufzeit.start,
     ende: laufzeit.ende,
     vorschlag: laufzeit.status === "VORSCHLAG",
-    einkauf: laufzeit.proxmoxPosition
+    einkauf:
+      einkaufSichtbar && laufzeit.proxmoxPosition
       ? {
           nummer: laufzeit.proxmoxPosition.rechnung.nummer,
           nettoBetrag: Number(laufzeit.proxmoxPosition.nettoBetrag),

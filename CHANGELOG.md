@@ -17,6 +17,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.18.0] – 2026-09-19
+
+### Hinzugefügt
+- Drei Rollen: Administrator, Techniker und Kunde. Kundenkonten sehen nur die eigenen Hosts und Rechnungen – ohne Einkaufspreise und Marge – und dürfen Notizen schreiben sowie Warnungen quittieren (#027)
+- Benutzerverwaltung unter *Einstellungen → Benutzer*: anlegen, Rolle ändern, sperren, Passwort setzen, löschen (#027)
+- Anmeldung mit Passkeys (WebAuthn), gleichwertig neben Passwort und OIDC; eigene Seite *Meine Passkeys* (#028)
+- Einstellung, welche Rolle automatisch angelegte OIDC-Konten bekommen (#027)
+
+### Behoben
+- Neu über OIDC angelegte Konten hätten die Vorgabe des Datenmodells geerbt und wären Administratoren geworden; Vorgabe ist jetzt *Techniker* (#027)
+- Das Screenshot-Skript meldete sich mit einem erfundenen Konto an – seit der Sitzungsprüfung gegen die Datenbank landete es auf der Anmeldeseite (#027)
+
 ## [0.17.0] – 2026-09-19
 
 ### Hinzugefügt

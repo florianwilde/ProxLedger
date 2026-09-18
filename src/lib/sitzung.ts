@@ -19,7 +19,7 @@ export interface Sitzung {
   email: string;
   name: string;
   /** Woher die Anmeldung stammt – für das Audit-Log und die Anzeige. */
-  herkunft: "passwort" | "oidc";
+  herkunft: "passwort" | "oidc" | "passkey";
 }
 
 function schluessel(): Uint8Array {
@@ -55,7 +55,8 @@ export async function sitzungLesen(token: string | undefined): Promise<GeleseneS
       benutzerId: payload.benutzerId,
       email: payload.email,
       name: typeof payload.name === "string" ? payload.name : payload.email,
-      herkunft: payload.herkunft === "oidc" ? "oidc" : "passwort",
+      herkunft:
+        payload.herkunft === "oidc" || payload.herkunft === "passkey" ? payload.herkunft : "passwort",
       ausgestelltAm: new Date((payload.iat ?? 0) * 1000),
     };
   } catch {

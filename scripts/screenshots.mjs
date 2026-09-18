@@ -18,6 +18,7 @@ import { homedir } from "node:os";
 import path from "node:path";
 import { request as httpAnfrage } from "node:http";
 import { SignJWT } from "jose";
+import pg from "pg";
 import "dotenv/config";
 
 const BASIS = process.env.SCREENSHOT_URL ?? "http://localhost:3000";
@@ -49,6 +50,8 @@ const SEITEN = [
   { name: "benachrichtigungen", pfad: "/einstellungen/benachrichtigungen", titel: "Benachrichtigungen" },
   { name: "audit", pfad: "/einstellungen/audit", titel: "Protokoll" },
   { name: "system", pfad: "/einstellungen/system", titel: "Systemeinstellungen" },
+  { name: "benutzer", pfad: "/einstellungen/benutzer", titel: "Benutzerverwaltung" },
+  { name: "passkeys", pfad: "/einstellungen/passkeys", titel: "Passkeys" },
 ];
 
 async function sitzungsToken() {
@@ -57,14 +60,29 @@ async function sitzungsToken() {
     throw new Error("APP_SECRET fehlt oder ist zu kurz – ohne Sitzung keine Bilder.");
   }
 
+  // Seit #027 schlägt die Sitzungsprüfung den Benutzer in der Datenbank nach: Ein erfundenes
+  // Konto landet wieder auf der Anmeldeseite. Deshalb hier ein echtes Administratorkonto nehmen.
+  // Kein Prisma-Client hier: Das Skript läuft als reines JavaScript, der erzeugte Client ist TypeScript.
+  const datenbank = new pg.Client({ connectionString: process.env.DATABASE_URL });
+  await datenbank.connect();
+  const { rows } = await datenbank.query(
+    `SELECT id, email, name FROM "Benutzer" WHERE rolle = 'ADMIN' AND aktiv = true ORDER BY "erstelltAm" LIMIT 1`,
+  );
+  await datenbank.end();
+  const benutzer = rows[0];
+
+  if (!benutzer) {
+    throw new Error("Kein aktiver Administrator in der Datenbank – erst `npm run db:seed` ausführen.");
+  }
+
   return new SignJWT({
-    benutzerId: "screenshots",
-    email: process.env.ADMIN_EMAIL ?? "admin@example.de",
-    name: process.env.ADMIN_NAME ?? "Florian",
+    benutzerId: benutzer.id,
+    email: benutzer.email,
+    name: benutzer.name,
     herkunft: "passwort",
   })
     .setProtectedHeader({ alg: "HS256" })
-    .setSubject("screenshots")
+    .setSubject(benutzer.id)
     .setIssuedAt()
     .setIssuer("proxledger")
     .setExpirationTime("1h")

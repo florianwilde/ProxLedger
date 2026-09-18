@@ -23,7 +23,7 @@ export async function emailKanalSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const id = formular.get("id")?.toString() || null;
   const host = formular.get("host")?.toString().trim() ?? "";
   const port = Number(formular.get("port") ?? 587);
@@ -80,7 +80,7 @@ export async function webhookKanalSpeichern(
   _vorher: AktionsErgebnis,
   formular: FormData,
 ): Promise<AktionsErgebnis> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const id = formular.get("id")?.toString() || null;
   const url = formular.get("url")?.toString().trim() ?? "";
 
@@ -119,7 +119,7 @@ export async function webhookKanalSpeichern(
 }
 
 export async function kanalLoeschen(formular: FormData) {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -130,7 +130,7 @@ export async function kanalLoeschen(formular: FormData) {
 
 /** Verschickt eine Testnachricht über einen Kanal. */
 export async function testSenden(formular: FormData): Promise<void> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const id = formular.get("id")?.toString();
   if (!id) return;
 
@@ -145,7 +145,7 @@ export async function testSenden(formular: FormData): Promise<void> {
 
 /** Zeitraum der Zusammenfassung speichern (täglich, wöchentlich oder aus). */
 export async function zusammenfassungSpeichern(formular: FormData) {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const zeitraum = formular.get("zeitraum")?.toString() ?? "aus";
 
   await prisma.einstellung.upsert({
@@ -160,7 +160,7 @@ export async function zusammenfassungSpeichern(formular: FormData) {
 
 /** Zusammenfassung sofort verschicken – praktisch zum Ausprobieren. */
 export async function zusammenfassungJetztSenden(formular: FormData): Promise<void> {
-  await sitzungErforderlich();
+  await sitzungErforderlich("betrieb");
   const zeitraum = formular.get("zeitraum")?.toString() === "woechentlich" ? "woechentlich" : "taeglich";
   await zusammenfassungSenden(zeitraum);
   neuLaden();

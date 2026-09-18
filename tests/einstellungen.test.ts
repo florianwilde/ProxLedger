@@ -24,6 +24,12 @@ describe("Einstellungen", () => {
     expect(einstellungenSchema.safeParse({ anmeldeversuche: 1 }).success).toBe(false);
   });
 
+  it("legt neue OIDC-Konten nicht als Administrator an", () => {
+    // Die Vorgabe ist sicherheitsrelevant: Wer sich beim Anbieter anmelden kann, soll nicht
+    // automatisch alles dürfen.
+    expect(einstellungenSchema.parse({}).oidcStandardRolle).toBe("TECHNIKER");
+  });
+
   it("lässt eine leere Dashboard-Adresse zu (dann gilt die Umgebung)", () => {
     expect(einstellungenSchema.parse({ dashboardUrl: "" }).dashboardUrl).toBe("");
   });
