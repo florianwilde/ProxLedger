@@ -9,6 +9,7 @@ import { CopyableCode } from "@/components/ui/CopyableCode";
 import { PRODUKT_TEXT } from "@/lib/anzeige";
 import { formatDatum, formatEuro } from "@/lib/format";
 import { laufzeitBestaetigenAktion, laufzeitVerwerfenAktion } from "@/server/actions/rechnungen";
+import { einstellungen, faelligkeitsVorschlag } from "@/server/einstellungen";
 import { laufzeitDetail } from "@/server/queries/rechnungen";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -27,6 +28,12 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
   const einkaufBetrag = laufzeit.proxmoxPosition ? Number(laufzeit.proxmoxPosition.nettoBetrag) : null;
   const verkaufBetrag = laufzeit.kundenPosition ? Number(laufzeit.kundenPosition.nettoBetrag) : null;
   const marge = einkaufBetrag !== null && verkaufBetrag !== null ? verkaufBetrag - einkaufBetrag : null;
+
+  // Vorgaben aus den Einstellungen füllen leere Felder vor (#025).
+  const [vorgaben, faelligVorschlag] = await Promise.all([einstellungen(), faelligkeitsVorschlag()]);
+  const verkaufVorschlag =
+    verkaufBetrag ??
+    (einkaufBetrag === null ? null : Math.round(einkaufBetrag * (1 + vorgaben.margeProzent / 100) * 100) / 100);
 
   const zeitraum = `${formatDatum(laufzeit.start)} – ${formatDatum(laufzeit.ende)}`;
 
@@ -148,9 +155,9 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
                   werte={{
                     nummer: einkauf?.nummer ?? null,
                     datum: einkauf?.datum.toISOString() ?? null,
-                    faelligAm: einkauf?.faelligAm?.toISOString() ?? null,
+                    faelligAm: einkauf?.faelligAm?.toISOString() ?? faelligVorschlag,
                     nettoBetrag: einkaufBetrag,
-                    ustSatz: Number(einkauf?.ustSatz ?? 19),
+                    ustSatz: Number(einkauf?.ustSatz ?? vorgaben.steuersatz),
                     rabatt:
                       einkauf?.rabatt === null || einkauf?.rabatt === undefined
                         ? null
@@ -179,8 +186,8 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
                     erstellt: verkauf?.erstellt ?? false,
                     nummer: verkauf?.nummer ?? null,
                     datum: verkauf?.datum?.toISOString() ?? null,
-                    nettoBetrag: verkaufBetrag,
-                    ustSatz: Number(verkauf?.ustSatz ?? 19),
+                    nettoBetrag: verkaufVorschlag,
+                    ustSatz: Number(verkauf?.ustSatz ?? vorgaben.steuersatz),
                     bezahlt: verkauf?.bezahlt ?? false,
                     bezahltAm: verkauf?.bezahltAm?.toISOString() ?? null,
                     anhangId: verkauf?.anhangId ?? null,

@@ -17,6 +17,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.16.0] – 2026-09-18
+
+### Hinzugefügt
+- *Einstellungen → System*: Dashboard-Adresse, Melderhythmus und Selbstaktualisierung der Agents, kaufmännische Vorgaben, Sicherheitsgrenzen, Firmenangaben und Zeitzone (#025)
+- Die Dashboard-Adresse und der Melderhythmus landen im ausgelieferten Installations-Einzeiler und im systemd-Timer (#025)
+- OIDC lässt sich auf bestimmte E-Mail-Domänen begrenzen; das automatische Anlegen unbekannter Konten ist abschaltbar (#025)
+- Nächtliches Aufräumen nach einstellbaren Aufbewahrungsfristen für Reports und Protokoll – der jüngste Report jedes Hosts bleibt erhalten (#025)
+- Firmenangaben erscheinen im Kopf der PDF-Ausgaben (#025)
+
+### Geändert
+- Steuersatz, Zahlungsziel und Aufschlag kommen aus den Einstellungen statt aus fest eingetragenen 19 % (#025)
+
 ## [0.15.0] – 2026-09-18
 
 ### Hinzugefügt

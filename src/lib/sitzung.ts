@@ -6,6 +6,7 @@ import { SignJWT, jwtVerify } from "jose";
  */
 
 export const SITZUNGS_COOKIE = "pl_sitzung";
+/** Rückfall, solange nichts in den Einstellungen steht (#025). */
 export const SITZUNGSDAUER_STUNDEN = 12;
 
 /** Eine gelesene Sitzung weiß zusätzlich, wann sie ausgestellt wurde – nötig für den Widerruf. */
@@ -31,13 +32,16 @@ function schluessel(): Uint8Array {
   return new TextEncoder().encode(geheimnis);
 }
 
-export async function sitzungErzeugen(sitzung: Sitzung): Promise<string> {
+export async function sitzungErzeugen(
+  sitzung: Sitzung,
+  dauerStunden: number = SITZUNGSDAUER_STUNDEN,
+): Promise<string> {
   return new SignJWT({ ...sitzung })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(sitzung.benutzerId)
     .setIssuedAt()
     .setIssuer("proxledger")
-    .setExpirationTime(`${SITZUNGSDAUER_STUNDEN}h`)
+    .setExpirationTime(`${dauerStunden}h`)
     .sign(schluessel());
 }
 
@@ -70,12 +74,12 @@ export function ueberHttps(): boolean {
   return process.env.NODE_ENV === "production";
 }
 
-export function cookieOptionen() {
+export function cookieOptionen(dauerStunden: number = SITZUNGSDAUER_STUNDEN) {
   return {
     httpOnly: true,
     sameSite: "lax" as const,
     secure: ueberHttps(),
     path: "/",
-    maxAge: SITZUNGSDAUER_STUNDEN * 3600,
+    maxAge: dauerStunden * 3600,
   };
 }

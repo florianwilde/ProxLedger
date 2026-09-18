@@ -3,9 +3,26 @@ import type { BenutzerModel } from "@/generated/prisma/models";
 import { prisma } from "@/lib/db";
 import { RateLimit } from "@/lib/ratelimit";
 import { protokolliere } from "@/server/audit";
+import { domaeneErlaubt, einstellungen } from "@/server/einstellungen";
 
-/** Anmeldeversuche: fünf pro Viertelstunde je Kennung, damit Raten teuer wird. */
-export const anmeldeRateLimit = new RateLimit(5, 5 / 900);
+/**
+ * Anmeldeversuche je Kennung und Viertelstunde. Die Zahl steht in den Einstellungen;
+ * für jede Einstellung wird eine eigene Bremse gehalten, damit der Zustand beim Ändern
+ * nicht verlorengeht.
+ */
+const bremsen = new Map<number, RateLimit>();
+
+export function anmeldeBremse(versuche: number): RateLimit {
+  const vorhanden = bremsen.get(versuche);
+  if (vorhanden) return vorhanden;
+
+  const neu = new RateLimit(versuche, versuche / 900);
+  bremsen.set(versuche, neu);
+  return neu;
+}
+
+/** Vorgabe für Aufrufer ohne Einstellungen (Tests). */
+export const anmeldeRateLimit = anmeldeBremse(5);
 
 export class AnmeldeFehler extends Error {}
 
@@ -15,8 +32,9 @@ export async function mitPasswortAnmelden(
   passwort: string,
   quelle: string,
 ): Promise<BenutzerModel> {
+  const { anmeldeversuche } = await einstellungen();
   const kennung = `${quelle}:${email.toLowerCase()}`;
-  if (!anmeldeRateLimit.pruefe(kennung).erlaubt) {
+  if (!anmeldeBremse(anmeldeversuche).pruefe(kennung).erlaubt) {
     throw new AnmeldeFehler("Zu viele Versuche. Bitte einige Minuten warten.");
   }
 
@@ -41,10 +59,17 @@ export async function mitPasswortAnmelden(
 
 /**
  * Ordnet eine OIDC-Anmeldung einem Benutzer zu: erst über die Subject-ID, sonst über die E-Mail.
- * Ein unbekanntes Konto wird angelegt – wer sich bei authentik anmelden darf, darf auch hier arbeiten.
+ * Ob ein unbekanntes Konto angelegt werden darf und welche E-Mail-Domänen zugelassen sind,
+ * steht in den Einstellungen (#025). Vorgabe bleibt: anlegen, alle Domänen.
  */
 export async function mitOidcAnmelden(subject: string, email: string, name: string): Promise<BenutzerModel> {
   const normalisiert = email.toLowerCase().trim();
+  const { oidcDomaenen, oidcKontenAnlegen } = await einstellungen();
+
+  if (!domaeneErlaubt(normalisiert, oidcDomaenen)) {
+    await protokolliere("anmeldung.abgelehnt", "Benutzer", null, { email: normalisiert, grund: "domaene" });
+    throw new AnmeldeFehler("Diese E-Mail-Domäne ist für die Anmeldung nicht zugelassen.");
+  }
 
   const vorhanden =
     (await prisma.benutzer.findUnique({ where: { oidcSubject: subject } })) ??
@@ -52,6 +77,11 @@ export async function mitOidcAnmelden(subject: string, email: string, name: stri
 
   if (vorhanden && !vorhanden.aktiv) {
     throw new AnmeldeFehler("Dieses Konto ist deaktiviert.");
+  }
+
+  if (!vorhanden && !oidcKontenAnlegen) {
+    await protokolliere("anmeldung.abgelehnt", "Benutzer", null, { email: normalisiert, grund: "kein-konto" });
+    throw new AnmeldeFehler("Für diese Adresse gibt es hier kein Konto.");
   }
 
   const benutzer = vorhanden

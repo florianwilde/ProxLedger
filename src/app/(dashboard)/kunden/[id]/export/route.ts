@@ -2,6 +2,7 @@ import { PRODUKT_TEXT, STATUS_TEXT, statusAusDatenbank } from "@/lib/anzeige";
 import { formatDatum, formatEuro } from "@/lib/format";
 import { Abschnitt, Bericht, pdfAntwort, Tabelle } from "@/server/pdf/dokument";
 import { kundeMitDetails, laufzeitenVonKunde, summen, summenProJahr } from "@/server/queries/kunden";
+import { einstellungen } from "@/server/einstellungen";
 
 export const dynamic = "force-dynamic";
 
@@ -15,9 +16,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const gesamt = summen(laufzeiten);
   const proJahr = summenProJahr(laufzeiten);
   const datum = new Date().toISOString().slice(0, 10);
+  const { firmaName, firmaAnschrift, firmaEmail, zeitzone } = await einstellungen();
+  const firmaAngaben = { name: firmaName, anschrift: firmaAnschrift, email: firmaEmail, zeitzone };
 
   return pdfAntwort(
     Bericht({
+      firma: firmaAngaben,
       titel: kunde.name,
       untertitel: `Kundennummer ${kunde.kundennummer}${kunde.ansprechpartner ? ` · ${kunde.ansprechpartner}` : ""}`,
       children: [

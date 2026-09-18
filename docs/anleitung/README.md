@@ -17,6 +17,7 @@ auch mit Hosts hinter NAT.
 7. [Warnungen](#7-warnungen)
 8. [Benachrichtigungen einrichten](#8-benachrichtigungen-einrichten)
 9. [Exporte](#9-exporte)
+9a. [Einstellungen](#9a-einstellungen)
 10. [Sicherung und Aktualisierung](#10-sicherung-und-aktualisierung)
 11. [Fehlersuche](#11-fehlersuche)
 
@@ -307,6 +308,36 @@ und Beträge stimmen.
 
 Die PDF-Ausgaben tragen das einfarbige Logo und eignen sich als Anlage für Kundenunterlagen oder als
 Jahresliste für die Buchhaltung.
+
+---
+
+## 9a. Einstellungen
+
+Unter *Einstellungen → System* steht alles, was sich im laufenden Betrieb ändern lässt:
+
+![Systemeinstellungen](bilder/system.png)
+
+**Adresse und Agent.** Die Dashboard-Adresse landet im Installations-Einzeiler und in den
+Benachrichtigungen. Bleibt das Feld leer, gilt `APP_URL` aus der Umgebung. Melderhythmus, Streuung und
+Selbstaktualisierung gelten für **neu installierte** Agents – bestehende übernehmen sie erst, wenn der
+Einzeiler dort erneut läuft.
+
+**Kaufmännisches.** Steuersatz, Zahlungsziel und Aufschlag füllen leere Rechnungsfelder vor. Der
+Aufschlag rechnet aus dem Einkaufspreis einen Vorschlag für den Verkaufspreis; eingetragene Beträge
+bleiben unberührt.
+
+**Sicherheit.** Sitzungsdauer und Anmeldeversuche gelten ab der nächsten Anmeldung. Die beiden
+OIDC-Felder sind wichtig, wenn ein Identitätsanbieter viele Konten kennt: Ohne Einschränkung darf
+jeder, der sich dort anmelden kann, hier mitarbeiten. Mit einer Domänenliste oder abgeschaltetem
+„Konten anlegen“ kommt nur herein, wer hier vorgesehen ist. Die Aufbewahrungsfristen räumen nachts um
+halb vier auf; der jüngste Report jedes Hosts bleibt immer erhalten, sonst stünde ein lange stummer
+Host plötzlich ohne Angaben da.
+
+**Firma und Darstellung.** Name, Anschrift und E-Mail stehen im Kopf der erzeugten PDF-Dateien, die
+Zeitzone gilt für PDF, CSV und Benachrichtigungen.
+
+> `APP_SECRET` und `DATABASE_URL` stehen bewusst **nicht** hier: Beide werden gebraucht, bevor die
+> Anwendung die Datenbank überhaupt lesen kann.
 
 ---
 

@@ -1,6 +1,7 @@
 import { csvAntwort, csvDatei } from "@/lib/csv";
 import { formatDatum, formatEuro } from "@/lib/format";
 import { Bericht, pdfAntwort, Tabelle } from "@/server/pdf/dokument";
+import { einstellungen } from "@/server/einstellungen";
 import {
   kundenListe,
   offeneRechnungspunkteProKunde,
@@ -30,8 +31,12 @@ export async function GET(request: Request) {
   const datum = new Date().toISOString().slice(0, 10);
 
   if (format === "pdf") {
+    const { firmaName, firmaAnschrift, firmaEmail, zeitzone } = await einstellungen();
+    const firmaAngaben = { name: firmaName, anschrift: firmaAnschrift, email: firmaEmail, zeitzone };
+
     return pdfAntwort(
       Bericht({
+      firma: firmaAngaben,
         titel: "Kundenübersicht",
         untertitel: `${zeilen.length} Kunden`,
         quer: true,

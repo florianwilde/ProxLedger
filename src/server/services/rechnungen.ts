@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { protokolliere } from "@/server/audit";
+import { einstellungen } from "@/server/einstellungen";
 
 export class RechnungsFehler extends Error {}
 
@@ -67,6 +68,7 @@ export async function proxmoxRechnungErfassen(laufzeitId: string, eingabe: Proxm
   if (!laufzeit) throw new RechnungsFehler("Laufzeit nicht gefunden.");
   if (!eingabe.nummer.trim()) throw new RechnungsFehler("Bitte eine Rechnungsnummer angeben.");
 
+  const { steuersatz: vorgabeSteuersatz } = await einstellungen();
   const nummer = eingabe.nummer.trim();
   const bezeichnung = `${laufzeit.key} · ${laufzeit.host.hostname} · ${laufzeit.start.toISOString().slice(0, 10)} bis ${laufzeit.ende.toISOString().slice(0, 10)}`;
 
@@ -79,7 +81,7 @@ export async function proxmoxRechnungErfassen(laufzeitId: string, eingabe: Proxm
           data: {
             datum: eingabe.datum,
             faelligAm: eingabe.faelligAm,
-            ustSatz: eingabe.ustSatz ?? 19,
+            ustSatz: eingabe.ustSatz ?? vorgabeSteuersatz,
             rabatt: eingabe.rabatt ?? null,
             zahlungsart: eingabe.zahlungsart ?? null,
             bezahlt: eingabe.bezahlt,
@@ -94,7 +96,7 @@ export async function proxmoxRechnungErfassen(laufzeitId: string, eingabe: Proxm
             datum: eingabe.datum,
             faelligAm: eingabe.faelligAm,
             nettoBetrag: eingabe.nettoBetrag,
-            ustSatz: eingabe.ustSatz ?? 19,
+            ustSatz: eingabe.ustSatz ?? vorgabeSteuersatz,
             rabatt: eingabe.rabatt ?? null,
             zahlungsart: eingabe.zahlungsart ?? null,
             bezahlt: eingabe.bezahlt,
@@ -146,6 +148,7 @@ export async function kundenrechnungErfassen(laufzeitId: string, eingabe: Kunden
     throw new RechnungsFehler("Der Host ist keinem Kunden zugewiesen – ohne Kunde keine Kundenrechnung.");
   }
 
+  const { steuersatz: vorgabeSteuersatz } = await einstellungen();
   const nummer = eingabe.nummer?.trim() || null;
   const bezeichnung = `${laufzeit.key} · ${laufzeit.host.hostname} · ${laufzeit.start.toISOString().slice(0, 10)} bis ${laufzeit.ende.toISOString().slice(0, 10)}`;
   const betrag = eingabe.nettoBetrag ?? 0;
@@ -160,7 +163,7 @@ export async function kundenrechnungErfassen(laufzeitId: string, eingabe: Kunden
       erstellt: eingabe.erstellt,
       nummer,
       datum: eingabe.datum ?? null,
-      ustSatz: eingabe.ustSatz ?? 19,
+      ustSatz: eingabe.ustSatz ?? vorgabeSteuersatz,
       bezahlt: eingabe.bezahlt,
       bezahltAm: eingabe.bezahlt ? (eingabe.bezahltAm ?? new Date()) : null,
       anhangId: eingabe.anhangId ?? null,

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { cookieOptionen, SITZUNGS_COOKIE, sitzungErzeugen } from "@/lib/sitzung";
 import { mitOidcAnmelden } from "@/server/auth/benutzer";
 import { anmeldungAbschliessen, oidcEinstellungen } from "@/server/auth/oidc";
+import { einstellungen as systemEinstellungen } from "@/server/einstellungen";
 
 export const dynamic = "force-dynamic";
 
@@ -25,13 +26,17 @@ export async function GET(request: Request) {
     const angaben = await anmeldungAbschliessen(einstellungen, new URL(request.url), pruefwert, zustand);
     const benutzer = await mitOidcAnmelden(angaben.subject, angaben.email, angaben.name);
 
-    const token = await sitzungErzeugen({
-      benutzerId: benutzer.id,
-      email: benutzer.email,
-      name: benutzer.name,
-      herkunft: "oidc",
-    });
-    speicher.set(SITZUNGS_COOKIE, token, cookieOptionen());
+    const { sitzungsdauerStunden } = await systemEinstellungen();
+    const token = await sitzungErzeugen(
+      {
+        benutzerId: benutzer.id,
+        email: benutzer.email,
+        name: benutzer.name,
+        herkunft: "oidc",
+      },
+      sitzungsdauerStunden,
+    );
+    speicher.set(SITZUNGS_COOKIE, token, cookieOptionen(sitzungsdauerStunden));
 
     return Response.redirect(new URL(ziel.startsWith("/") ? ziel : "/", request.url), 302);
   } catch (fehler) {

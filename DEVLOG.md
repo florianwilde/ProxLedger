@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 10 h 28 min
+**Gesamt:** 11 h 38 min
 
 | Issue | Zeit |
 |---|---|
@@ -30,6 +30,7 @@
 | #022 Cluster-Abgleich | 0 h 25 min |
 | #023 Feldtest PBS | 0 h 35 min |
 | #024 OWASP-Härtung | 0 h 45 min |
+| #025 Einstellungen | 1 h 10 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -52,7 +53,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.15.0
+**Version:** 0.16.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -141,6 +142,10 @@
 
 - Durchsicht nach OWASP (#024): drei echte Lücken gefunden – Server Actions ohne eigene Zugriffsprüfung, Login-CSRF und fehlende CSP. Alle behoben und mit Tests abgesichert
 - Erkenntnis: Der Schutz lag vollständig in einer einzigen Schicht (`proxy.ts`). Das fällt erst auf, wenn man die Endpunkte einzeln betrachtet statt die Oberfläche
+
+- Einstellungen im Dashboard (#025): vier Bereiche, alle Werte wirken auch wirklich – der Melderhythmus zum Beispiel bis in den erzeugten systemd-Timer hinein, live geprüft
+- Dabei die OIDC-Lücke aus #024 geschlossen: Domänenliste und Schalter gegen automatisch angelegte Konten
+- Bewusst nicht gebaut: „stumm nach X Tagen“ (steht schon bei den Warnregeln) und die Währung in der Browseransicht
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
