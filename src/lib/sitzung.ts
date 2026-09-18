@@ -8,6 +8,11 @@ import { SignJWT, jwtVerify } from "jose";
 export const SITZUNGS_COOKIE = "pl_sitzung";
 export const SITZUNGSDAUER_STUNDEN = 12;
 
+/** Eine gelesene Sitzung weiß zusätzlich, wann sie ausgestellt wurde – nötig für den Widerruf. */
+export interface GeleseneSitzung extends Sitzung {
+  ausgestelltAm: Date;
+}
+
 export interface Sitzung {
   benutzerId: string;
   email: string;
@@ -37,7 +42,7 @@ export async function sitzungErzeugen(sitzung: Sitzung): Promise<string> {
 }
 
 /** Prüft das Token; bei ungültiger Signatur oder Ablauf kommt null zurück. */
-export async function sitzungLesen(token: string | undefined): Promise<Sitzung | null> {
+export async function sitzungLesen(token: string | undefined): Promise<GeleseneSitzung | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, schluessel(), { issuer: "proxledger" });
@@ -47,6 +52,7 @@ export async function sitzungLesen(token: string | undefined): Promise<Sitzung |
       email: payload.email,
       name: typeof payload.name === "string" ? payload.name : payload.email,
       herkunft: payload.herkunft === "oidc" ? "oidc" : "passwort",
+      ausgestelltAm: new Date((payload.iat ?? 0) * 1000),
     };
   } catch {
     return null;

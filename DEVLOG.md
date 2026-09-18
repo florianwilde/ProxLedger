@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 9 h 43 min
+**Gesamt:** 10 h 28 min
 
 | Issue | Zeit |
 |---|---|
@@ -29,6 +29,7 @@
 | #018 Feldtest auf echten Hosts | 0 h 40 min |
 | #022 Cluster-Abgleich | 0 h 25 min |
 | #023 Feldtest PBS | 0 h 35 min |
+| #024 OWASP-Härtung | 0 h 45 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -51,7 +52,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.14.1
+**Version:** 0.15.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -137,6 +138,9 @@
 - Feldtest auf einem echten Proxmox Backup Server (#023): der Agent hätte dort **nichts** gelesen – PBS gibt eine Rahmentabelle aus, kein `feld: wert`. Behoben, mit den echten Ausgaben als Testfälle
 - Der erfundene PBS-Testfall hatte den Fehler verdeckt. Lehre: ausgedachte Testdaten bestätigen nur die eigene Annahme
 - Uninstall zum ersten Mal auf einem echten Host geprüft – restlos sauber, damit ist #018 vollständig
+
+- Durchsicht nach OWASP (#024): drei echte Lücken gefunden – Server Actions ohne eigene Zugriffsprüfung, Login-CSRF und fehlende CSP. Alle behoben und mit Tests abgesichert
+- Erkenntnis: Der Schutz lag vollständig in einer einzigen Schicht (`proxy.ts`). Das fällt erst auf, wenn man die Endpunkte einzeln betrachtet statt die Oberfläche
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

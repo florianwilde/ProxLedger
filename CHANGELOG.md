@@ -17,6 +17,19 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.15.0] – 2026-09-18
+
+### Hinzugefügt
+- `docs/sicherheit.md`: Zuordnung aller Maßnahmen zu den OWASP Top 10, samt der Punkte, die bewusst offen bleiben (#024)
+- Content-Security-Policy mit frischem Nonce je Anfrage (#024)
+- Sitzungen lassen sich widerrufen: gesperrtes Konto oder neues Passwort beendet laufende Sitzungen sofort (#024)
+- Benutzerverwaltung auf der Kommandozeile: `npm run benutzer -- liste|sperren|entsperren|passwort` (#024)
+
+### Behoben
+- Server Actions verließen sich allein auf den Schutz in `proxy.ts`; jede der 27 Aktionen prüft die Sitzung jetzt selbst (#024)
+- Die Anmeldung prüfte die Herkunft des Formulars nicht – damit war Login-CSRF möglich (#024)
+- `npm audit` meldete vier hohe Schwachstellen in Beiwerk von Prisma (`mysql2`, `deepmerge-ts`); über `overrides` angehoben, jetzt ohne Befund (#024)
+
 ## [0.14.1] – 2026-09-18
 
 ### Behoben

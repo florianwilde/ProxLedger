@@ -23,19 +23,62 @@ const OEFFENTLICH = [
   "/manifest.webmanifest",
 ];
 
+/**
+ * Content-Security-Policy je Anfrage, mit frischem Nonce.
+ *
+ * `strict-dynamic` heißt: Nur Skripte mit diesem Nonce dürfen laufen (und was sie selbst nachladen).
+ * Damit läuft eingeschleustes `<script>` aus der Datenbank oder einer Proxmox-Ausgabe nicht mehr –
+ * die zweite Verteidigungslinie hinter der Maskierung durch React (OWASP A03).
+ *
+ * `style-src` erlaubt bewusst `unsafe-inline`: Bootstrap und AdminLTE setzen Stile direkt am Element,
+ * und ein Stil kann keinen Code ausführen.
+ */
+function richtlinie(nonce: string): string {
+  const entwicklung = process.env.NODE_ENV !== "production";
+  return [
+    "default-src 'self'",
+    // In der Entwicklung braucht der Hot-Reload eval; im Betrieb nicht.
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${entwicklung ? " 'unsafe-eval'" : ""}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    // Verbindungen nur zur eigenen Herkunft; in der Entwicklung zusätzlich der Hot-Reload.
+    `connect-src 'self'${entwicklung ? " ws: wss:" : ""}`,
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    ...(entwicklung ? [] : ["upgrade-insecure-requests"]),
+  ].join("; ");
+}
+
+function mitRichtlinie(request: NextRequest, antwort?: NextResponse): NextResponse {
+  const nonce = crypto.randomUUID().replaceAll("-", "");
+  const csp = richtlinie(nonce);
+
+  // Next.js versieht seine eigenen Skripte mit diesem Nonce, sobald es ihn in der Anfrage findet.
+  const kopfzeilen = new Headers(request.headers);
+  kopfzeilen.set("x-nonce", nonce);
+  kopfzeilen.set("Content-Security-Policy", csp);
+
+  const ergebnis = antwort ?? NextResponse.next({ request: { headers: kopfzeilen } });
+  ergebnis.headers.set("Content-Security-Policy", csp);
+  return ergebnis;
+}
+
 export async function proxy(request: NextRequest) {
   const pfad = request.nextUrl.pathname;
 
   if (OEFFENTLICH.some((eintrag) => pfad === eintrag || pfad.startsWith(`${eintrag}/`))) {
-    return NextResponse.next();
+    return mitRichtlinie(request);
   }
 
   const sitzung = await sitzungLesen(request.cookies.get(SITZUNGS_COOKIE)?.value);
-  if (sitzung) return NextResponse.next();
+  if (sitzung) return mitRichtlinie(request);
 
   const ziel = new URL("/login", request.url);
   if (pfad !== "/") ziel.searchParams.set("ziel", `${pfad}${request.nextUrl.search}`);
-  return NextResponse.redirect(ziel);
+  return mitRichtlinie(request, NextResponse.redirect(ziel));
 }
 
 export const config = {
