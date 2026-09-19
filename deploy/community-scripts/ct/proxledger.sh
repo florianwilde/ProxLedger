@@ -5,7 +5,7 @@ source "$_cs_boot" 2>/dev/null || source <(curl -fsSL "${COMMUNITY_SCRIPTS_CORE_
 # Copyright (c) 2021-2026 tteck
 # Author: Florian Wilde
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
-# Source: https://git.wilde-server.de/fw/ProxLedger
+# Source: https://git.wilde-server.de/florian.wilde/ProxLedger
 
 APP="ProxLedger"
 var_tags="${var_tags:-monitoring;licensing}"

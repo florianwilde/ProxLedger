@@ -16,7 +16,7 @@ systemd-Dienste ein (Dashboard und Worker) und schreiben die erzeugten Zugangsda
 Auf dem Proxmox-VE-Host als root:
 
 ```bash
-bash -c "$(curl -fsSL https://git.wilde-server.de/fw/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
+bash -c "$(curl -fsSL https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
 ```
 
 Das Gerüst (`build.func`, `install.func`) lädt das Skript von den community-scripts nach – das ist

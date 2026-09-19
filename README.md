@@ -13,7 +13,7 @@ Auf jedem Host meldet ein schlanker Agent täglich per HTTPS seinen Status (Push
 Auf einem Rechner mit Docker:
 
 ```bash
-git clone <dieses-repo> proxledger && cd proxledger
+git clone https://git.wilde-server.de/florian.wilde/ProxLedger.git proxledger && cd proxledger
 cp .env.example .env
 # Pflichtangaben setzen: APP_SECRET, POSTGRES_PASSWORD, ADMIN_PASSWORD, APP_URL
 docker compose up -d
@@ -37,7 +37,7 @@ bash deploy/lxc-installer.sh          # eigener Installer: Container mit Docker 
 
 ```bash
 # Nach Art der Proxmox VE Helper-Scripts: Container mit Node und PostgreSQL direkt darin
-bash -c "$(curl -fsSL https://<git>/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
+bash -c "$(curl -fsSL https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
 ```
 
 Der zweite Weg folgt den Konventionen von [community-scripts.org](https://community-scripts.org) und

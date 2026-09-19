@@ -20,7 +20,7 @@ die Domäne, unter der sie entstanden sind, und die Adresse steckt im Installati
 **Docker** (beliebiger Host mit Docker):
 
 ```bash
-git clone <repo> proxledger && cd proxledger
+git clone https://git.wilde-server.de/florian.wilde/ProxLedger.git proxledger && cd proxledger
 cp .env.example .env
 # Pflicht: APP_SECRET, POSTGRES_PASSWORD, ADMIN_PASSWORD, APP_URL
 docker compose up -d
@@ -34,7 +34,7 @@ bash deploy/lxc-installer.sh                    # Container mit Docker darin
 
 ```bash
 # Nach Art der Proxmox VE Helper-Scripts, ohne Docker:
-bash -c "$(curl -fsSL https://<git>/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
+bash -c "$(curl -fsSL https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
 ```
 
 Der erste Administrator entsteht beim Einrichten aus `ADMIN_EMAIL` und `ADMIN_PASSWORD`; beim
