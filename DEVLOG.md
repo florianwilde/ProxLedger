@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 15 h 03 min
+**Gesamt:** 15 h 23 min
 
 | Issue | Zeit |
 |---|---|
@@ -35,6 +35,7 @@
 | #027 Rollen und Benutzerverwaltung | 1 h 20 min |
 | #028 Passkeys | 0 h 45 min |
 | #029 Einrichtungsdokumentation | 0 h 40 min |
+| #030 netbird Reverse Proxy | 0 h 20 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -57,7 +58,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.19.0
+**Version:** 0.19.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -161,6 +162,8 @@
 
 - Einrichtungsdokumentation (#029): Beim Aufschreiben des OIDC-Wegs fielen zwei Fehler auf, die nur hinter einem Reverse Proxy auftreten – Rückkehradresse und Code-Einlösung nahmen die interne Adresse. Beides behoben
 - Erkenntnis: Eine Anleitung Schritt für Schritt aufzuschreiben findet Fehler, die kein Test findet, weil sie nur in einer bestimmten Betriebsform auftreten
+
+- netbird Reverse Proxy (#030) in die Anleitung aufgenommen – Florians Hinweis, dass die Beta gut läuft. Beim Durchgehen der Möglichkeiten fiel der Fallstrick auf: Eine Anmeldehürde vor dem Dienst trifft auch `/api/agent` und legt alle Agents still
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

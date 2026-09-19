@@ -66,7 +66,77 @@ Danach einmal anmelden und darauf achten, dass die Adresszeile auf `proxledger.f
 
 ---
 
-## Weg B: netbird (kein offener Port)
+## Weg B: netbird Reverse Proxy (Beta)
+
+Seit v0.65 bringt netbird einen **eigenen Reverse Proxy** mit; v0.72 hat private Dienste und „Bring
+Your Own Proxy“ ergänzt. Damit entfällt der nginx Proxy Manager vollständig: netbird übernimmt die
+TLS-Terminierung und reicht den Verkehr durch das Mesh an den Ziel-Peer weiter – **ohne offenen Port
+und ohne Firewall-Regel auf dem ProxLedger-Host**.
+
+Für ProxLedger ist das der bequemste Weg, weil er die beiden Dinge löst, an denen es sonst hakt: ein
+gültiges Zertifikat (damit Passkeys funktionieren) und eine feste öffentliche Adresse.
+
+> **Beta.** Die Funktion ist als Beta gekennzeichnet. Sie unterstützt derzeit **kein Rosenpass**, und
+> wer netbird selbst hostet, braucht **Traefik** als äußeren Proxy – nur der beherrscht das nötige
+> TLS-Passthrough.
+
+### 1. Dienst anlegen
+
+Im netbird-Dashboard unter *Services → Reverse Proxy → Create*:
+
+| Reiter | Einstellung |
+|---|---|
+| **Details** | Mode `HTTP`; Subdomain `proxledger`, dazu eine Basis-Domäne; als Target den Peer mit ProxLedger, Protokoll `HTTP`, Port `3000` |
+| **Authentication** | für ProxLedger **aus lassen** – Begründung unten |
+| **Access Control** | nach Bedarf: IP-Bereiche, Länder, CrowdSec-Bewertung |
+| **Settings** | *Host header forwarding* **an**, ebenso das Umschreiben von Weiterleitungen |
+
+Das Zertifikat besorgt netbird selbst über ACME (Let's Encrypt); alternativ lassen sich eigene
+Zertifikate hinterlegen.
+
+**Host header forwarding ist nicht optional.** ProxLedger bildet Weiterleitungen, die OIDC-Rückkehr
+und die `rpID` der Passkeys aus der öffentlichen Adresse. Kommt beim Dienst nur die interne Adresse
+an, landet man nach der Anmeldung auf einer Adresse, die es im Browser nicht gibt.
+
+### 2. Adresse eintragen
+
+```bash
+APP_URL="https://proxledger.<ihre-basis-domaene>"
+```
+
+und dieselbe Adresse unter *Einstellungen → System* als **Adresse des Dashboards**. Danach neu starten.
+
+### 3. Warum die netbird-Anmeldung hier ausbleiben sollte
+
+netbird kann den Dienst zusätzlich absichern – per SSO über den eigenen Identitätsanbieter, per
+Passwort, PIN oder Kopfzeile. Verlockend, aber für ProxLedger meist falsch:
+
+**Die Absicherung gilt für den ganzen Dienst, also auch für `/api/agent`.** Die Agents auf den
+Proxmox-Hosts können sich dort nicht anmelden – sie weisen sich mit ihrem eigenen Token aus. Steht
+eine SSO-Hürde davor, melden alle Hosts stumm ins Leere, bis der Zwischenspeicher voll ist.
+
+Zwei Wege, wenn die zusätzliche Hürde gewünscht ist:
+
+1. **Zwei Dienste anlegen:** einen für die Oberfläche mit SSO, einen zweiten (eigene Subdomain) ohne
+   Anmeldung für die Agents. Im Installations-Einzeiler dann die Agent-Adresse verwenden
+   (`--url https://agents.<domaene>`).
+2. **Privater Dienst:** netbird kann einen Dienst so schalten, dass er **nur** aus dem eigenen Netz und
+   nur für ausgewählte Gruppen erreichbar ist. Das ist die sauberste Lösung, wenn sowohl Arbeitsplätze
+   als auch alle Proxmox-Hosts ohnehin im netbird-Netz sind: kein offener Zugang, trotzdem gültiges
+   Zertifikat und damit Passkeys.
+
+### 4. Prüfen
+
+```bash
+curl -fsS -o /dev/null -w "%{http_code}\n" https://proxledger.<domaene>/api/gesundheit
+curl -fsS https://proxledger.<domaene>/install.sh | grep -m1 DASHBOARD_URL
+```
+
+Die zweite Zeile muss die **öffentliche** Adresse zeigen – das ist die, die später in jedem Agent steht.
+
+---
+
+## Weg C: netbird ohne Reverse Proxy (kein offener Port)
 
 netbird spannt ein privates Netz über WireGuard. ProxLedger ist dann **nur** für Geräte im Netz
 erreichbar – kein Port im Internet, kein Zertifikat von außen nötig.
@@ -107,7 +177,8 @@ untereinander sprechen.
 ### 4. HTTPS trotzdem einrichten
 
 netbird verschlüsselt den Transport – der Browser weiß davon aber nichts, und **Passkeys bleiben ohne
-HTTPS gesperrt**. Zwei Möglichkeiten:
+HTTPS gesperrt**. Am einfachsten ist hier der Reverse Proxy aus Weg B (auch als privater Dienst
+nutzbar). Sonst bleiben zwei Möglichkeiten:
 
 - **Empfohlen:** Zusätzlich einen kleinen Reverse Proxy im netbird-Netz betreiben (nginx oder Caddy)
   mit einem Zertifikat für einen internen Namen, ausgestellt über DNS-01 – dafür muss nichts nach
@@ -121,14 +192,24 @@ betreiben. In dem Fall `APP_URL` auf genau diese Adresse setzen – sonst setzt 
 
 ---
 
-## Beides zusammen
+## Welcher Weg wofür
 
-Der häufigste Aufbau in der Praxis:
+| Lage | Empfehlung |
+|---|---|
+| Eigener Server, Domäne vorhanden, Kunden sollen zugreifen | **Weg A** – nginx Proxy Manager |
+| Alles läuft ohnehin über netbird, Zertifikat gewünscht | **Weg B** – netbird Reverse Proxy, bei Bedarf als privater Dienst |
+| Kein offener Zugang, keine Passkeys nötig | **Weg C** – netbird pur, `APP_URL` auf die netbird-Adresse |
+
+Weg B ist der kürzeste, wenn netbird ohnehin im Einsatz ist: ein Dienst, ein Zertifikat, kein
+offener Port. Nur die Beta-Kennzeichnung sollte man im Hinterkopf behalten und nicht gleichzeitig auf
+etwas anderes umstellen, damit bei einem Problem klar ist, woran es liegt.
+
+Der häufigste gemischte Aufbau:
 
 | Zugang | Weg |
 |---|---|
-| Oberfläche für Mitarbeiter und Kunden | nginx Proxy Manager mit Let's-Encrypt-Zertifikat |
-| Agents aus Kundennetzen | netbird, oder dieselbe öffentliche Adresse |
+| Oberfläche für Mitarbeiter und Kunden | nginx Proxy Manager oder netbird Reverse Proxy |
+| Agents aus Kundennetzen | netbird-Netz, oder dieselbe öffentliche Adresse |
 
 Wichtig ist nur, dass die Agents dieselbe Adresse erreichen, die im Installations-Einzeiler steht.
 Ändert sich die Adresse später, genügt der Einzeiler erneut auf jedem Host – die Zuordnung bleibt
@@ -136,6 +217,9 @@ erhalten, weil sie an der Maschinenkennung hängt, nicht an der Adresse.
 
 ## Merkposten
 
+0. **Keine Anmeldehürde vor `/api/agent`.** Egal welcher Proxy: Wer die Oberfläche zusätzlich absichert,
+   schließt damit auch die Agents aus – die weisen sich mit eigenem Token aus und können sich nirgends
+   anmelden.
 1. **Adresse zuerst festlegen, dann Passkeys anlegen.** Ein Passkey gilt nur für die Domäne, unter der
    er registriert wurde.
 2. **`APP_URL` und die Dashboard-Adresse müssen auf die öffentliche Adresse zeigen** – daraus entstehen

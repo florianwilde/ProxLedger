@@ -135,7 +135,7 @@ sie sich mit eigenen Tokens ausweisen.
 | Anleitung | Inhalt |
 |---|---|
 | [Inbetriebnahme](docs/betrieb/inbetriebnahme.md) | von null zum meldenden Host, in der richtigen Reihenfolge |
-| [Reverse Proxy](docs/betrieb/reverse-proxy.md) | HTTPS mit nginx Proxy Manager, privates Netz mit netbird |
+| [Reverse Proxy](docs/betrieb/reverse-proxy.md) | HTTPS mit nginx Proxy Manager, netbird Reverse Proxy (Beta) oder netbird pur |
 | [authentik](docs/betrieb/authentik.md) | Anmeldung über OIDC, samt Fehlerbildern |
 | [Sicherung](docs/betrieb/sicherung.md) | was gesichert wird – und wie man es zurückspielt |
 

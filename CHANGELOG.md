@@ -17,6 +17,11 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.19.1] – 2026-09-19
+
+### Hinzugefügt
+- Anleitung für den netbird Reverse Proxy (Beta): Dienst anlegen, Zertifikat, private Dienste – samt Warnung, dass eine Anmeldehürde vor dem Dienst auch die Agents aussperrt (#030)
+
 ## [0.19.0] – 2026-09-19
 
 ### Hinzugefügt
