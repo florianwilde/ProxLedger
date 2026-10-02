@@ -17,6 +17,12 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.19.2] – 2026-10-03
+
+### Sicherheit
+- Next.js auf 16.3.8 angehoben. Für 16.2.0 bis 16.3.5 wurde eine als **kritisch** eingestufte Lücke in `next/og` gemeldet (Remote Code Execution, GHSA-vcvr-r3jv-pc5j). ProxLedger nutzt `next/og` nicht, war also nicht angreifbar – die Fassung gehört trotzdem aktualisiert, bevor etwas produktiv läuft
+- `@simplewebauthn/server` auf 14.0.3
+
 ## [0.19.1] – 2026-09-19
 
 ### Hinzugefügt

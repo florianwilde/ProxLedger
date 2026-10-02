@@ -58,7 +58,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.19.1
+**Version:** 0.19.2
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -164,6 +164,10 @@
 - Erkenntnis: Eine Anleitung Schritt für Schritt aufzuschreiben findet Fehler, die kein Test findet, weil sie nur in einer bestimmten Betriebsform auftreten
 
 - netbird Reverse Proxy (#030) in die Anleitung aufgenommen – Florians Hinweis, dass die Beta gut läuft. Beim Durchgehen der Möglichkeiten fiel der Fallstrick auf: Eine Anmeldehürde vor dem Dienst trifft auch `/api/agent` und legt alle Agents still
+
+### 03.10.2026 – Prüfung vor dem Einsatz
+- `npm audit` vor der Freigabe erneut laufen lassen: In den zwei Wochen seit dem letzten Stand kam eine kritische Meldung zu Next.js dazu (RCE in `next/og`). Wir nutzen `next/og` nicht, waren also nicht angreifbar – angehoben auf 16.3.8, Tests und Build grün
+- Lehre für den Betrieb: Vor jedem Produktivgang und danach regelmäßig `npm audit` prüfen, nicht nur bei Änderungen am Code
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
