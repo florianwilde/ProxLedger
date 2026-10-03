@@ -4,7 +4,7 @@ import { tokenAusHeader } from "@/lib/tokens";
 import { AgentApiFehler } from "./service";
 
 /** Version des Agent-Skripts, die das Dashboard ausliefert (siehe #005). */
-export const AGENT_VERSION = "0.2.1";
+export const AGENT_VERSION = "0.2.2";
 
 export function fehlerAntwort(status: number, code: string, nachricht: string, extra?: HeadersInit) {
   return Response.json({ ok: false, code, fehler: nachricht }, { status, headers: extra });

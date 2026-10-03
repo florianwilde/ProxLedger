@@ -12,7 +12,7 @@
 set -o nounset
 set -o pipefail
 
-AGENT_VERSION="0.2.1"
+AGENT_VERSION="0.2.2"
 CONFIG_DATEI="${PROXLEDGER_CONFIG:-/etc/proxledger/agent.conf}"
 SPOOL_VERZEICHNIS="${PROXLEDGER_SPOOL:-/var/lib/proxledger/spool}"
 SPOOL_MAXIMUM=30
@@ -175,9 +175,24 @@ cluster_name() {
 
 # Namen aller Cluster-Mitglieder laut corosync. Auch Knoten ohne Agent stehen hier –
 # daraus erkennt das Dashboard vergessene Knoten (#022).
+# Namen aller Cluster-Knoten aus `pvecm nodes`.
+#
+# Die Spaltenzahl ist nicht fest: Mit einem QDevice steht zwischen Votes und Name noch dessen
+# Zustand (A,V,NMW oder NR). Deshalb wird die Spalte "Name" aus der Kopfzeile bestimmt, statt
+# blind die dritte zu nehmen. Die Zeile des QDevice selbst traegt die Nodeid 0 und ist kein Knoten.
 cluster_mitglieder() {
   if command -v pvecm >/dev/null 2>&1; then
-    pvecm nodes 2>/dev/null | awk '/^[[:space:]]*[0-9]+[[:space:]]+[0-9]+/ {print $3}' | sed 's/ *(local)//'
+    pvecm nodes 2>/dev/null | awk '
+      /Nodeid/ {
+        for (i = 1; i <= NF; i++) if ($i == "Name") spalte = i
+        next
+      }
+      /^[[:space:]]*[0-9]+[[:space:]]+[0-9]+/ {
+        if ($1 == 0) next
+        name = (spalte ? $spalte : $3)
+        sub(/\(.*/, "", name)
+        if (name != "") print name
+      }'
   fi
 }
 
