@@ -135,7 +135,15 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
                         ) : (
                           position.bezeichnung
                         )}{" "}
-                        · {formatEuro(Number(position.nettoBetrag))}
+                        ·{" "}
+                        {position.rabatt ? (
+                          <>
+                            {formatEuro(Number(position.nettoBetrag))} − {formatEuro(Number(position.rabatt))}{" "}
+                            = <strong>{formatEuro(Number(position.nettoBetrag) - Number(position.rabatt))}</strong>
+                          </>
+                        ) : (
+                          formatEuro(Number(position.nettoBetrag))
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -159,9 +167,10 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
                     nettoBetrag: einkaufBetrag,
                     ustSatz: Number(einkauf?.ustSatz ?? vorgaben.steuersatz),
                     rabatt:
-                      einkauf?.rabatt === null || einkauf?.rabatt === undefined
+                      laufzeit.proxmoxPosition?.rabatt === null ||
+                      laufzeit.proxmoxPosition?.rabatt === undefined
                         ? null
-                        : Number(einkauf.rabatt),
+                        : Number(laufzeit.proxmoxPosition.rabatt),
                     zahlungsart: einkauf?.zahlungsart ?? null,
                     bezahlt: einkauf?.bezahlt ?? false,
                     bezahltAm: einkauf?.bezahltAm?.toISOString() ?? null,

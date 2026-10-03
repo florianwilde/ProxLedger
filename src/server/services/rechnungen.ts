@@ -68,7 +68,8 @@ export async function proxmoxRechnungErfassen(laufzeitId: string, eingabe: Proxm
   if (!laufzeit) throw new RechnungsFehler("Laufzeit nicht gefunden.");
   if (!eingabe.nummer.trim()) throw new RechnungsFehler("Bitte eine Rechnungsnummer angeben.");
 
-  const { steuersatz: vorgabeSteuersatz } = await einstellungen();
+  // Einkauf bei Proxmox: eigener Satz, Vorgabe 0 wegen Reverse Charge.
+  const { steuersatzEinkauf: vorgabeSteuersatz } = await einstellungen();
   const nummer = eingabe.nummer.trim();
   const bezeichnung = `${laufzeit.key} · ${laufzeit.host.hostname} · ${laufzeit.start.toISOString().slice(0, 10)} bis ${laufzeit.ende.toISOString().slice(0, 10)}`;
 
@@ -82,7 +83,6 @@ export async function proxmoxRechnungErfassen(laufzeitId: string, eingabe: Proxm
             datum: eingabe.datum,
             faelligAm: eingabe.faelligAm,
             ustSatz: eingabe.ustSatz ?? vorgabeSteuersatz,
-            rabatt: eingabe.rabatt ?? null,
             zahlungsart: eingabe.zahlungsart ?? null,
             bezahlt: eingabe.bezahlt,
             bezahltAm: eingabe.bezahlt ? (eingabe.bezahltAm ?? new Date()) : null,
@@ -97,7 +97,6 @@ export async function proxmoxRechnungErfassen(laufzeitId: string, eingabe: Proxm
             faelligAm: eingabe.faelligAm,
             nettoBetrag: eingabe.nettoBetrag,
             ustSatz: eingabe.ustSatz ?? vorgabeSteuersatz,
-            rabatt: eingabe.rabatt ?? null,
             zahlungsart: eingabe.zahlungsart ?? null,
             bezahlt: eingabe.bezahlt,
             bezahltAm: eingabe.bezahlt ? (eingabe.bezahltAm ?? new Date()) : null,
@@ -109,10 +108,20 @@ export async function proxmoxRechnungErfassen(laufzeitId: string, eingabe: Proxm
     const position = laufzeit.proxmoxPosition
       ? await tx.proxmoxRechnungPosition.update({
           where: { id: laufzeit.proxmoxPosition.id },
-          data: { rechnungId: rechnung.id, bezeichnung, nettoBetrag: eingabe.nettoBetrag },
+          data: {
+            rechnungId: rechnung.id,
+            bezeichnung,
+            nettoBetrag: eingabe.nettoBetrag,
+            rabatt: eingabe.rabatt ?? null,
+          },
         })
       : await tx.proxmoxRechnungPosition.create({
-          data: { rechnungId: rechnung.id, bezeichnung, nettoBetrag: eingabe.nettoBetrag },
+          data: {
+            rechnungId: rechnung.id,
+            bezeichnung,
+            nettoBetrag: eingabe.nettoBetrag,
+            rabatt: eingabe.rabatt ?? null,
+          },
         });
 
     await tx.laufzeit.update({
@@ -120,9 +129,11 @@ export async function proxmoxRechnungErfassen(laufzeitId: string, eingabe: Proxm
       data: { proxmoxPositionId: position.id, status: "BESTAETIGT" },
     });
 
-    // Der Rechnungsbetrag ist immer die Summe der Positionen.
+    // Der Rechnungsbetrag ist immer die Summe der Positionen – nach Abzug ihrer Rabatte.
+    // Genau so steht es auch auf der Rechnung von Proxmox: Listenpreise und Rabatte als eigene
+    // Zeilen, darunter die Summe.
     const positionen = await tx.proxmoxRechnungPosition.findMany({ where: { rechnungId: rechnung.id } });
-    const summe = positionen.reduce((s, p) => s + Number(p.nettoBetrag), 0);
+    const summe = positionen.reduce((s, p) => s + Number(p.nettoBetrag) - Number(p.rabatt ?? 0), 0);
     await tx.proxmoxRechnung.update({ where: { id: rechnung.id }, data: { nettoBetrag: summe } });
 
     await protokolliere("proxmox_rechnung.erfasst", "ProxmoxRechnung", rechnung.id, {

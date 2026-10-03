@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 18 h 58 min
+**Gesamt:** 19 h 53 min
 
 | Issue | Zeit |
 |---|---|
@@ -42,6 +42,7 @@
 | #034 Bedienung auf dem Handy | 0 h 40 min |
 | #035 Tabellen als Karten | 0 h 50 min |
 | #036 Standort am Host | 0 h 30 min |
+| #037 Rabatt je Position | 0 h 55 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -64,7 +65,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.21.0
+**Version:** 0.22.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -188,6 +189,10 @@
 - Breite Tabellen werden auf dem Telefon zu Karten (#035); dabei fiel auf, dass `pl-touch-target` am Kontrollkästchen selbst saß und es zum leeren Kasten aufblies
 - Standort am Host (#036): Die Meldung lautete „kann man nicht einstellen“ – tatsächlich löschte jede Kundenzuweisung den vorhandenen Standort, weil das Formular ihn nicht mitsendete und die Aktion ihn trotzdem las
 - Beide Fehler kamen aus dem echten Einsatz, nicht aus den Tests. Das bleibt die ergiebigste Quelle
+
+- Eine echte Proxmox-Rechnung hat drei Fehler im Rechnungsteil aufgedeckt (#037): Rabatt an der falschen Ebene, nirgends abgezogen, und 19 % USt als Vorgabe, wo Reverse Charge gilt
+- Florians Schilderung des Ablaufs (unbezahlte Rechnung → Kundenrechnung → Kunde zahlt → selbst zahlen → PAID-Fassung) ergab die zwölfte Warnregel
+- Lehre: Ein Beleg aus der Praxis sagt mehr über das Datenmodell als jede Annahme darüber, wie Rechnungen aussehen
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

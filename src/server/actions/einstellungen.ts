@@ -35,6 +35,7 @@ export async function einstellungenSpeichernAktion(
 
     waehrung: text(formular, "waehrung") || vorher.waehrung,
     steuersatz: zahl(formular, "steuersatz"),
+    steuersatzEinkauf: zahl(formular, "steuersatzEinkauf"),
     zahlungszielTage: zahl(formular, "zahlungszielTage"),
     margeProzent: zahl(formular, "margeProzent"),
 

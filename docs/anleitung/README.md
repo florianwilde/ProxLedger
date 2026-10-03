@@ -251,6 +251,23 @@ Positionen und wird automatisch nachgeführt.
 Die Jahresbahn zeigt zwölf Monate mit einer Linie für „heute“, gruppiert nach Kunde. Darunter stehen die
 Abläufe der nächsten 90 Tage und die bereits abgelaufenen Subscriptions.
 
+### Der übliche Ablauf
+
+1. Proxmox schickt die Rechnung zunächst als **UNPAID**. Sie wird hier erfasst, Haken „bezahlt“ bleibt leer.
+2. Die Kundenrechnung wird geschrieben und verschickt.
+3. Der Kunde zahlt. Jetzt meldet ProxLedger: *Kunde hat bezahlt – Proxmox-Rechnung noch offen*.
+4. Man zahlt bei Proxmox, setzt den Haken „bezahlt“ und lädt die **PAID**-Fassung des PDFs hoch – sie
+   ersetzt die alte.
+
+### Die Felder der Proxmox-Rechnung
+
+| Feld | Inhalt |
+|---|---|
+| Rechnungsnummer | Nummer von Proxmox. **Dieselbe Nummer bei einer weiteren Laufzeit** hängt diese als Position an dieselbe Rechnung – so werden Sammelrechnungen über mehrere Hosts abgebildet. |
+| Listenpreis netto | Der Betrag dieser **einen** Laufzeit, wie er auf der Rechnung steht (z. B. 1.100 €). |
+| Rabatt | Der „Client Discount“ dieser Laufzeit (z. B. 110 €). Gerechnet wird mit Listenpreis minus Rabatt. |
+| USt | Bei Proxmox in aller Regel 0 – Reverse Charge nach Art. 196. Die Vorgabe steht unter *Einstellungen → System*. |
+
 ---
 
 ## 7. Warnungen

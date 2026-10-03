@@ -24,7 +24,13 @@ export const einstellungenSchema = z.object({
 
   // --- Kaufmännisches ---
   waehrung: z.enum(["EUR", "CHF"]).default("EUR"),
+  /** Steuersatz der Kundenrechnungen. */
   steuersatz: z.number().min(0).max(100).default(19),
+  /**
+   * Steuersatz der Proxmox-Rechnungen. Vorgabe 0: Proxmox sitzt in Österreich und rechnet
+   * gegenüber Unternehmen mit USt-IdNr. über Reverse Charge ab (#037).
+   */
+  steuersatzEinkauf: z.number().min(0).max(100).default(0),
   zahlungszielTage: z.number().int().min(0).max(120).default(14),
   /** Vorschlag für den Aufschlag auf den Einkaufspreis beim Anlegen einer Kundenrechnung. */
   margeProzent: z.number().min(0).max(500).default(20),

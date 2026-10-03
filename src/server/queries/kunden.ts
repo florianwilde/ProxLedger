@@ -87,7 +87,11 @@ export async function laufzeitenVonKunde(kundeId: string) {
       einkaufSichtbar && laufzeit.proxmoxPosition
       ? {
           nummer: laufzeit.proxmoxPosition.rechnung.nummer,
-          nettoBetrag: Number(laufzeit.proxmoxPosition.nettoBetrag),
+          // Nach Abzug des Rabatts – siehe #037.
+          nettoBetrag:
+            Number(laufzeit.proxmoxPosition.nettoBetrag) - Number(laufzeit.proxmoxPosition.rabatt ?? 0),
+          listenpreis: Number(laufzeit.proxmoxPosition.nettoBetrag),
+          rabatt: Number(laufzeit.proxmoxPosition.rabatt ?? 0),
           bezahlt: laufzeit.proxmoxPosition.rechnung.bezahlt,
           faelligAm: laufzeit.proxmoxPosition.rechnung.faelligAm,
         }

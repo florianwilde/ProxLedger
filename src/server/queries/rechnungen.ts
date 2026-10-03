@@ -76,8 +76,11 @@ export async function rechnungsListe(filter: RechnungsFilter) {
   const zeilen = laufzeiten.map((laufzeit) => {
     // Einkaufspreis und Marge sind nichts für ein Kundenkonto. Sie werden hier entfernt,
     // nicht erst in der Anzeige – sonst stünden sie im ausgelieferten HTML.
+    // Gerechnet wird mit dem Betrag nach Abzug des Rabatts – das ist, was tatsächlich gezahlt wird.
     const einkauf =
-      einkaufSichtbar && laufzeit.proxmoxPosition ? Number(laufzeit.proxmoxPosition.nettoBetrag) : null;
+      einkaufSichtbar && laufzeit.proxmoxPosition
+        ? Number(laufzeit.proxmoxPosition.nettoBetrag) - Number(laufzeit.proxmoxPosition.rabatt ?? 0)
+        : null;
     const verkauf = laufzeit.kundenPosition ? Number(laufzeit.kundenPosition.nettoBetrag) : null;
 
     return {

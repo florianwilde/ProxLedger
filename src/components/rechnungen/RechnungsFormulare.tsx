@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { kundenrechnungSpeichern, proxmoxRechnungSpeichern } from "@/server/actions/rechnungen";
 import type { AktionsErgebnis } from "@/server/actions/kunden";
+import { formatEuro } from "@/lib/format";
 
 const LEER: AktionsErgebnis = {};
 
@@ -41,6 +42,13 @@ export function ProxmoxRechnungFormular({
   werte: ProxmoxWerte;
 }) {
   const [ergebnis, aktion, laeuft] = useActionState(proxmoxRechnungSpeichern, LEER);
+
+  // Listenpreis und Rabatt im Zustand, damit der tatsächlich gezahlte Betrag sofort danebensteht.
+  const [netto, setNetto] = useState(werte.nettoBetrag === null ? "" : String(werte.nettoBetrag));
+  const [rabatt, setRabatt] = useState(werte.rabatt === null ? "" : String(werte.rabatt));
+  const zahl = (wert: string) => Number(wert.replace(",", ".")) || 0;
+  const nettoZahl = zahl(netto);
+  const rabattZahl = zahl(rabatt);
 
   return (
     <form action={aktion}>
@@ -93,16 +101,18 @@ export function ProxmoxRechnungFormular({
 
         <div className="col-md-3">
           <label className="form-label" htmlFor="px-netto">
-            Netto (€) *
+            Listenpreis netto (€) *
           </label>
           <input
             id="px-netto"
             name="nettoBetrag"
             className="form-control"
             inputMode="decimal"
-            defaultValue={werte.nettoBetrag ?? ""}
+            value={netto}
+            onChange={(e) => setNetto(e.target.value)}
             required
           />
+          <div className="form-text">Betrag dieser einen Laufzeit, wie er auf der Rechnung steht.</div>
         </div>
         <div className="col-md-2">
           <label className="form-label" htmlFor="px-ust">
@@ -125,8 +135,18 @@ export function ProxmoxRechnungFormular({
             name="rabatt"
             className="form-control"
             inputMode="decimal"
-            defaultValue={werte.rabatt ?? ""}
+            value={rabatt}
+            onChange={(e) => setRabatt(e.target.value)}
           />
+          <div className="form-text">
+            {rabattZahl > 0 ? (
+              <>
+                Gerechnet wird mit <strong>{formatEuro(nettoZahl - rabattZahl)}</strong>.
+              </>
+            ) : (
+              "Proxmox weist ihn je Key als eigene Zeile aus („Client Discount“)."
+            )}
+          </div>
         </div>
         <div className="col-md-4">
           <label className="form-label" htmlFor="px-zahlungsart">

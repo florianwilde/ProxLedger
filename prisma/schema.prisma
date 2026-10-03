@@ -261,9 +261,10 @@ model ProxmoxRechnung {
   nummer       String    @unique
   datum        DateTime  @db.Date
   faelligAm    DateTime? @db.Date
+  /// Summe der Positionen nach Abzug ihrer Rabatte – wird beim Speichern nachgeführt.
   nettoBetrag  Decimal   @db.Decimal(12, 2)
-  ustSatz      Decimal   @default(19.00) @db.Decimal(5, 2)
-  rabatt       Decimal?  @db.Decimal(12, 2)
+  /// Bei Proxmox in aller Regel 0: Reverse Charge nach Art. 196 (#037).
+  ustSatz      Decimal   @default(0.00) @db.Decimal(5, 2)
   zahlungsart  String?
   bezahlt      Boolean   @default(false)
   bezahltAm    DateTime? @db.Date
@@ -284,7 +285,10 @@ model ProxmoxRechnungPosition {
   rechnungId  String
   bezeichnung String
   menge       Int     @default(1)
+  /// Listenpreis dieser Position, wie er auf der Rechnung steht.
   nettoBetrag Decimal @db.Decimal(12, 2)
+  /// Rabatt dieser Position. Proxmox weist ihn je Key als eigene Zeile aus (#037).
+  rabatt      Decimal? @db.Decimal(12, 2)
 
   rechnung ProxmoxRechnung @relation(fields: [rechnungId], references: [id], onDelete: Cascade)
   laufzeit Laufzeit?
