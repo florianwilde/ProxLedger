@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 22 h 33 min
+**Gesamt:** 22 h 53 min
 
 | Issue | Zeit |
 |---|---|
@@ -47,6 +47,7 @@
 | #039 Zugang zur Laufzeit | 0 h 30 min |
 | #040 Schlagworte sichtbar | 0 h 40 min |
 | #041 Doppelte Hosts | 0 h 50 min |
+| #042 QDevice im Cluster | 0 h 20 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -69,7 +70,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.24.0
+**Version:** 0.24.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -211,6 +212,9 @@
 
 - Doppelte Hosts (#041): Zwei Einträge desselben Namens beim selben Kunden entstehen, wenn sich die Maschinenkennung ändert. Neue Warnregel plus die bis dahin fehlende Möglichkeit, einen Host überhaupt loszuwerden
 - Bewusst kein automatisches Zusammenführen: Es müsste raten, welcher Eintrag welche Rechnung erbt
+
+- QDevice im Cluster (#042): Der Agent nahm blind die dritte Spalte von `pvecm nodes` als Namen. Mit QDevice steht dort der Zustand des QDevice
+- Dritter Fall dieser Art: Was beim Feldtest auf einem Cluster stimmte, stimmt nicht überall. Spalten gehören über ihre Überschrift angesprochen
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

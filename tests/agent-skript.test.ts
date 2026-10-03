@@ -241,6 +241,25 @@ productname: Proxmox "VE" \\ Subscription	mit Tab`,
     expect(report.host.clusterMitglieder).toEqual(["hv-rz5-pve-01", "hv-rz5-pve-02", "hv-rz5-pve-03"]);
   });
 
+  it("liest die Knoten auch mit QDevice-Spalte richtig", () => {
+    // Mit einem QDevice steht zwischen Votes und Name dessen Zustand. Vorher landeten
+    // „A,V,NMW“ und „NR“ als Knotennamen im Report (#042).
+    befehlErsetzen("pvesubscription", PVE_SUBSCRIPTION);
+    befehlErsetzen(
+      "pvecm",
+      `Membership information
+----------------------
+    Nodeid      Votes    Qdevice Name
+         1          1    A,V,NMW hv-pve-01
+         2          1    A,V,NMW hv-pve-02 (local)
+         3          1         NR hv-pve-05
+         0          1            Qdevice (votes 1)`,
+    );
+
+    const report = reportErzeugen() as { host: { clusterMitglieder: string[] } };
+    expect(report.host.clusterMitglieder).toEqual(["hv-pve-01", "hv-pve-02", "hv-pve-05"]);
+  });
+
   it("meldet eine leere Liste, wenn der Host in keinem Cluster ist", () => {
     befehlErsetzen("pvesubscription", PVE_SUBSCRIPTION);
 

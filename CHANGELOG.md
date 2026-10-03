@@ -17,6 +17,12 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.24.1] – 2026-10-03
+
+### Behoben
+- **Cluster mit QDevice meldeten falsche Knotennamen** (`A,V,NMW`, `NR`) und das QDevice als zusätzlichen Knoten: `pvecm nodes` hat dann eine Spalte mehr. Die Namensspalte wird jetzt aus der Kopfzeile bestimmt (#042)
+- Agent-Version 0.2.2
+
 ## [0.24.0] – 2026-10-03
 
 ### Hinzugefügt
