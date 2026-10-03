@@ -195,7 +195,8 @@ async function main() {
       console.log(`  ${seite}-dunkel.png`);
     }
 
-    for (const seite of ["dashboard", "hosts"]) {
+    // Die Seiten mit den breitesten Tabellen – dort entscheidet sich die Mobilansicht (#035).
+    for (const seite of ["dashboard", "hosts", "kunden", "rechnungen", "jahresbahn"]) {
       const eintrag = SEITEN.find((s) => s.name === seite);
       await aufnehmen(hell, eintrag.pfad, path.join(ZIEL, `mobil-${seite}.png`), 390, 1500, adresse);
       console.log(`  mobil-${seite}.png`);

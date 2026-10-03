@@ -175,6 +175,9 @@ weitergeben, und der Zurück-Knopf funktioniert wie erwartet.
 
 ---
 
+Im Detail eines Hosts lassen sich Kunde **und Standort** gemeinsam ändern. Die Standortliste zeigt nur
+die Standorte des gewählten Kunden; angelegt werden sie auf der Kundenseite.
+
 ## 4a. Cluster
 
 **In Proxmox hat jeder Knoten eine eigene Subscription** mit eigener Server-ID – ein Cluster mit drei

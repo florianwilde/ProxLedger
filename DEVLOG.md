@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 17 h 38 min
+**Gesamt:** 18 h 58 min
 
 | Issue | Zeit |
 |---|---|
@@ -40,6 +40,8 @@
 | #032 LXC-Installation korrigiert | 0 h 20 min |
 | #033 Weiterleitung auf Lausch-Adresse | 0 h 30 min |
 | #034 Bedienung auf dem Handy | 0 h 40 min |
+| #035 Tabellen als Karten | 0 h 50 min |
+| #036 Standort am Host | 0 h 30 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -62,7 +64,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.20.2
+**Version:** 0.21.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -182,6 +184,10 @@
 
 - Mobile Bedienung (#034): Das Menü ließ sich auf dem Telefon nicht schließen – AdminLTE-Markup ohne AdminLTE-JavaScript. Eigener Zustand, abdunkelnde Fläche, Schließen beim Navigieren und mit Escape
 - Lehre: Die Mobilansicht war mit Screenshots geprüft, nicht mit den Fingern. Ein Bild zeigt nicht, dass etwas nicht wieder weggeht
+
+- Breite Tabellen werden auf dem Telefon zu Karten (#035); dabei fiel auf, dass `pl-touch-target` am Kontrollkästchen selbst saß und es zum leeren Kasten aufblies
+- Standort am Host (#036): Die Meldung lautete „kann man nicht einstellen“ – tatsächlich löschte jede Kundenzuweisung den vorhandenen Standort, weil das Formular ihn nicht mitsendete und die Aktion ihn trotzdem las
+- Beide Fehler kamen aus dem echten Einsatz, nicht aus den Tests. Das bleibt die ergiebigste Quelle
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

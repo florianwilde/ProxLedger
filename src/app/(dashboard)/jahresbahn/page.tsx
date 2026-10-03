@@ -41,8 +41,8 @@ export default async function JahresbahnSeite() {
               <p className="mb-0 text-body-secondary">Noch kein Host mit Ablaufdatum gemeldet.</p>
             ) : (
               <div className="table-responsive">
-                <div style={{ minWidth: "820px" }}>
-                  <div className="d-flex text-body-secondary small mb-2" style={{ marginLeft: "13rem" }}>
+                <div className="pl-timeline">
+                  <div className="d-flex text-body-secondary small mb-2 pl-timeline-kopf">
                     {monate.map((monat) => (
                       <div key={monat} style={{ width: `${100 / 12}%` }}>
                         {monat}
@@ -72,7 +72,7 @@ export default async function JahresbahnSeite() {
                               : "var(--pl-info)";
                         return (
                           <div key={eintrag.hostId} className="d-flex align-items-center mb-1">
-                            <div className="small text-truncate" style={{ width: "13rem" }}>
+                            <div className="small text-truncate pl-timeline-name">
                               <Link href={`/hosts/${eintrag.hostId}`} className="text-decoration-none">
                                 {eintrag.hostname}
                               </Link>
@@ -112,7 +112,8 @@ export default async function JahresbahnSeite() {
             )}
 
             <p className="small text-body-secondary mb-0">
-              Die rote Linie markiert heute ({formatDatum(jetzt)}). Balkenfarbe: rot unter 14 Tagen, gelb
+              <span className="d-md-none">Seitwärts wischen zeigt die späteren Monate. </span>Die rote
+              Linie markiert heute ({formatDatum(jetzt)}). Balkenfarbe: rot unter 14 Tagen, gelb
               unter 30 Tagen, sonst blau. Ein Klick führt zur Laufzeit mit ihren Rechnungen.
             </p>
           </Card>
@@ -125,11 +126,11 @@ export default async function JahresbahnSeite() {
                 tabelle
               >
                 <div className="table-responsive">
-                  <table className="table table-striped align-middle">
+                  <table className="table table-striped align-middle pl-karten-tabelle">
                     <thead>
                       <tr>
-                        <th scope="col">Ablauf</th>
                         <th scope="col">Host</th>
+                        <th scope="col">Ablauf</th>
                         <th scope="col">Kunde</th>
                         <th scope="col">Key</th>
                         <th scope="col">Proxmox</th>
@@ -139,15 +140,15 @@ export default async function JahresbahnSeite() {
                     <tbody>
                       {naechste90Tage.map((eintrag) => (
                         <tr key={eintrag.hostId}>
-                          <td>
-                            <AblaufBadge datum={eintrag.ablauf.toISOString()} heute={jetzt} />
-                          </td>
-                          <td>
-                            <Link href={`/hosts/${eintrag.hostId}`} className="text-decoration-none">
+                          <td className="pl-karten-kopf">
+                            <Link href={`/hosts/${eintrag.hostId}`} className="fw-semibold text-decoration-none">
                               {eintrag.hostname}
                             </Link>
                           </td>
-                          <td>
+                          <td data-label="Ablauf">
+                            <AblaufBadge datum={eintrag.ablauf.toISOString()} heute={jetzt} />
+                          </td>
+                          <td data-label="Kunde">
                             {eintrag.kunde ? (
                               <Link href={`/kunden/${eintrag.kunde.id}`} className="text-decoration-none">
                                 {eintrag.kunde.name}
@@ -156,13 +157,13 @@ export default async function JahresbahnSeite() {
                               <span className="badge pl-bg-neutral">Nicht zugeordnet</span>
                             )}
                           </td>
-                          <td>
+                          <td data-label="Key">
                             <CopyableCode wert={eintrag.key} />
                           </td>
-                          <td>
+                          <td data-label="Proxmox">
                             <EinkaufBadge bezahlt={eintrag.einkaufBezahlt} />
                           </td>
-                          <td>
+                          <td data-label="Kundenrechnung">
                             <VerkaufBadge erstellt={eintrag.verkaufErstellt ?? false} bezahlt={false} />
                           </td>
                         </tr>

@@ -382,10 +382,128 @@ body {
   transform: translateX(-50%);
 }
 
+/* Zeitleiste der Jahresbahn: Breiten als Klassen, damit sie auf dem Telefon kleiner ausfallen. */
+.pl-timeline {
+  min-width: 820px;
+}
+
+.pl-timeline-kopf {
+  margin-left: 13rem;
+}
+
+.pl-timeline-name {
+  width: 13rem;
+}
+
 /* ---------- Mobil ---------- */
 
 @media (max-width: 575.98px) {
   .pl-touch-target {
     min-height: 44px;
+  }
+
+  /*
+   * Ein Kontrollkästchen darf nicht selbst 44 px hoch werden – sonst steht in der Zeile ein
+   * großer leerer Kasten. Die Fläche zum Treffen bekommt stattdessen sein Umfeld (#035).
+   */
+  .pl-haken {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .pl-haken .form-check-input {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+}
+
+/*
+ * Breite Tabellen auf dem Telefon: Jede Zeile wird zur Karte, jede Zelle bekommt ihre
+ * Beschriftung aus `data-label` davor. Das ersetzt das Scrollen nach rechts, bei dem die
+ * Hälfte der Angaben unsichtbar bleibt (#035).
+ *
+ * Zellen ohne `data-label` stehen für sich – etwa eine Zeile mit Knöpfen.
+ */
+@media (max-width: 767.98px) {
+  .pl-karten-tabelle,
+  .pl-karten-tabelle tbody,
+  .pl-karten-tabelle tr,
+  .pl-karten-tabelle td {
+    display: block;
+    width: 100%;
+  }
+
+  .pl-karten-tabelle thead {
+    display: none;
+  }
+
+  .pl-karten-tabelle tr {
+    padding: 0.35rem 0.25rem;
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  .pl-karten-tabelle tr:last-child {
+    border-bottom: 0;
+  }
+
+  .pl-karten-tabelle td {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.3rem 0.75rem;
+    text-align: right;
+    border: 0;
+  }
+
+  .pl-karten-tabelle td::before {
+    flex: 0 0 auto;
+    font-size: 0.8125rem;
+    color: var(--bs-secondary-color);
+    text-align: left;
+    content: attr(data-label);
+  }
+
+  /* Die erste Zelle trägt den Namen – sie steht als Überschrift der Karte für sich. */
+  .pl-karten-tabelle td.pl-karten-kopf {
+    display: block;
+    padding-top: 0.6rem;
+    font-size: 1.0625rem;
+    text-align: left;
+  }
+
+  .pl-karten-tabelle td.pl-karten-kopf::before {
+    content: none;
+  }
+
+  /* Lange Namen und Schlüssel sollen umbrechen, aber nicht Buchstabe für Buchstabe. */
+  .pl-karten-tabelle td a,
+  .pl-karten-tabelle td .pl-mono {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  /* Auf dem Telefon bleibt mehr Platz für die Monate, wenn die Namensspalte schrumpft. */
+  .pl-timeline {
+    min-width: 560px;
+  }
+
+  .pl-timeline-kopf {
+    margin-left: 7rem;
+  }
+
+  .pl-timeline-name {
+    width: 7rem;
+  }
+
+  /* Kartenkopf mit Knöpfen: untereinander statt nebeneinander über den Rand hinaus. */
+  .card-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .card-header .card-tools {
+    flex-wrap: wrap;
+    width: 100%;
   }
 }
