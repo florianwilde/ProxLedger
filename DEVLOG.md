@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 15 h 23 min
+**Gesamt:** 16 h 08 min
 
 | Issue | Zeit |
 |---|---|
@@ -36,6 +36,7 @@
 | #028 Passkeys | 0 h 45 min |
 | #029 Einrichtungsdokumentation | 0 h 40 min |
 | #030 netbird Reverse Proxy | 0 h 20 min |
+| #031 Update für beide Varianten | 0 h 45 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -58,7 +59,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.19.2
+**Version:** 0.20.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -168,6 +169,9 @@
 ### 03.10.2026 – Prüfung vor dem Einsatz
 - `npm audit` vor der Freigabe erneut laufen lassen: In den zwei Wochen seit dem letzten Stand kam eine kritische Meldung zu Next.js dazu (RCE in `next/og`). Wir nutzen `next/og` nicht, waren also nicht angreifbar – angehoben auf 16.3.8, Tests und Build grün
 - Lehre für den Betrieb: Vor jedem Produktivgang und danach regelmäßig `npm audit` prüfen, nicht nur bei Änderungen am Code
+
+- Update- und Sicherungsskript für beide Installationsarten (#031). Beim Durchspielen zwei Fehler gefunden: Die Zustandsprüfung des Web-Containers konnte nie gelingen (Next bindet an `HOSTNAME`, Docker setzt dort den Containernamen), und eine fehlgeschlagene Sicherung hielt die Aktualisierung nicht auf
+- Lehre: Ein Skript, das nie unter echten Bedingungen gelaufen ist, ist eine Behauptung. Erst der Durchlauf gegen einen laufenden Stapel hat beide Fehler gezeigt
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

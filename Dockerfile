@@ -24,6 +24,9 @@ RUN npx prisma generate \
 FROM basis AS laufzeit
 ENV NODE_ENV=production
 ENV PORT=3000
+# Ohne diese Zeile nimmt Next den von Docker gesetzten HOSTNAME als Bindeadresse und lauscht
+# nur auf der Container-IP. Die Zustandsprüfung über 127.0.0.1 schlägt dann immer fehl.
+ENV HOSTNAME=0.0.0.0
 
 RUN addgroup -g 1001 -S proxledger && adduser -S proxledger -u 1001 -G proxledger
 

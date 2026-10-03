@@ -34,4 +34,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#028](028-passkeys.md) | Anmeldung mit Passkeys | erledigt | v0.18.0 | 4 h | 0 h 45 min |
 | [#029](029-betriebsdokumentation.md) | Einrichtungsdokumentation | erledigt | v0.19.0 | 3 h | 0 h 40 min |
 | [#030](030-netbird-reverse-proxy.md) | netbird Reverse Proxy in die Anleitung | erledigt | v0.19.1 | 1 h | 0 h 20 min |
-| | **Summe** | | | **147 h** | **15 h 23 min** |
+| [#031](031-update-skript-beide-varianten.md) | Update- und Sicherungsskript für beide Varianten | erledigt | v0.20.0 | 2 h | 0 h 45 min |
+| | **Summe** | | | **149 h** | **16 h 08 min** |

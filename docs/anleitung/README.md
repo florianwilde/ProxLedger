@@ -396,31 +396,46 @@ Rückweg immer nutzbar.
 **Sichern:**
 
 ```bash
-./deploy/backup.sh /var/backups/proxledger
+bash /opt/proxledger/deploy/backup.sh /var/backups/proxledger
 ```
 
-Das Skript sichert Datenbank, hochgeladene PDFs und die `.env`. Für regelmäßige Sicherungen in die
-Crontab eintragen:
+Das Skript sichert Datenbank, hochgeladene PDFs und die `.env` – und erkennt selbst, ob die
+Installation mit Docker oder als Dienst im Container läuft. Für regelmäßige Sicherungen in die Crontab:
 
 ```
 30 2 * * * /opt/proxledger/deploy/backup.sh /var/backups/proxledger
 ```
 
-**Zurückspielen:**
+**Zurückspielen** (Docker):
 
 ```bash
 gunzip -c datenbank-20260917-023000.sql.gz | docker compose exec -T postgres psql -U proxledger proxledger
 ```
 
+Bei der Installation als Dienst stattdessen:
+
+```bash
+gunzip -c datenbank-20260917-023000.sql.gz | psql "$DATABASE_URL"
+```
+
 **Aktualisieren:**
 
 ```bash
-cd /opt/proxledger
-git pull
-docker compose up -d --build
+bash /opt/proxledger/deploy/update.sh
 ```
 
-Migrationen laufen dabei automatisch.
+Ein Befehl für beide Installationsarten. Der Reihe nach: sichern, neuen Stand holen, bauen,
+migrieren, neu starten – und zum Schluss prüfen, ob das Dashboard wieder antwortet. Schlägt die
+Sicherung fehl, bricht das Skript ab, **bevor** etwas verändert wird.
+
+| Aufruf | Wirkung |
+|---|---|
+| `bash deploy/update.sh` | der übliche Weg |
+| `SICHERUNG_ZIEL=/pfad bash deploy/update.sh` | anderer Ort für die Sicherung |
+| `bash deploy/update.sh --ohne-sicherung` | nur, wenn anderweitig gesichert ist |
+
+Beim LXC-Weg nach Art der Helper-Scripts geht es auch über das Skript auf dem Proxmox-Host – dort
+erkennt das Gerüst eine vorhandene Installation und bietet die Aktualisierung an.
 
 > `APP_SECRET` unbedingt mitsichern: Ohne diesen Wert sind alle Sitzungen ungültig. Und beachte, dass eine
 > Sicherung die Zugangsdaten für SMTP und Webhook im Klartext enthält – sie gehört entsprechend geschützt.

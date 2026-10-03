@@ -181,4 +181,5 @@ printf '  3. Für den Betrieb über HTTPS einen Reverse Proxy davorsetzen (Beisp
 echo
 gelb "APP_URL in /opt/proxledger/.env auf die endgültige Adresse setzen, sobald der Reverse Proxy steht."
 printf '  Logs ansehen:   pct exec %s -- docker compose -f /opt/proxledger/docker-compose.yml logs -f\n' "$CTID"
-printf '  Aktualisieren:  pct exec %s -- bash -c "cd /opt/proxledger && git pull && docker compose up -d --build"\n' "$CTID"
+printf '  Aktualisieren:  pct exec %s -- bash -c "bash /opt/proxledger/deploy/update.sh"\n' "$CTID"
+printf '  Sichern:        pct exec %s -- bash -c "bash /opt/proxledger/deploy/backup.sh /var/backups/proxledger"\n' "$CTID"

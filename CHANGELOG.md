@@ -17,6 +17,15 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.20.0] – 2026-10-03
+
+### Hinzugefügt
+- `deploy/update.sh` und `deploy/backup.sh` erkennen die Installationsart selbst und beherrschen jetzt auch die Installation als Dienst (Node und PostgreSQL direkt im Container) – nicht mehr nur Docker (#031)
+- Eine fehlgeschlagene Sicherung bricht die Aktualisierung ab, bevor etwas verändert wird (#031)
+
+### Behoben
+- Die Zustandsprüfung des Web-Containers konnte nie gelingen: Next bindet im Standalone-Modus an die Adresse aus `HOSTNAME`, und Docker setzt dort den Containernamen – der Server lauschte nur auf der Container-IP. `web` blieb dauerhaft auf „health: starting“ (#031)
+
 ## [0.19.2] – 2026-10-03
 
 ### Sicherheit

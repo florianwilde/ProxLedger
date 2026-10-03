@@ -14,10 +14,15 @@ Maschinenkennung, nicht an einem Token.
 ## Sichern
 
 ```bash
-bash deploy/backup.sh          # Datenbank und Uploads
+bash deploy/backup.sh /var/backups/proxledger
 ```
 
-Beim LXC-Weg reicht zusätzlich die gewohnte Proxmox-Sicherung des Containers.
+Das Skript erkennt selbst, ob die Installation mit Docker oder als Dienst läuft, und sichert in beiden
+Fällen Datenbank, Uploads und `.env`. Beim LXC-Weg reicht zusätzlich die gewohnte Proxmox-Sicherung
+des Containers.
+
+Vor jeder Aktualisierung läuft es ohnehin automatisch – [`deploy/update.sh`](../../deploy/update.sh)
+ruft es als Erstes auf und bricht ab, wenn es fehlschlägt.
 
 ## Zurückspielen
 
