@@ -32,6 +32,7 @@ export interface HostDaten {
   subLizenzierteSockets: number | null;
   sockets: number | null;
   letzterReportAm: Date | null;
+  ips: string[];
   serverIds: { serverId: string; ersteMeldung: Date; letzteMeldung: Date }[];
 }
 
@@ -406,6 +407,51 @@ const kundenrechnungUnbezahlt: Regel = {
 };
 
 /**
+ * Zwei Hosts desselben Kunden mit demselben Namen (#041).
+ *
+ * Das ist entweder gewollt – zwei Maschinen in getrennten Netzen heißen eben gleich – oder ein
+ * Doppeleintrag: Hat eine Maschine ihre Kennung aus `/etc/machine-id` verloren (Neuinstallation,
+ * geklonter Container), registriert sie sich als neuer Host, und der alte Eintrag bleibt stehen.
+ * Welcher Fall vorliegt, weiß nur der Betreiber – deshalb ein Hinweis mit den IP-Adressen zum
+ * Unterscheiden und nicht mehr.
+ */
+const hostnameDoppelt: Regel = {
+  name: "hostname-doppelt",
+  beschreibung: "Mehrere Hosts desselben Kunden tragen denselben Namen",
+  standardSchwellwerte: {},
+  pruefe(kontext) {
+    const gruppen = new Map<string, HostDaten[]>();
+    for (const host of kontext.hosts) {
+      // Ohne Kunde ist der Vergleich wenig wert: Gleiche Namen sind dort der Normalfall.
+      if (!host.kundeId) continue;
+      const schluessel = `${host.kundeId}:${host.hostname.toLowerCase()}`;
+      gruppen.set(schluessel, [...(gruppen.get(schluessel) ?? []), host]);
+    }
+
+    return [...gruppen.values()]
+      .filter((gruppe) => gruppe.length > 1)
+      .map((gruppe) => {
+        const beschreibungen = gruppe.map(
+          (host) => `${host.ips.join(", ") || "keine IP gemeldet"}`,
+        );
+
+        return {
+          // Der Fingerabdruck hängt an Kunde und Name, nicht an den einzelnen Hosts – sonst gäbe
+          // es für jede Maschine eine eigene Warnung über denselben Sachverhalt.
+          fingerprint: `hostname-doppelt:${gruppe[0].kundeId}:${gruppe[0].hostname.toLowerCase()}`,
+          regel: "hostname-doppelt",
+          schwere: "INFO" as AlertSchwere,
+          titel: `${gruppe.length} Hosts heißen „${gruppe[0].hostname}“`,
+          beschreibung: `${kundenHinweis(gruppe[0].kundeName)} · ${beschreibungen.join(" | ")} · Entweder getrennte Maschinen – dann helfen Schlagworte – oder ein Doppeleintrag nach Neuinstallation; den alten Host dann stilllegen`,
+          hostId: gruppe[0].id,
+          kundeId: gruppe[0].kundeId,
+          laufzeitId: null,
+        };
+      });
+  },
+};
+
+/**
  * Der übliche Ablauf: Erst kommt die unbezahlte Rechnung von Proxmox, dann stellt man dem Kunden
  * seine Rechnung, und **nachdem der Kunde gezahlt hat**, zahlt man selbst bei Proxmox. Hat der Kunde
  * bezahlt und die Einkaufsrechnung ist noch offen, liegt das Geld da und die Rechnung auch – das ist
@@ -450,6 +496,7 @@ export const REGELN: Regel[] = [
   kundenrechnungFehlt,
   kundenrechnungUnbezahlt,
   kundeBezahltEinkaufOffen,
+  hostnameDoppelt,
 ];
 
 /** Wendet alle aktiven Regeln an. */

@@ -28,6 +28,7 @@ function host(überschreibungen: Partial<HostDaten> = {}): HostDaten {
     subLizenzierteSockets: 1,
     sockets: 1,
     letzterReportAm: new Date(JETZT.getTime() - 3_600_000),
+    ips: ["10.0.0.10"],
     serverIds: [{ serverId: "AAAA", ersteMeldung: inTagen(-300), letzteMeldung: JETZT }],
     ...überschreibungen,
   };
@@ -72,9 +73,9 @@ function ausRegel(k: RegelKontext, name: string) {
 }
 
 describe("Warnregeln", () => {
-  it("prüft alle zwölf Regeln, wenn nichts abgeschaltet ist", () => {
-    expect(REGELN).toHaveLength(12);
-    expect(new Set(REGELN.map((r) => r.name)).size).toBe(12);
+  it("prüft alle dreizehn Regeln, wenn nichts abgeschaltet ist", () => {
+    expect(REGELN).toHaveLength(13);
+    expect(new Set(REGELN.map((r) => r.name)).size).toBe(13);
   });
 
   describe("Subscription läuft ab", () => {
@@ -412,6 +413,59 @@ describe("Warnregeln", () => {
       });
 
       expect(alleRegelnPruefen(k).filter((a) => a.regel === "kunde-bezahlt-einkauf-offen")).toHaveLength(0);
+    });
+  });
+
+  describe("Gleicher Hostname beim selben Kunden", () => {
+    it("meldet zwei gleichnamige Hosts desselben Kunden – mit IPs zum Unterscheiden", () => {
+      const k = kontext({
+        hosts: [
+          host({ id: "h1", hostname: "hv-pve-01", ips: ["10.10.5.32"] }),
+          host({ id: "h2", hostname: "hv-pve-01", ips: ["10.10.12.33", "10.10.5.11"] }),
+        ],
+      });
+
+      const treffer = alleRegelnPruefen(k).filter((a) => a.regel === "hostname-doppelt");
+      expect(treffer).toHaveLength(1);
+      expect(treffer[0].titel).toBe("2 Hosts heißen „hv-pve-01“");
+      expect(treffer[0].beschreibung).toContain("10.10.5.32");
+      expect(treffer[0].beschreibung).toContain("10.10.12.33");
+    });
+
+    it("schweigt bei gleichem Namen in verschiedenen Kundennetzen", () => {
+      const k = kontext({
+        hosts: [
+          host({ id: "h1", hostname: "hv-pve-01", kundeId: "k1" }),
+          host({ id: "h2", hostname: "hv-pve-01", kundeId: "k2" }),
+        ],
+      });
+
+      expect(alleRegelnPruefen(k).filter((a) => a.regel === "hostname-doppelt")).toHaveLength(0);
+    });
+
+    it("schweigt bei Hosts ohne Kunde", () => {
+      const k = kontext({
+        hosts: [
+          host({ id: "h1", hostname: "hv-pve-01", kundeId: null, kundeName: null }),
+          host({ id: "h2", hostname: "hv-pve-01", kundeId: null, kundeName: null }),
+        ],
+      });
+
+      expect(alleRegelnPruefen(k).filter((a) => a.regel === "hostname-doppelt")).toHaveLength(0);
+    });
+
+    it("erzeugt für drei gleichnamige Hosts nur eine Warnung", () => {
+      const k = kontext({
+        hosts: [
+          host({ id: "h1", hostname: "hv-pve-01" }),
+          host({ id: "h2", hostname: "hv-pve-01" }),
+          host({ id: "h3", hostname: "HV-PVE-01" }),
+        ],
+      });
+
+      const treffer = alleRegelnPruefen(k).filter((a) => a.regel === "hostname-doppelt");
+      expect(treffer).toHaveLength(1);
+      expect(treffer[0].titel).toContain("3 Hosts");
     });
   });
 });

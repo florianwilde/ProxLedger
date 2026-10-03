@@ -12,7 +12,7 @@ export async function hostsNachAblauf(jetzt: Date = new Date()) {
   const einkaufSichtbar = await darfEinkaufSehen();
 
   const hosts = await prisma.host.findMany({
-    where: { subNextduedate: { not: null }, ...(nurKunde ? { kundeId: nurKunde } : {}) },
+    where: { subNextduedate: { not: null }, archiviertAm: null, ...(nurKunde ? { kundeId: nurKunde } : {}) },
     orderBy: { subNextduedate: "asc" },
     include: {
       kunde: { select: { id: true, name: true } },

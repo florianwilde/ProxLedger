@@ -8,33 +8,36 @@ export function meldungsGrenze(jetzt: Date = new Date()): Date {
   return new Date(jetzt.getTime() - MELDUNG_FRIST_STUNDEN * 3_600_000);
 }
 
+/** Stillgelegte Hosts zählen nirgends mit (#041). */
+const NICHT_ARCHIVIERT = { archiviertAm: null } as const;
+
 export async function hostsOhneKunde() {
   // Ein Kundenkonto hat hier nichts zu suchen: Nicht zugeordnete Hosts gehören per Definition
   // noch niemandem, dürfen also auch niemandem gezeigt werden.
   if (await sichtbarerKunde()) return [];
 
   return prisma.host.findMany({
-    where: { kundeId: null },
+    where: { kundeId: null, ...NICHT_ARCHIVIERT },
     orderBy: { erstmalsGesehenAm: "desc" },
   });
 }
 
 export async function hostAnzahl() {
   const kundeId = await sichtbarerKunde();
-  return prisma.host.count({ where: kundeId ? { kundeId } : {} });
+  return prisma.host.count({ where: { ...NICHT_ARCHIVIERT, ...(kundeId ? { kundeId } : {}) } });
 }
 
 /** Kennzahlen für Dashboard-Kacheln und Sidebar-Badges. */
 export async function kennzahlen(jetzt: Date = new Date()) {
   const in30Tagen = new Date(jetzt.getTime() + 30 * 86_400_000);
   const kundeId = await sichtbarerKunde();
-  const hostSicht = kundeId ? { kundeId } : {};
+  const hostSicht = kundeId ? { kundeId, ...NICHT_ARCHIVIERT } : NICHT_ARCHIVIERT;
   const laufzeitSicht = kundeId ? { host: { kundeId } } : {};
 
   const [gesamt, aktiv, ohneKunde, baldAblaufend, ohneMeldung, offeneAlerts] = await Promise.all([
     prisma.host.count({ where: hostSicht }),
     prisma.host.count({ where: { ...hostSicht, subStatus: "ACTIVE" } }),
-    kundeId ? Promise.resolve(0) : prisma.host.count({ where: { kundeId: null } }),
+    kundeId ? Promise.resolve(0) : prisma.host.count({ where: { kundeId: null, ...NICHT_ARCHIVIERT } }),
     prisma.host.count({ where: { ...hostSicht, subNextduedate: { gte: jetzt, lte: in30Tagen } } }),
     prisma.host.count({
       where: {
@@ -42,7 +45,12 @@ export async function kennzahlen(jetzt: Date = new Date()) {
         OR: [{ letzterReportAm: null }, { letzterReportAm: { lt: meldungsGrenze(jetzt) } }],
       },
     }),
-    prisma.alert.count({ where: { erledigtAm: null, ...(kundeId ? { host: { kundeId } } : {}) } }),
+    prisma.alert.count({
+      where: {
+        erledigtAm: null,
+        OR: [{ hostId: null }, { host: { ...NICHT_ARCHIVIERT, ...(kundeId ? { kundeId } : {}) } }],
+      },
+    }),
   ]);
 
   const [offeneEinkaufsrechnungen, fehlendeKundenrechnungen] = await Promise.all([
@@ -94,7 +102,7 @@ export async function suchIndex() {
 
   const [hosts, kunden, proxmoxRechnungen, kundenrechnungen] = await Promise.all([
     prisma.host.findMany({
-      where: kundeId ? { kundeId } : {},
+      where: { ...NICHT_ARCHIVIERT, ...(kundeId ? { kundeId } : {}) },
       select: {
         id: true,
         hostname: true,

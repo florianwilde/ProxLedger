@@ -8,6 +8,8 @@ export interface HostFilter {
   kunde?: string;
   /** Schlagwort, nach dem gefiltert wird (#040). */
   tag?: string;
+  /** Stillgelegte Hosts mitzeigen (#041). */
+  archiviert?: "ja";
   status?: string;
   produkt?: string;
   ablauf?: "30" | "14" | "abgelaufen";
@@ -21,6 +23,9 @@ export const SEITENGROESSE = 25;
 /** Baut die Where-Bedingung aus den Filtern der Host-Tabelle. */
 function bedingung(filter: HostFilter, jetzt: Date): Prisma.HostWhereInput {
   const und: Prisma.HostWhereInput[] = [];
+
+  // Stillgelegte Hosts erscheinen nur, wenn ausdrücklich danach gefragt wird.
+  if (filter.archiviert !== "ja") und.push({ archiviertAm: null });
 
   if (filter.tag) {
     und.push({ tags: { some: { name: filter.tag } } });

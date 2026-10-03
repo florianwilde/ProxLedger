@@ -28,7 +28,7 @@ export function HostFilterLeiste({
     router.push(`${pathname}?${neu.toString()}`);
   }
 
-  const aktiveFilter = ["kunde", "tag", "status", "produkt", "ablauf", "rechnung", "q"].filter(
+  const aktiveFilter = ["kunde", "tag", "status", "produkt", "ablauf", "rechnung", "archiviert", "q"].filter(
     (schluessel) => werte[schluessel],
   ).length;
 
@@ -158,6 +158,20 @@ export function HostFilterLeiste({
             nur mit offenen Rechnungspunkten
           </label>
         </div>
+
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="archiviert"
+            checked={werte.archiviert === "ja"}
+            onChange={(e) => setzen("archiviert", e.target.checked ? "ja" : "")}
+          />
+          <label className="form-check-label small" htmlFor="archiviert">
+            stillgelegte Hosts zeigen
+          </label>
+        </div>
+
         {aktiveFilter > 0 ? (
           <Link href="/hosts" className="small">
             Filter zurücksetzen ({aktiveFilter})

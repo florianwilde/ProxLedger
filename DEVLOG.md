@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 21 h 43 min
+**Gesamt:** 22 h 33 min
 
 | Issue | Zeit |
 |---|---|
@@ -46,6 +46,7 @@
 | #038 Überbreite auf dem Handy | 0 h 40 min |
 | #039 Zugang zur Laufzeit | 0 h 30 min |
 | #040 Schlagworte sichtbar | 0 h 40 min |
+| #041 Doppelte Hosts | 0 h 50 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -68,7 +69,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.23.0
+**Version:** 0.24.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -207,6 +208,9 @@
 
 - Schlagworte und Notizen sichtbar gemacht (#040). Beides gab es längst – nur eben versteckt in einem Reiter, und damit nutzlos zum Unterscheiden gleichnamiger Hosts
 - Kein neues Feld gebaut: Ein zweites „Kommentar“ hätte dieselbe Angabe an zwei Orten gehalten
+
+- Doppelte Hosts (#041): Zwei Einträge desselben Namens beim selben Kunden entstehen, wenn sich die Maschinenkennung ändert. Neue Warnregel plus die bis dahin fehlende Möglichkeit, einen Host überhaupt loszuwerden
+- Bewusst kein automatisches Zusammenführen: Es müsste raten, welcher Eintrag welche Rechnung erbt
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

@@ -134,6 +134,10 @@ model Host {
   subNextduedate       DateTime?          @db.Date
   subChecktime         DateTime?
 
+  /// Stillgelegt: Der Host erscheint nicht mehr in Listen, Zahlen und Warnungen – seine
+  /// Geschichte samt Laufzeiten und Rechnungen bleibt aber erhalten (#041).
+  archiviertAm      DateTime?
+
   erstmalsGesehenAm DateTime  @default(now())
   letzterReportAm   DateTime?
   erstelltAm        DateTime  @default(now())

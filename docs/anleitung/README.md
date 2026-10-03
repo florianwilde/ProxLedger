@@ -205,6 +205,21 @@ gibt es Schlagworte und Notizen, zu finden im Host-Detail unter *Notizen und Tag
 
 Bewährt haben sich kurze, wiederverwendbare Worte: `cluster`, `backup`, `produktiv`, `aussenstelle`.
 
+### Wenn ein Host doppelt erscheint
+
+Steht derselbe Name zweimal beim selben Kunden, meldet ProxLedger das als Hinweis und nennt die
+IP-Adressen beider Einträge. Zwei Fälle sind möglich:
+
+- **Zwei verschiedene Maschinen** heißen gleich. Dann helfen Schlagworte beim Auseinanderhalten.
+- **Dieselbe Maschine hat sich neu registriert** – etwa nach einer Neuinstallation oder weil ein
+  Container geklont wurde. Hosts werden an ihrer Kennung aus `/etc/machine-id` erkannt, nicht am
+  Namen; ändert sie sich, entsteht ein zweiter Eintrag.
+
+Den alten Eintrag legst du im Host-Detail still. Er verschwindet dann aus Listen, Zahlen und
+Warnungen, seine Laufzeiten und Rechnungen bleiben aber erhalten – mit dem Schalter *stillgelegte
+Hosts zeigen* findest du ihn wieder. **Endgültig löschen** geht nur, solange keine Laufzeit daran
+hängt.
+
 ---
 
 ## 5. Kunden und Standorte pflegen

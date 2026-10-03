@@ -6,7 +6,7 @@ export async function ablaufDaten(jetzt: Date = new Date()) {
   const nurKunde = await sichtbarerKunde();
 
   const hosts = await prisma.host.findMany({
-    where: { subNextduedate: { not: null }, ...(nurKunde ? { kundeId: nurKunde } : {}) },
+    where: { subNextduedate: { not: null }, archiviertAm: null, ...(nurKunde ? { kundeId: nurKunde } : {}) },
     orderBy: [{ subNextduedate: "asc" }],
     select: {
       id: true,
