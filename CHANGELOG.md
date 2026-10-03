@@ -17,6 +17,16 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.20.1] – 2026-10-03
+
+### Behoben
+- **Abmelden führte auf `0.0.0.0:3000`** und damit ins Leere. Next.js macht Weiterleitungen aus Server Actions serverseitig absolut und nahm dafür die Lausch-Adresse des Servers. Betroffen waren Abmelden, die Sitzungsprüfung und das Löschen eines Kunden (#033)
+- Eine als Lausch-Adresse eingetragene `APP_URL` (`0.0.0.0`, `::`) wird jetzt übergangen statt übernommen (#033)
+- Die LXC-Installation brach mit *404 – Could not fetch install/proxledger-install.sh* ab: Ein per curl geladenes ct-Skript kennt seine Herkunft nicht und suchte bei den community-scripts (#032)
+
+### Geändert
+- Vorgabe für den Arbeitsspeicher des LXC von 2 auf 4 GB – `next build` scheitert sonst während der Installation am Speicher (#032)
+
 ## [0.20.0] – 2026-10-03
 
 ### Hinzugefügt

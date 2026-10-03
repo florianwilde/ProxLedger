@@ -35,4 +35,6 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#029](029-betriebsdokumentation.md) | Einrichtungsdokumentation | erledigt | v0.19.0 | 3 h | 0 h 40 min |
 | [#030](030-netbird-reverse-proxy.md) | netbird Reverse Proxy in die Anleitung | erledigt | v0.19.1 | 1 h | 0 h 20 min |
 | [#031](031-update-skript-beide-varianten.md) | Update- und Sicherungsskript für beide Varianten | erledigt | v0.20.0 | 2 h | 0 h 45 min |
-| | **Summe** | | | **149 h** | **16 h 08 min** |
+| [#032](032-lxc-installation-korrekturen.md) | LXC-Installation: Herkunft der Skripte und Speicher | erledigt | v0.20.1 | 1 h | 0 h 20 min |
+| [#033](033-weiterleitung-lauschadresse.md) | Abmelden führte auf die Lausch-Adresse | erledigt | v0.20.1 | 1 h | 0 h 30 min |
+| | **Summe** | | | **151 h** | **16 h 58 min** |

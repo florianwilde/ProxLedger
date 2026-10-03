@@ -100,6 +100,19 @@ describe("Öffentliche Adresse", () => {
     expect(eigeneAdresse(anfrageMit({}), "/").host).toBe("0a5963a591df:3000");
   });
 
+  it("übergeht eine Lausch-Adresse in der Konfiguration", () => {
+    // 0.0.0.0 heißt „alle Schnittstellen“ – als Ziel im Browser ist das unbrauchbar.
+    // Genau so stand es nach einer Installation in der .env und führte beim Abmelden ins Leere.
+    const anfrage = anfrageMit({ host: "proxledger.firma.de" });
+    expect(eigeneAdresse(anfrage, "/login", "http://0.0.0.0:3000").host).toBe("proxledger.firma.de");
+  });
+
+  it("übergeht auch eine Lausch-Adresse aus der Umgebung", () => {
+    vi.stubEnv("APP_URL", "http://0.0.0.0:3000");
+    const anfrage = anfrageMit({ host: "proxledger.firma.de" });
+    expect(eigeneAdresse(anfrage, "/login").host).toBe("proxledger.firma.de");
+  });
+
   it("übergeht einen unbrauchbaren Eintrag, statt zu scheitern", () => {
     const anfrage = anfrageMit({ "x-forwarded-host": "dashboard.kunde.de" });
     expect(eigeneAdresse(anfrage, "/", "keine-adresse").host).toBe("dashboard.kunde.de");
