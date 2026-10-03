@@ -38,4 +38,6 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#032](032-lxc-installation-korrekturen.md) | LXC-Installation: Herkunft der Skripte und Speicher | erledigt | v0.20.1 | 1 h | 0 h 20 min |
 | [#033](033-weiterleitung-lauschadresse.md) | Abmelden führte auf die Lausch-Adresse | erledigt | v0.20.1 | 1 h | 0 h 30 min |
 | [#034](034-mobile-bedienung.md) | Bedienung auf dem Handy | erledigt | v0.20.2 | 2 h | 0 h 40 min |
-| | **Summe** | | | **153 h** | **17 h 38 min** |
+| [#035](035-mobile-tabellen.md) | Tabellen auf dem Handy als Karten | erledigt | v0.21.0 | 3 h | 0 h 50 min |
+| [#036](036-standort-am-host.md) | Standort am Host setzen | erledigt | v0.21.0 | 1 h | 0 h 30 min |
+| | **Summe** | | | **157 h** | **18 h 58 min** |

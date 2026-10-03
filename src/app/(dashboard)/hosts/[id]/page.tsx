@@ -16,7 +16,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { PRODUKT_TEXT } from "@/lib/anzeige";
 import { prisma } from "@/lib/db";
 import { formatDatum, formatDatumZeit, formatEuro, formatUptime, formatZahl } from "@/lib/format";
-import { hostKundeSetzen } from "@/server/actions/host-detail";
+import { KundeStandortFormular } from "@/components/hosts/KundeStandortFormular";
 import { hostTokenWiderrufen } from "@/server/actions/tokens";
 import { hostMitDetails } from "@/server/queries/hostliste";
 import { meldungsGrenze } from "@/server/queries/hosts";
@@ -43,7 +43,11 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
 
   const kunden = await prisma.kunde.findMany({
     orderBy: { name: "asc" },
-    select: { id: true, name: true },
+    select: {
+      id: true,
+      name: true,
+      standorte: { orderBy: { name: "asc" }, select: { id: true, name: true } },
+    },
   });
 
   // Welche Cluster-Mitglieder melden sich selbst? Fehlende Knoten haben keinen Agent (#022).
@@ -167,30 +171,12 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                 <Zeile bezeichnung="Erstmals gesehen">{formatDatum(host.erstmalsGesehenAm)}</Zeile>
                 <Zeile bezeichnung="Letzte Meldung">{formatDatumZeit(host.letzterReportAm)}</Zeile>
 
-                <form action={hostKundeSetzen} className="mt-3">
-                  <input type="hidden" name="hostId" value={host.id} />
-                  <label className="form-label small" htmlFor="kundeId">
-                    Kunde ändern
-                  </label>
-                  <div className="input-group input-group-sm">
-                    <select
-                      id="kundeId"
-                      name="kundeId"
-                      className="form-select"
-                      defaultValue={host.kundeId ?? ""}
-                    >
-                      <option value="">– nicht zugeordnet –</option>
-                      {kunden.map((kunde) => (
-                        <option key={kunde.id} value={kunde.id}>
-                          {kunde.name}
-                        </option>
-                      ))}
-                    </select>
-                    <button type="submit" className="btn btn-outline-primary">
-                      Setzen
-                    </button>
-                  </div>
-                </form>
+                <KundeStandortFormular
+                  hostId={host.id}
+                  kunden={kunden}
+                  kundeId={host.kundeId}
+                  standortId={host.standortId}
+                />
               </Card>
             </div>
 

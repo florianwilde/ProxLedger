@@ -57,8 +57,24 @@ export async function hostKundeSetzen(formular: FormData) {
   const standortId = formular.get("standortId")?.toString() || null;
   if (!hostId) return;
 
-  await prisma.host.update({ where: { id: hostId }, data: { kundeId, standortId } });
-  await protokolliere("host.zugewiesen", "Host", hostId, { kundeId, standortId });
+  // Ein Standort gehört immer zu einem Kunden. Passt beides nicht zusammen – etwa weil der Kunde
+  // gewechselt hat –, wird der Standort verworfen statt eine falsche Zuordnung zu speichern.
+  const gueltigerStandort =
+    standortId && kundeId
+      ? ((await prisma.standort.findFirst({
+          where: { id: standortId, kundeId },
+          select: { id: true },
+        })) ?? null)
+      : null;
+
+  await prisma.host.update({
+    where: { id: hostId },
+    data: { kundeId, standortId: gueltigerStandort?.id ?? null },
+  });
+  await protokolliere("host.zugewiesen", "Host", hostId, {
+    kundeId,
+    standortId: gueltigerStandort?.id ?? null,
+  });
 
   if (kundeId) {
     await prisma.alert.updateMany({

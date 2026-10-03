@@ -17,6 +17,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.21.0] – 2026-10-03
+
+### Hinzugefügt
+- Standort eines Hosts lässt sich in der Detailansicht setzen; die Auswahl richtet sich nach dem gewählten Kunden (#036)
+- Breite Tabellen werden auf dem Telefon zu Karten: jede Angabe mit ihrer Beschriftung, statt rechts abgeschnitten zu sein (#035)
+
+### Behoben
+- **Jede Kundenzuweisung löschte den Standort des Hosts**, weil das Formular ihn nicht mitsendete, die Aktion ihn aber las (#036)
+- Ein Standort, der zu einem anderen Kunden gehört, wird nicht mehr gespeichert (#036)
+- Kartenköpfe mit Knöpfen liefen auf dem Telefon über den Rand (#035)
+- Das Kontrollkästchen für den Rechnungsstatus wurde auf dem Telefon zum 44 Pixel hohen leeren Kasten (#035)
+
 ## [0.20.2] – 2026-10-03
 
 ### Behoben

@@ -197,7 +197,7 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
             </form>
 
             <div className="table-responsive">
-              <table className="table table-striped align-middle">
+              <table className="table table-striped align-middle pl-karten-tabelle">
                 <thead>
                   <tr>
                     <th scope="col">Kunde</th>
@@ -234,7 +234,13 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                     const faelligIn = tageBis(zeile.einkaufFaelligAm, heute);
                     return (
                       <tr key={zeile.id}>
-                        <td>
+                        {/* Auf dem Telefon steht der Host als Überschrift der Karte, sonst als Spalte. */}
+                        <td className="d-md-none pl-karten-kopf">
+                          <Link href={`/hosts/${zeile.hostId}`} className="fw-semibold text-decoration-none">
+                            {zeile.hostname}
+                          </Link>
+                        </td>
+                        <td data-label="Kunde">
                           {zeile.kunde ? (
                             <Link href={`/kunden/${zeile.kunde.id}`} className="text-decoration-none">
                               {zeile.kunde.name}
@@ -248,13 +254,13 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                             {zeile.hostname}
                           </Link>
                         </td>
-                        <td className="d-none d-lg-table-cell">
+                        <td className="d-none d-lg-table-cell" data-label="Laufzeit">
                           <Link href={`/rechnungen/${zeile.id}`} className="text-decoration-none">
                             {formatDatum(zeile.start)} – {formatDatum(zeile.ende)}
                           </Link>
                           {zeile.vorschlag ? <Badge farbe="info">Vorschlag</Badge> : null}
                         </td>
-                        <td>
+                        <td data-label="Proxmox-Rechnung">
                           <CopyableCode wert={zeile.einkaufNummer} />
                           {zeile.einkaufBezahlt === false && faelligIn !== null && faelligIn <= 7 ? (
                             <div className="small pl-text-danger">
@@ -262,8 +268,10 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                             </div>
                           ) : null}
                         </td>
-                        <td className="d-none d-xl-table-cell">{formatEuro(zeile.einkaufBetrag)}</td>
-                        <td className="text-center">
+                        <td className="d-none d-xl-table-cell" data-label="Einkauf">
+                          {formatEuro(zeile.einkaufBetrag)}
+                        </td>
+                        <td className="text-center" data-label="Einkauf bezahlt">
                           <StatusHaken
                             laufzeitId={zeile.id}
                             hostId={zeile.hostId}
@@ -273,11 +281,13 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                             titel="Proxmox-Rechnung bezahlt"
                           />
                         </td>
-                        <td>
+                        <td data-label="Kundenrechnung">
                           <CopyableCode wert={zeile.verkaufNummer} />
                         </td>
-                        <td className="d-none d-xl-table-cell">{formatEuro(zeile.verkaufBetrag)}</td>
-                        <td className="text-center">
+                        <td className="d-none d-xl-table-cell" data-label="Verkauf">
+                          {formatEuro(zeile.verkaufBetrag)}
+                        </td>
+                        <td className="text-center" data-label="Rechnung erstellt">
                           <StatusHaken
                             laufzeitId={zeile.id}
                             hostId={zeile.hostId}
@@ -286,7 +296,7 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                             titel="Kundenrechnung erstellt"
                           />
                         </td>
-                        <td className="text-center">
+                        <td className="text-center" data-label="Vom Kunden bezahlt">
                           <StatusHaken
                             laufzeitId={zeile.id}
                             hostId={zeile.hostId}
@@ -297,6 +307,7 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                           />
                         </td>
                         <td
+                          data-label="Marge"
                           className={`d-none d-xl-table-cell ${(zeile.marge ?? 0) >= 0 ? "pl-text-success" : "pl-text-danger"}`}
                         >
                           {zeile.marge === null ? "–" : formatEuro(zeile.marge)}
@@ -306,7 +317,7 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                   })}
                   {zeilen.length === 0 ? (
                     <tr>
-                      <td colSpan={11} className="text-center text-body-secondary py-4">
+                      <td colSpan={12} className="text-center text-body-secondary py-4">
                         Nichts gefunden. <Link href="/rechnungen?status=alle">Alle anzeigen</Link>
                       </td>
                     </tr>

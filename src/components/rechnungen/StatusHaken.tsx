@@ -37,7 +37,7 @@ export function StatusHaken({
   }
 
   return (
-    <span className="d-inline-flex align-items-center justify-content-center">
+    <span className="pl-haken d-inline-flex align-items-center justify-content-center">
       {laeuft ? (
         <span
           className="spinner-border spinner-border-sm text-body-secondary"
@@ -47,7 +47,7 @@ export function StatusHaken({
       ) : (
         <input
           type="checkbox"
-          className="form-check-input pl-touch-target"
+          className="form-check-input"
           checked={wert}
           disabled={deaktiviert}
           onChange={(e) => umschalten(e.target.checked)}

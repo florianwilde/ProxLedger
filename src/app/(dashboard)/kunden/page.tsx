@@ -39,7 +39,7 @@ export default async function KundenSeite() {
             }
           >
             <div className="table-responsive">
-              <table className="table table-striped align-middle">
+              <table className="table table-striped align-middle pl-karten-tabelle">
                 <thead>
                   <tr>
                     <th scope="col">Kunde</th>
@@ -56,26 +56,28 @@ export default async function KundenSeite() {
                     const punkte = rechnungspunkte.get(kunde.id);
                     return (
                       <tr key={kunde.id}>
-                        <td>
+                        <td className="pl-karten-kopf">
                           <Link href={`/kunden/${kunde.id}`} className="fw-semibold text-decoration-none">
                             {kunde.name}
                           </Link>
                           <div className="small text-body-secondary">{kunde.ansprechpartner ?? "–"}</div>
                         </td>
-                        <td className="pl-mono">{kunde.kundennummer}</td>
-                        <td>{kunde.hosts}</td>
-                        <td>{kunde.aktiv}</td>
-                        <td>
+                        <td className="pl-mono" data-label="Kundennummer">
+                          {kunde.kundennummer}
+                        </td>
+                        <td data-label="Hosts">{kunde.hosts}</td>
+                        <td data-label="Aktiv lizenziert">{kunde.aktiv}</td>
+                        <td data-label="Nächster Ablauf">
                           <AblaufBadge datum={kunde.naechsterAblauf?.toISOString() ?? null} heute={heute} />
                         </td>
-                        <td>
+                        <td data-label="Warnungen">
                           {kunde.offeneAlerts > 0 ? (
                             <Badge farbe="warning">{kunde.offeneAlerts} offen</Badge>
                           ) : (
                             <Badge farbe="success">keine</Badge>
                           )}
                         </td>
-                        <td>
+                        <td data-label="Rechnungen">
                           {punkte && punkte.offen > 0 ? (
                             <Badge farbe="danger">{punkte.offen} offen</Badge>
                           ) : (
