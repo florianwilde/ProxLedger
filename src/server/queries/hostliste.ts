@@ -6,6 +6,8 @@ import { sichtbarerKunde } from "@/server/auth/sitzungspflicht";
 export interface HostFilter {
   q?: string;
   kunde?: string;
+  /** Schlagwort, nach dem gefiltert wird (#040). */
+  tag?: string;
   status?: string;
   produkt?: string;
   ablauf?: "30" | "14" | "abgelaufen";
@@ -20,6 +22,10 @@ export const SEITENGROESSE = 25;
 function bedingung(filter: HostFilter, jetzt: Date): Prisma.HostWhereInput {
   const und: Prisma.HostWhereInput[] = [];
 
+  if (filter.tag) {
+    und.push({ tags: { some: { name: filter.tag } } });
+  }
+
   if (filter.q && filter.q.trim().length > 0) {
     const suche = filter.q.trim();
     und.push({
@@ -30,6 +36,8 @@ function bedingung(filter: HostFilter, jetzt: Date): Prisma.HostWhereInput {
         { subKey: { contains: suche, mode: "insensitive" } },
         { ips: { has: suche } },
         { kunde: { name: { contains: suche, mode: "insensitive" } } },
+        { notizen: { contains: suche, mode: "insensitive" } },
+        { tags: { some: { name: { contains: suche, mode: "insensitive" } } } },
         // Suche nach einer Proxmox-Rechnungsnummer führt ebenfalls zum Host.
         {
           laufzeiten: {
@@ -113,6 +121,7 @@ export async function hostListe(filter: HostFilter, jetzt: Date = new Date()) {
       include: {
         kunde: { select: { id: true, name: true } },
         standort: { select: { name: true } },
+        tags: { orderBy: { name: "asc" }, select: { id: true, name: true } },
       },
     }),
   ]);
@@ -181,5 +190,12 @@ export async function filterOptionen() {
     orderBy: { name: "asc" },
     select: { id: true, name: true },
   });
-  return { kunden };
+
+  // Nur Schlagworte, die auch an einem sichtbaren Host hängen – sonst stünden leere zur Auswahl.
+  const tags = await prisma.tag.findMany({
+    where: { hosts: { some: kundeId ? { kundeId } : {} } },
+    orderBy: { name: "asc" },
+    select: { name: true },
+  });
+  return { kunden, tags: tags.map((tag) => tag.name) };
 }

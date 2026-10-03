@@ -68,6 +68,7 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
   const filter: HostFilter = {
     q: einzeln(roh.q),
     kunde: einzeln(roh.kunde),
+    tag: einzeln(roh.tag),
     status: einzeln(roh.status),
     produkt: einzeln(roh.produkt),
     ablauf: einzeln(roh.ablauf) as HostFilter["ablauf"],
@@ -85,6 +86,7 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
   const basis: Record<string, string | undefined> = {
     q: filter.q,
     kunde: filter.kunde,
+    tag: filter.tag,
     status: filter.status,
     produkt: filter.produkt,
     ablauf: filter.ablauf,
@@ -117,7 +119,7 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
               </>
             }
           >
-            <HostFilterLeiste kunden={optionen.kunden} werte={basis} />
+            <HostFilterLeiste kunden={optionen.kunden} tags={optionen.tags} werte={basis} />
 
             <div className="table-responsive">
               <table className="table table-striped align-middle">
@@ -152,7 +154,28 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
                           {host.hostname}
                         </Link>
                         {host.meldetNicht ? <KeineMeldungBadge /> : null}
+                        {host.notizen ? (
+                          // Gerade bei gleichnamigen Hosts hilft die Notiz beim Auseinanderhalten (#040).
+                          <i
+                            className="bi bi-sticky ms-2 text-body-secondary"
+                            title={host.notizen}
+                            aria-label={`Notiz: ${host.notizen}`}
+                          />
+                        ) : null}
                         <div className="small text-body-secondary">{host.ips.join(", ") || "–"}</div>
+                        {host.tags.length > 0 ? (
+                          <div className="mt-1 d-flex flex-wrap gap-1">
+                            {host.tags.map((tag) => (
+                              <Link
+                                key={tag.id}
+                                href={`/hosts?tag=${encodeURIComponent(tag.name)}`}
+                                className="badge pl-bg-neutral text-decoration-none"
+                              >
+                                {tag.name}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
                       </td>
                       <td>
                         {host.kunde ? (

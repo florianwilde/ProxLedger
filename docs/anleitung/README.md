@@ -192,6 +192,19 @@ Dashboard vergleicht sie mit den Hosts, die sich tatsächlich melden:
 Hier laufen auf `hv-rz5-pve-02` und `hv-rz5-pve-03` noch keine Agents – das Dashboard sagt es zweimal
 deutlich. Sobald dort installiert wird, schließen sich die Warnungen von selbst.
 
+### Gleichnamige Hosts auseinanderhalten
+
+In verschiedenen Kundennetzen heißen Hosts oft gleich – `hv-pve-01` gibt es womöglich dreimal. Dafür
+gibt es Schlagworte und Notizen, zu finden im Host-Detail unter *Notizen und Tags*:
+
+- **Schlagworte** erscheinen als Abzeichen unter dem Hostnamen in der Liste. Ein Klick darauf zeigt
+  alle Hosts mit diesem Schlagwort; dasselbe geht über die Auswahl *Alle Schlagworte*.
+- **Notizen** zeigen in der Liste ein Zettel-Symbol, dessen Text beim Überfahren erscheint. Im
+  Host-Detail steht die Notiz oben bei den Stammdaten.
+- Beides wird mitdurchsucht – auch von der globalen Suche (Strg+K).
+
+Bewährt haben sich kurze, wiederverwendbare Worte: `cluster`, `backup`, `produktiv`, `aussenstelle`.
+
 ---
 
 ## 5. Kunden und Standorte pflegen

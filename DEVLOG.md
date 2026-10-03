@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 21 h 03 min
+**Gesamt:** 21 h 43 min
 
 | Issue | Zeit |
 |---|---|
@@ -45,6 +45,7 @@
 | #037 Rabatt je Position | 0 h 55 min |
 | #038 Überbreite auf dem Handy | 0 h 40 min |
 | #039 Zugang zur Laufzeit | 0 h 30 min |
+| #040 Schlagworte sichtbar | 0 h 40 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -67,7 +68,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.22.2
+**Version:** 0.23.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -203,6 +204,9 @@
 - #039: Auf dem Telefon führte kein Weg zu den Rechnungsformularen – die Laufzeit war nicht verlinkt und die Spalte erst ab 992 px sichtbar
 - Dritte Stelle, die den Einkauf ohne Rabatt rechnete. Beim Ändern einer Rechengröße gehört jede Stelle gesucht, die sie selbst bildet – nicht nur die Abfragen
 - Bootstraps `d-*`-Klassen setzen `display` mit `!important`; für Spalten in der Kartenansicht braucht es eigene Klassen
+
+- Schlagworte und Notizen sichtbar gemacht (#040). Beides gab es längst – nur eben versteckt in einem Reiter, und damit nutzlos zum Unterscheiden gleichnamiger Hosts
+- Kein neues Feld gebaut: Ein zweites „Kommentar“ hätte dieselbe Angabe an zwei Orten gehalten
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
