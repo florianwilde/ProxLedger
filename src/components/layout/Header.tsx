@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { SearchDialog, type SuchEintrag } from "./SearchDialog";
 import type { Rolle } from "@/generated/prisma/enums";
 import { ROLLEN_TEXT } from "@/server/auth/rollen";
+import { menuUmschalten } from "./menuZustand";
 
 export interface KopfleistenAlert {
   id: string;
@@ -58,16 +59,9 @@ export function Header({
     return () => window.removeEventListener("keydown", tasten);
   }, []);
 
-  /** Sidebar umschalten: auf schmalen Bildschirmen als Overlay, sonst eingeklappt. */
+  /** Seitenmenü umschalten – der Zustand liegt in menuZustand.ts, damit das Menü selbst ihn kennt. */
   const sidebarUmschalten = useCallback(() => {
-    const body = document.body;
-    if (window.innerWidth < 992) {
-      body.classList.toggle("sidebar-open");
-      body.classList.remove("sidebar-collapse");
-    } else {
-      body.classList.toggle("sidebar-collapse");
-      body.classList.remove("sidebar-open");
-    }
+    menuUmschalten();
   }, []);
 
   function themaUmschalten() {
