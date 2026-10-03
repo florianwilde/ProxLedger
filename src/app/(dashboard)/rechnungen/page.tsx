@@ -204,7 +204,7 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                     <th scope="col" className="d-none d-md-table-cell">
                       Host
                     </th>
-                    <th scope="col" className="d-none d-lg-table-cell">
+                    <th scope="col" className="pl-spalte-laufzeit">
                       Laufzeit
                     </th>
                     <th scope="col">Proxmox-Rechnung</th>
@@ -254,7 +254,7 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
                             {zeile.hostname}
                           </Link>
                         </td>
-                        <td className="d-none d-lg-table-cell" data-label="Laufzeit">
+                        <td className="pl-spalte-laufzeit" data-label="Laufzeit">
                           <Link href={`/rechnungen/${zeile.id}`} className="text-decoration-none">
                             {formatDatum(zeile.start)} – {formatDatum(zeile.ende)}
                           </Link>

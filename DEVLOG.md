@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 20 h 33 min
+**Gesamt:** 21 h 03 min
 
 | Issue | Zeit |
 |---|---|
@@ -44,6 +44,7 @@
 | #036 Standort am Host | 0 h 30 min |
 | #037 Rabatt je Position | 0 h 55 min |
 | #038 Überbreite auf dem Handy | 0 h 40 min |
+| #039 Zugang zur Laufzeit | 0 h 30 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -66,7 +67,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.22.1
+**Version:** 0.22.2
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -198,6 +199,10 @@
 - Überbreite auf dem Handy (#038): Drei Verursacher, ein Muster – ein Element breiter als das Fenster zoomt die ganze Seite heraus
 - Dabei einen eigenen Fehler aus #037 gefunden: Die Detailseite rechnete weiter mit dem Listenpreis. Beim Ändern einer Rechengröße reicht es nicht, die Abfragen anzupassen – auch die Seiten rechnen selbst
 - Das Aufnahme-Skript kann jetzt gezielt in Telefonbreite aufnehmen; damit ließ sich die Behebung belegen statt nur behaupten
+
+- #039: Auf dem Telefon führte kein Weg zu den Rechnungsformularen – die Laufzeit war nicht verlinkt und die Spalte erst ab 992 px sichtbar
+- Dritte Stelle, die den Einkauf ohne Rabatt rechnete. Beim Ändern einer Rechengröße gehört jede Stelle gesucht, die sie selbst bildet – nicht nur die Abfragen
+- Bootstraps `d-*`-Klassen setzen `display` mit `!important`; für Spalten in der Kartenansicht braucht es eigene Klassen
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

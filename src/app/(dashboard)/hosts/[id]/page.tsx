@@ -346,7 +346,7 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                     icon: "bi-receipt",
                     inhalt: (
                       <div className="table-responsive">
-                        <table className="table table-striped align-middle mb-0">
+                        <table className="table table-striped align-middle mb-0 pl-karten-tabelle">
                           <thead>
                             <tr>
                               <th scope="col">Laufzeit</th>
@@ -359,21 +359,28 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                           </thead>
                           <tbody>
                             {host.laufzeiten.map((laufzeit) => {
+                              // Nach Abzug des Rabatts – das ist, was tatsächlich gezahlt wird (#037).
                               const einkauf = laufzeit.proxmoxPosition
-                                ? Number(laufzeit.proxmoxPosition.nettoBetrag)
+                                ? Number(laufzeit.proxmoxPosition.nettoBetrag) -
+                                  Number(laufzeit.proxmoxPosition.rabatt ?? 0)
                                 : null;
                               const verkauf = laufzeit.kundenPosition
                                 ? Number(laufzeit.kundenPosition.nettoBetrag)
                                 : null;
                               return (
                                 <tr key={laufzeit.id}>
-                                  <td>
-                                    {formatDatum(laufzeit.start)} – {formatDatum(laufzeit.ende)}
+                                  <td className="pl-karten-kopf">
+                                    <Link
+                                      href={`/rechnungen/${laufzeit.id}`}
+                                      className="fw-semibold text-decoration-none"
+                                    >
+                                      {formatDatum(laufzeit.start)} – {formatDatum(laufzeit.ende)}
+                                    </Link>
                                     {laufzeit.status === "VORSCHLAG" ? (
                                       <span className="badge pl-bg-info ms-2">Vorschlag</span>
                                     ) : null}
                                   </td>
-                                  <td>
+                                  <td data-label="Proxmox-Rechnung">
                                     <CopyableCode wert={laufzeit.proxmoxPosition?.rechnung.nummer ?? null} />
                                     <div>
                                       <EinkaufBadge
@@ -385,8 +392,8 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                                       />
                                     </div>
                                   </td>
-                                  <td>{formatEuro(einkauf)}</td>
-                                  <td>
+                                  <td data-label="Einkauf">{formatEuro(einkauf)}</td>
+                                  <td data-label="Kundenrechnung">
                                     <CopyableCode wert={laufzeit.kundenPosition?.rechnung.nummer ?? null} />
                                     <div>
                                       <VerkaufBadge
@@ -395,8 +402,8 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                                       />
                                     </div>
                                   </td>
-                                  <td>{formatEuro(verkauf)}</td>
-                                  <td>
+                                  <td data-label="Verkauf">{formatEuro(verkauf)}</td>
+                                  <td data-label="Marge">
                                     {einkauf !== null && verkauf !== null
                                       ? formatEuro(verkauf - einkauf)
                                       : "–"}
