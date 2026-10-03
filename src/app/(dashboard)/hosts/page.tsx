@@ -69,6 +69,7 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
     q: einzeln(roh.q),
     kunde: einzeln(roh.kunde),
     tag: einzeln(roh.tag),
+    archiviert: einzeln(roh.archiviert) as HostFilter["archiviert"],
     status: einzeln(roh.status),
     produkt: einzeln(roh.produkt),
     ablauf: einzeln(roh.ablauf) as HostFilter["ablauf"],
@@ -87,6 +88,7 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
     q: filter.q,
     kunde: filter.kunde,
     tag: filter.tag,
+    archiviert: filter.archiviert,
     status: filter.status,
     produkt: filter.produkt,
     ablauf: filter.ablauf,
@@ -154,6 +156,9 @@ export default async function HostsSeite({ searchParams }: { searchParams: SuchP
                           {host.hostname}
                         </Link>
                         {host.meldetNicht ? <KeineMeldungBadge /> : null}
+                        {host.archiviertAm ? (
+                          <span className="badge pl-bg-neutral ms-2">Stillgelegt</span>
+                        ) : null}
                         {host.notizen ? (
                           // Gerade bei gleichnamigen Hosts hilft die Notiz beim Auseinanderhalten (#040).
                           <i

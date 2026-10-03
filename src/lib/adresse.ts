@@ -55,8 +55,14 @@ export function eigeneAdresse(request: Request, pfad: string, eingetragen?: stri
  * Containername); im Browser landet man damit auf einer Seite, die es nicht gibt.
  */
 export async function eigenerPfad(pfad: string, eingetragen?: string): Promise<string> {
-  const { headers } = await import("next/headers");
-  const kopfzeilen = await headers();
+  let kopfzeilen: Headers;
+  try {
+    const { headers } = await import("next/headers");
+    kopfzeilen = await headers();
+  } catch {
+    // Außerhalb einer Anfrage (Tests, Skripte) gibt es keine Kopfzeilen – dann bleibt der Pfad relativ.
+    return pfad;
+  }
 
   // Die Anfrage selbst gibt es hier nicht; eine leere mit den echten Kopfzeilen genügt.
   const basis = oeffentlicheBasis(new Request("http://platzhalter.invalid", { headers: kopfzeilen }), eingetragen);

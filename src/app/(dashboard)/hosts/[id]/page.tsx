@@ -17,6 +17,7 @@ import { PRODUKT_TEXT } from "@/lib/anzeige";
 import { prisma } from "@/lib/db";
 import { formatDatum, formatDatumZeit, formatEuro, formatUptime, formatZahl } from "@/lib/format";
 import { KundeStandortFormular } from "@/components/hosts/KundeStandortFormular";
+import { hostArchivieren, hostLoeschen } from "@/server/actions/hosts";
 import { hostTokenWiderrufen } from "@/server/actions/tokens";
 import { hostMitDetails } from "@/server/queries/hostliste";
 import { meldungsGrenze } from "@/server/queries/hosts";
@@ -108,6 +109,11 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                   <h2 className="h5 mt-2 mb-1">{host.hostname}</h2>
                   <div className="text-body-secondary small">{host.fqdn ?? "Kein FQDN gemeldet"}</div>
                   {meldetNicht ? <KeineMeldungBadge /> : null}
+                  {host.archiviertAm ? (
+                    <div className="mt-2">
+                      <span className="badge pl-bg-neutral">Stillgelegt</span>
+                    </div>
+                  ) : null}
 
                   {/* Schlagworte und Notiz stehen hier, nicht nur im Reiter – bei gleichnamigen
                       Hosts ist das die Stelle, an der man sie braucht (#040). */}
@@ -198,6 +204,32 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                   kundeId={host.kundeId}
                   standortId={host.standortId}
                 />
+
+                {/* Stilllegen statt löschen: Laufzeiten und Rechnungen gehören zur Buchhaltung (#041). */}
+                <div className="mt-3 pt-3 border-top d-flex flex-wrap gap-2">
+                  <form action={hostArchivieren}>
+                    <input type="hidden" name="hostId" value={host.id} />
+                    <button type="submit" className="btn btn-sm btn-outline-secondary">
+                      {host.archiviertAm ? "Wieder aufnehmen" : "Stilllegen"}
+                    </button>
+                  </form>
+
+                  {host.laufzeiten.length === 0 ? (
+                    <form action={hostLoeschen}>
+                      <input type="hidden" name="hostId" value={host.id} />
+                      <button type="submit" className="btn btn-sm btn-outline-danger">
+                        Endgültig löschen
+                      </button>
+                    </form>
+                  ) : null}
+                </div>
+                <div className="form-text">
+                  {host.archiviertAm
+                    ? `Stillgelegt am ${formatDatum(host.archiviertAm)} – erscheint nicht in Listen, Zahlen und Warnungen.`
+                    : host.laufzeiten.length === 0
+                      ? "Stilllegen blendet den Host aus; löschen geht nur, solange keine Laufzeit daran hängt."
+                      : "An diesem Host hängen Laufzeiten – er lässt sich nur stilllegen, nicht löschen."}
+                </div>
               </Card>
             </div>
 

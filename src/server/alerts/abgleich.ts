@@ -9,13 +9,15 @@ import { alleRegelnPruefen, REGELN, type AlertKandidat, type RegelKontext } from
 export async function kontextLaden(jetzt: Date = new Date()): Promise<RegelKontext> {
   const [hosts, laufzeiten, einstellungen] = await Promise.all([
     prisma.host.findMany({
+      // Stillgelegte Hosts erzeugen keine Warnungen mehr (#041).
+      where: { archiviertAm: null },
       include: {
         kunde: { select: { name: true } },
         serverIdHistorie: { select: { serverId: true, ersteMeldung: true, letzteMeldung: true } },
       },
     }),
     prisma.laufzeit.findMany({
-      where: { status: "BESTAETIGT" },
+      where: { status: "BESTAETIGT", host: { archiviertAm: null } },
       include: {
         host: { select: { hostname: true, kundeId: true, kunde: { select: { name: true } } } },
         proxmoxPosition: { include: { rechnung: true } },
@@ -40,6 +42,7 @@ export async function kontextLaden(jetzt: Date = new Date()): Promise<RegelKonte
       subLizenzierteSockets: host.subLizenzierteSockets,
       sockets: host.sockets,
       letzterReportAm: host.letzterReportAm,
+      ips: host.ips,
       serverIds: host.serverIdHistorie,
     })),
     laufzeiten: laufzeiten.map((laufzeit) => ({

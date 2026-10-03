@@ -44,4 +44,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#038](038-ueberbreite-handy.md) | Seite wird auf dem Handy herausgezoomt | erledigt | v0.22.1 | 2 h | 0 h 40 min |
 | [#039](039-zugang-zur-laufzeit.md) | Auf dem Telefon führte kein Weg zur Laufzeit | erledigt | v0.22.2 | 1 h | 0 h 30 min |
 | [#040](040-schlagworte-sichtbar.md) | Schlagworte und Notizen sichtbar machen | erledigt | v0.23.0 | 2 h | 0 h 40 min |
-| | **Summe** | | | **165 h** | **21 h 43 min** |
+| [#041](041-doppelte-hosts.md) | Gleichnamige Hosts erkennen und stilllegen | erledigt | v0.24.0 | 3 h | 0 h 50 min |
+| | **Summe** | | | **168 h** | **22 h 33 min** |

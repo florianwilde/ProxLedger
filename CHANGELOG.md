@@ -17,6 +17,14 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.24.0] – 2026-10-03
+
+### Hinzugefügt
+- Dreizehnte Warnregel: Mehrere Hosts desselben Kunden tragen denselben Namen – mit IP-Adressen zum Unterscheiden (#041)
+- Hosts lassen sich **stilllegen**: Sie verschwinden aus Listen, Zahlen, Suche und Warnungen, ihre Laufzeiten und Rechnungen bleiben erhalten (#041)
+- Endgültiges Löschen für Hosts, an denen keine Laufzeit hängt (#041)
+- Schalter „stillgelegte Hosts zeigen“ in der Host-Liste (#041)
+
 ## [0.23.0] – 2026-10-03
 
 ### Hinzugefügt
