@@ -9,9 +9,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
  */
 export function HostFilterLeiste({
   kunden,
+  tags,
   werte,
 }: {
   kunden: { id: string; name: string }[];
+  tags: string[];
   werte: Record<string, string | undefined>;
 }) {
   const router = useRouter();
@@ -26,7 +28,7 @@ export function HostFilterLeiste({
     router.push(`${pathname}?${neu.toString()}`);
   }
 
-  const aktiveFilter = ["kunde", "status", "produkt", "ablauf", "rechnung", "q"].filter(
+  const aktiveFilter = ["kunde", "tag", "status", "produkt", "ablauf", "rechnung", "q"].filter(
     (schluessel) => werte[schluessel],
   ).length;
 
@@ -75,6 +77,27 @@ export function HostFilterLeiste({
           ))}
         </select>
       </div>
+
+      {tags.length > 0 ? (
+        <div className="col-6 col-md-2">
+          <label className="visually-hidden" htmlFor="tag">
+            Schlagwort
+          </label>
+          <select
+            className="form-select"
+            id="tag"
+            value={werte.tag ?? ""}
+            onChange={(e) => setzen("tag", e.target.value)}
+          >
+            <option value="">Alle Schlagworte</option>
+            {tags.map((tag) => (
+              <option key={tag} value={tag}>
+                {tag}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
 
       <div className="col-6 col-md-2">
         <select

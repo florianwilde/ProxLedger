@@ -103,7 +103,9 @@ export async function suchIndex() {
         subKey: true,
         ips: true,
         produkt: true,
+        notizen: true,
         kunde: { select: { name: true } },
+        tags: { select: { name: true } },
       },
     }),
     prisma.kunde.findMany({
@@ -128,9 +130,17 @@ export async function suchIndex() {
       titel: host.hostname,
       untertitel: `${host.produkt} · ${host.kunde?.name ?? "Nicht zugeordnet"}${
         host.subKey ? ` · ${host.subKey}` : ""
-      }`,
+      }${host.tags.length > 0 ? ` · ${host.tags.map((tag) => tag.name).join(", ")}` : ""}`,
       href: `/hosts/${host.id}`,
-      begriffe: [host.hostname, host.fqdn, host.serverId, host.subKey, ...host.ips]
+      begriffe: [
+        host.hostname,
+        host.fqdn,
+        host.serverId,
+        host.subKey,
+        host.notizen,
+        ...host.tags.map((tag) => tag.name),
+        ...host.ips,
+      ]
         .filter((w): w is string => Boolean(w))
         .map((w) => w.toLowerCase()),
     })),

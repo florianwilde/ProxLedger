@@ -17,6 +17,14 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.23.0] – 2026-10-03
+
+### Hinzugefügt
+- Schlagworte stehen jetzt in der Host-Liste und oben im Host-Detail; ein Klick darauf filtert die Liste (#040)
+- Filter „Alle Schlagworte“ in der Host-Liste (#040)
+- Eine vorhandene Notiz zeigt ein Zettel-Symbol in der Liste; der Text erscheint beim Überfahren und steht oben im Host-Detail (#040)
+- Suche und globale Suche finden Hosts auch über Schlagwort und Notiztext (#040)
+
 ## [0.22.2] – 2026-10-03
 
 ### Behoben

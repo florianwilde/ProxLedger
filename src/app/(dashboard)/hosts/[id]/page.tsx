@@ -108,6 +108,27 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                   <h2 className="h5 mt-2 mb-1">{host.hostname}</h2>
                   <div className="text-body-secondary small">{host.fqdn ?? "Kein FQDN gemeldet"}</div>
                   {meldetNicht ? <KeineMeldungBadge /> : null}
+
+                  {/* Schlagworte und Notiz stehen hier, nicht nur im Reiter – bei gleichnamigen
+                      Hosts ist das die Stelle, an der man sie braucht (#040). */}
+                  {host.tags.length > 0 ? (
+                    <div className="mt-2 d-flex flex-wrap gap-1 justify-content-center">
+                      {host.tags.map((tag) => (
+                        <Link
+                          key={tag.id}
+                          href={`/hosts?tag=${encodeURIComponent(tag.name)}`}
+                          className="badge pl-bg-neutral text-decoration-none"
+                        >
+                          {tag.name}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                  {host.notizen ? (
+                    <p className="small text-body-secondary mt-2 mb-0 text-start border-start ps-2">
+                      {host.notizen}
+                    </p>
+                  ) : null}
                 </div>
 
                 <Zeile bezeichnung="Kunde">
