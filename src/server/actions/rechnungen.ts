@@ -7,6 +7,8 @@ import {
   einkaufBezahltSetzen,
   kundenrechnungErfassen,
   laufzeitAnlegen,
+  laufzeitBearbeiten,
+  laufzeitenZusammenfuehren,
   laufzeitBestaetigen,
   laufzeitVerwerfen,
   proxmoxRechnungErfassen,
@@ -171,5 +173,48 @@ export async function laufzeitAnlegenAktion(
     await laufzeitAnlegen({ hostId, key, start, ende, notizen: null });
     seitenNeuLaden(hostId);
     return "Laufzeit angelegt.";
+  });
+}
+
+export async function laufzeitBearbeitenAktion(
+  _vorher: AktionsErgebnis,
+  formular: FormData,
+): Promise<AktionsErgebnis> {
+  await sitzungErforderlich("fachlichSchreiben");
+
+  const id = formular.get("laufzeitId")?.toString();
+  const hostId = formular.get("hostId")?.toString();
+  const key = formular.get("key")?.toString().trim();
+  const start = datum(formular.get("start"));
+  const ende = datum(formular.get("ende"));
+  const notizen = formular.get("notizen")?.toString().trim() || null;
+
+  if (!id || !hostId || !key || !start || !ende) {
+    return { fehler: "Bitte Key, Beginn und Ende angeben." };
+  }
+
+  return ausfuehren(async () => {
+    await laufzeitBearbeiten(id, { key, start, ende, notizen });
+    seitenNeuLaden(hostId);
+    return "Laufzeit geändert.";
+  });
+}
+
+export async function laufzeitenZusammenfuehrenAktion(
+  _vorher: AktionsErgebnis,
+  formular: FormData,
+): Promise<AktionsErgebnis> {
+  await sitzungErforderlich("fachlichSchreiben");
+
+  const zielId = formular.get("zielId")?.toString();
+  const quelleId = formular.get("quelleId")?.toString();
+  const hostId = formular.get("hostId")?.toString();
+
+  if (!zielId || !quelleId || !hostId) return { fehler: "Bitte eine Laufzeit zum Zusammenführen wählen." };
+
+  return ausfuehren(async () => {
+    await laufzeitenZusammenfuehren(zielId, quelleId);
+    seitenNeuLaden(hostId);
+    return "Laufzeiten zusammengeführt.";
   });
 }

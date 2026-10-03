@@ -324,3 +324,104 @@ export async function laufzeitAnlegen(daten: {
   await protokolliere("laufzeit.angelegt", "Laufzeit", laufzeit.id, daten);
   return laufzeit;
 }
+
+/** Ändert Key, Zeitraum oder Notiz einer Laufzeit (#043). */
+export async function laufzeitBearbeiten(
+  id: string,
+  daten: { key: string; start: Date; ende: Date; notizen?: string | null },
+) {
+  const laufzeit = await prisma.laufzeit.findUnique({ where: { id } });
+  if (!laufzeit) throw new RechnungsFehler("Laufzeit nicht gefunden.");
+  if (daten.ende <= daten.start) throw new RechnungsFehler("Das Ende muss nach dem Beginn liegen.");
+
+  // Je Host und Startdatum darf es nur eine Laufzeit geben – sonst entstünden zwei Lizenzjahre
+  // für denselben Zeitraum, und die Rechnungen ließen sich nicht mehr zuordnen.
+  const kollision = await prisma.laufzeit.findUnique({
+    where: { hostId_start: { hostId: laufzeit.hostId, start: daten.start } },
+  });
+  if (kollision && kollision.id !== id) {
+    throw new RechnungsFehler(
+      "Für dieses Startdatum gibt es an diesem Host schon eine Laufzeit. Beide lassen sich zusammenführen.",
+    );
+  }
+
+  const geaendert = await prisma.laufzeit.update({
+    where: { id },
+    data: {
+      key: daten.key,
+      start: daten.start,
+      ende: daten.ende,
+      notizen: daten.notizen ?? null,
+      // Von Hand geändert heißt: der Vorschlag ist angenommen.
+      status: "BESTAETIGT",
+    },
+  });
+
+  await protokolliere("laufzeit.geaendert", "Laufzeit", id, {
+    key: daten.key,
+    start: daten.start,
+    ende: daten.ende,
+  });
+  return geaendert;
+}
+
+/**
+ * Führt zwei Laufzeiten desselben Hosts zusammen (#043).
+ *
+ * Gedacht für den Fall, dass neben einer von Hand erfassten Laufzeit ein Vorschlag des Agenten
+ * steht – etwa weil das gemeldete Ablaufdatum einen Tag abweicht. Die Rechnungspositionen der
+ * aufgelösten Laufzeit wandern mit, sofern das Ziel dort noch nichts hat; andernfalls bricht der
+ * Vorgang ab. Zwei Einkaufsrechnungen auf einem Lizenzjahr wären nicht mehr zuzuordnen.
+ */
+export async function laufzeitenZusammenfuehren(zielId: string, quelleId: string) {
+  if (zielId === quelleId) throw new RechnungsFehler("Das ist dieselbe Laufzeit.");
+
+  return prisma.$transaction(async (tx) => {
+    const [ziel, quelle] = await Promise.all([
+      tx.laufzeit.findUnique({ where: { id: zielId } }),
+      tx.laufzeit.findUnique({ where: { id: quelleId } }),
+    ]);
+
+    if (!ziel || !quelle) throw new RechnungsFehler("Laufzeit nicht gefunden.");
+    if (ziel.hostId !== quelle.hostId) {
+      throw new RechnungsFehler("Zusammenführen geht nur innerhalb desselben Hosts.");
+    }
+
+    if (ziel.proxmoxPositionId && quelle.proxmoxPositionId) {
+      throw new RechnungsFehler(
+        "Beide Laufzeiten haben eine Proxmox-Rechnung. Bitte zuerst die falsche Rechnung entfernen.",
+      );
+    }
+    if (ziel.kundenPositionId && quelle.kundenPositionId) {
+      throw new RechnungsFehler(
+        "Beide Laufzeiten haben eine Kundenrechnung. Bitte zuerst die falsche Rechnung entfernen.",
+      );
+    }
+
+    // Zuerst muss die Quelle ihre Positionen loslassen: Eine Position gehört zu genau einer
+    // Laufzeit, und die Datenbank wacht darüber. Erst danach darf das Ziel sie übernehmen.
+    await tx.laufzeit.update({
+      where: { id: quelleId },
+      data: { proxmoxPositionId: null, kundenPositionId: null },
+    });
+
+    await tx.laufzeit.update({
+      where: { id: zielId },
+      data: {
+        proxmoxPositionId: ziel.proxmoxPositionId ?? quelle.proxmoxPositionId,
+        kundenPositionId: ziel.kundenPositionId ?? quelle.kundenPositionId,
+        status: "BESTAETIGT",
+        notizen: [ziel.notizen, quelle.notizen].filter(Boolean).join(" · ") || null,
+      },
+    });
+
+    await tx.laufzeit.delete({ where: { id: quelleId } });
+
+    await protokolliere("laufzeit.zusammengefuehrt", "Laufzeit", zielId, {
+      quelle: quelleId,
+      quelleStart: quelle.start,
+    });
+
+    return ziel;
+  });
+}

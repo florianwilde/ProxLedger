@@ -8,6 +8,7 @@ import { CopyableCode } from "@/components/ui/CopyableCode";
 import { InfoBox } from "@/components/ui/SmallBox";
 import { prisma } from "@/lib/db";
 import { formatDatum, formatEuro, tageBis } from "@/lib/format";
+import { LaufzeitAnlegen } from "@/components/rechnungen/LaufzeitAnlegen";
 import {
   anzahlVorschlaege,
   laufzeitJahre,
@@ -33,11 +34,16 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
     q: einzeln(roh.q),
   };
 
-  const [{ zeilen, summen }, jahre, kunden, vorschlaege] = await Promise.all([
+  const [{ zeilen, summen }, jahre, kunden, vorschlaege, hostsFuerLaufzeit] = await Promise.all([
     rechnungsListe(filter),
     laufzeitJahre(),
     prisma.kunde.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
     anzahlVorschlaege(),
+    prisma.host.findMany({
+      where: { archiviertAm: null },
+      orderBy: { hostname: "asc" },
+      select: { id: true, hostname: true, subKey: true, kunde: { select: { name: true } } },
+    }),
   ]);
 
   const heute = new Date();
@@ -105,6 +111,19 @@ export default async function RechnungenSeite({ searchParams }: { searchParams: 
               <InfoBox text="Laufzeiten" wert={String(zeilen.length)} icon="bi-calendar-range" farbe="info" />
             </div>
           </div>
+
+          {/* Laufzeiten entstehen sonst aus den Agenten-Reports; von Hand braucht man es für
+              Hosts ohne gemeldetes Ablaufdatum oder für Nachträge (#043). */}
+          <Card titel="Laufzeit von Hand anlegen" rahmen="keiner">
+            <LaufzeitAnlegen
+              hosts={hostsFuerLaufzeit.map((host) => ({
+                id: host.id,
+                hostname: host.hostname,
+                kundeName: host.kunde?.name ?? null,
+                subKey: host.subKey,
+              }))}
+            />
+          </Card>
 
           <Card
             titel="Laufzeiten und Rechnungen"

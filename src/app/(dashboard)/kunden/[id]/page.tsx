@@ -204,7 +204,7 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
 
               <Card titel="Laufzeiten und Rechnungen" rahmen="info" tabelle>
                 <div className="table-responsive">
-                  <table className="table table-striped align-middle">
+                  <table className="table table-striped align-middle pl-karten-tabelle">
                     <thead>
                       <tr>
                         <th scope="col">Laufzeit</th>
@@ -213,26 +213,46 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
                         <th scope="col">Einkauf</th>
                         <th scope="col">Kundenrechnung</th>
                         <th scope="col">Verkauf</th>
+                        <th scope="col">Marge</th>
                       </tr>
                     </thead>
                     <tbody>
                       {laufzeiten.map((laufzeit) => (
                         <tr key={laufzeit.id}>
-                          <td>
-                            {formatDatum(laufzeit.start)} – {formatDatum(laufzeit.ende)}
+                          {/* Von hier aus werden die Rechnungen erfasst – ohne Link führte die
+                              Kundenansicht in eine Sackgasse (#043). */}
+                          <td className="pl-karten-kopf">
+                            <Link
+                              href={`/rechnungen/${laufzeit.id}`}
+                              className="fw-semibold text-decoration-none"
+                            >
+                              {formatDatum(laufzeit.start)} – {formatDatum(laufzeit.ende)}
+                            </Link>
                             {laufzeit.vorschlag ? (
                               <span className="badge pl-bg-info ms-2">Vorschlag</span>
                             ) : null}
                           </td>
-                          <td>{laufzeit.hostname}</td>
-                          <td>
+                          <td data-label="Host">
+                            <Link href={`/hosts/${laufzeit.hostId}`} className="text-decoration-none">
+                              {laufzeit.hostname}
+                            </Link>
+                          </td>
+                          <td data-label="Proxmox-Rechnung">
                             <CopyableCode wert={laufzeit.einkauf?.nummer ?? null} />
                             <div>
                               <EinkaufBadge bezahlt={laufzeit.einkauf ? laufzeit.einkauf.bezahlt : null} />
                             </div>
                           </td>
-                          <td>{formatEuro(laufzeit.einkauf?.nettoBetrag)}</td>
-                          <td>
+                          <td data-label="Einkauf">
+                            {formatEuro(laufzeit.einkauf?.nettoBetrag)}
+                            {laufzeit.einkauf && laufzeit.einkauf.rabatt > 0 ? (
+                              <div className="small text-body-secondary">
+                                {formatEuro(laufzeit.einkauf.listenpreis)} − {formatEuro(laufzeit.einkauf.rabatt)}{" "}
+                                Rabatt
+                              </div>
+                            ) : null}
+                          </td>
+                          <td data-label="Kundenrechnung">
                             <CopyableCode wert={laufzeit.verkauf?.nummer ?? null} />
                             <div>
                               <VerkaufBadge
@@ -241,12 +261,26 @@ export default async function KundenDetailSeite({ params }: { params: Promise<{ 
                               />
                             </div>
                           </td>
-                          <td>{formatEuro(laufzeit.verkauf?.nettoBetrag)}</td>
+                          <td data-label="Verkauf">{formatEuro(laufzeit.verkauf?.nettoBetrag)}</td>
+                          <td
+                            data-label="Marge"
+                            className={
+                              laufzeit.einkauf && laufzeit.verkauf
+                                ? (laufzeit.verkauf.nettoBetrag ?? 0) - laufzeit.einkauf.nettoBetrag >= 0
+                                  ? "pl-text-success"
+                                  : "pl-text-danger"
+                                : undefined
+                            }
+                          >
+                            {laufzeit.einkauf && laufzeit.verkauf
+                              ? formatEuro((laufzeit.verkauf.nettoBetrag ?? 0) - laufzeit.einkauf.nettoBetrag)
+                              : "–"}
+                          </td>
                         </tr>
                       ))}
                       {laufzeiten.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="text-center text-body-secondary py-4">
+                          <td colSpan={7} className="text-center text-body-secondary py-4">
                             Noch keine Laufzeiten erfasst.
                           </td>
                         </tr>

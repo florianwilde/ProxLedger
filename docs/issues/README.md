@@ -46,4 +46,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#040](040-schlagworte-sichtbar.md) | Schlagworte und Notizen sichtbar machen | erledigt | v0.23.0 | 2 h | 0 h 40 min |
 | [#041](041-doppelte-hosts.md) | Gleichnamige Hosts erkennen und stilllegen | erledigt | v0.24.0 | 3 h | 0 h 50 min |
 | [#042](042-qdevice-cluster.md) | Cluster-Knoten falsch gelesen bei QDevice | erledigt | v0.24.1 | 1 h | 0 h 20 min |
-| | **Summe** | | | **169 h** | **22 h 53 min** |
+| [#043](043-laufzeiten-bearbeiten.md) | Laufzeiten anlegen, bearbeiten, zusammenführen | erledigt | v0.25.0 | 4 h | 1 h 05 min |
+| | **Summe** | | | **173 h** | **23 h 58 min** |
