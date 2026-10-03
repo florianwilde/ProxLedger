@@ -40,7 +40,13 @@ msg_info "Setting up ProxLedger"
 $STD git clone --branch "$ZWEIG" --depth 1 "$QUELLE" /opt/proxledger
 cd /opt/proxledger
 
-IP_ADRESSE=$(hostname -I | awk '{print $1}')
+# Erreichbare Adresse des Containers ermitteln. `hostname -I` liefert sie in aller Regel;
+# notfalls hilft die Route nach draussen. 0.0.0.0 waere eine Lausch-Adresse und im Browser nutzlos.
+IP_ADRESSE=$(hostname -I 2>/dev/null | awk '{print $1}')
+if [ -z "$IP_ADRESSE" ] || [ "$IP_ADRESSE" = "0.0.0.0" ]; then
+  IP_ADRESSE=$(ip route get 1.1.1.1 2>/dev/null | awk '/src/ {print $7; exit}')
+fi
+[ -n "$IP_ADRESSE" ] || IP_ADRESSE="localhost"
 cat <<EOF >/opt/proxledger/.env
 DATABASE_URL="postgresql://${DB_USER}:${DB_PASS}@localhost:5432/${DB_NAME}?schema=public"
 APP_SECRET="${APP_SECRET}"
@@ -107,6 +113,8 @@ msg_ok "Created Services"
 {
   echo "ProxLedger"
   echo "Adresse:     http://${IP_ADRESSE}:3000"
+  echo "             (Im Journal steht 0.0.0.0:3000 - das ist nur die Lausch-Adresse,"
+  echo "              im Browser gehoert die obige IP oder der spaetere DNS-Name hinein.)"
   echo "Benutzer:    admin@proxledger.local"
   echo "Passwort:    ${ADMIN_PASS}"
   echo

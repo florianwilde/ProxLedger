@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import type { Rolle } from "@/generated/prisma/enums";
+import { eigenerPfad } from "@/lib/adresse";
 import { prisma } from "@/lib/db";
 import { type GeleseneSitzung, SITZUNGS_COOKIE, sitzungLesen } from "@/lib/sitzung";
 import { darf, type Recht } from "./rollen";
@@ -68,10 +69,10 @@ export const angemeldet = cache(async (): Promise<AngemeldeterBenutzer | null> =
  */
 export async function sitzungErforderlich(recht?: Recht): Promise<AngemeldeterBenutzer> {
   const benutzer = await angemeldet();
-  if (!benutzer) redirect("/login?fehler=Bitte+anmelden.");
+  if (!benutzer) redirect(await eigenerPfad("/login?fehler=Bitte+anmelden."));
 
   if (recht && !darf(benutzer.rolle, recht)) {
-    redirect("/?fehler=Für+diesen+Bereich+fehlt+die+Berechtigung.");
+    redirect(await eigenerPfad("/?fehler=Für+diesen+Bereich+fehlt+die+Berechtigung."));
   }
 
   return benutzer;

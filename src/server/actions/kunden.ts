@@ -6,6 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { protokolliere } from "@/server/audit";
 import { sitzungErforderlich } from "@/server/auth/sitzungspflicht";
+import { eigenerPfad } from "@/lib/adresse";
 
 export interface AktionsErgebnis {
   fehler?: string;
@@ -79,7 +80,7 @@ export async function kundeLoeschen(formular: FormData) {
 
   revalidatePath("/kunden");
   revalidatePath("/hosts/nicht-zugeordnet");
-  redirect("/kunden");
+  redirect(await eigenerPfad("/kunden"));
 }
 
 const standortSchema = z.object({

@@ -9,31 +9,34 @@
  * sich fälschen; für eine Weiterleitung auf die eigene Seite ist das unkritisch, als erste Wahl aber
  * unnötig.
  */
-export function oeffentlicheBasis(request: Request, eingetragen?: string): URL {
-  if (eingetragen) {
-    try {
-      return new URL(eingetragen);
-    } catch {
-      // Unbrauchbarer Eintrag: weiter mit den übrigen Quellen.
-    }
-  }
+/**
+ * Lausch-Adressen taugen nicht als Ziel für einen Browser: `0.0.0.0` heißt „alle Schnittstellen“.
+ * Steht so etwas in der Konfiguration, wird es übergangen statt eine unerreichbare Seite zu bauen.
+ */
+const UNBRAUCHBAR = new Set(["0.0.0.0", "::", "[::]", "", "0"]);
 
-  if (process.env.APP_URL) {
-    try {
-      return new URL(process.env.APP_URL);
-    } catch {
-      // ebenso
-    }
+function brauchbar(adresse: string | undefined): URL | null {
+  if (!adresse) return null;
+  try {
+    const ergebnis = new URL(adresse);
+    return UNBRAUCHBAR.has(ergebnis.hostname) ? null : ergebnis;
+  } catch {
+    return null;
   }
+}
+
+export function oeffentlicheBasis(request: Request, eingetragen?: string): URL {
+  const ausEinstellung = brauchbar(eingetragen);
+  if (ausEinstellung) return ausEinstellung;
+
+  const ausUmgebung = brauchbar(process.env.APP_URL);
+  if (ausUmgebung) return ausUmgebung;
 
   const gastgeber = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
   if (gastgeber) {
     const schema = request.headers.get("x-forwarded-proto") ?? new URL(request.url).protocol.replace(":", "");
-    try {
-      return new URL(`${schema}://${gastgeber}`);
-    } catch {
-      // ebenso
-    }
+    const ausKopfzeile = brauchbar(`${schema}://${gastgeber}`);
+    if (ausKopfzeile) return ausKopfzeile;
   }
 
   return new URL(request.url);
@@ -42,4 +45,20 @@ export function oeffentlicheBasis(request: Request, eingetragen?: string): URL {
 /** Baut eine Adresse auf derselben Installation – für Weiterleitungen nach der Anmeldung. */
 export function eigeneAdresse(request: Request, pfad: string, eingetragen?: string): URL {
   return new URL(pfad, oeffentlicheBasis(request, eingetragen));
+}
+
+/**
+ * Dasselbe für Server Actions und Seiten, die keine `Request` zur Hand haben.
+ *
+ * Nötig, weil Next.js eine Weiterleitung aus einer Server Action serverseitig absolut macht – und
+ * dafür die Adresse nimmt, auf die der Server lauscht. Im Container ist das `0.0.0.0` (oder der
+ * Containername); im Browser landet man damit auf einer Seite, die es nicht gibt.
+ */
+export async function eigenerPfad(pfad: string, eingetragen?: string): Promise<string> {
+  const { headers } = await import("next/headers");
+  const kopfzeilen = await headers();
+
+  // Die Anfrage selbst gibt es hier nicht; eine leere mit den echten Kopfzeilen genügt.
+  const basis = oeffentlicheBasis(new Request("http://platzhalter.invalid", { headers: kopfzeilen }), eingetragen);
+  return new URL(pfad, basis).toString();
 }

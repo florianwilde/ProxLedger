@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 16 h 08 min
+**Gesamt:** 16 h 58 min
 
 | Issue | Zeit |
 |---|---|
@@ -37,6 +37,8 @@
 | #029 Einrichtungsdokumentation | 0 h 40 min |
 | #030 netbird Reverse Proxy | 0 h 20 min |
 | #031 Update für beide Varianten | 0 h 45 min |
+| #032 LXC-Installation korrigiert | 0 h 20 min |
+| #033 Weiterleitung auf Lausch-Adresse | 0 h 30 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -59,7 +61,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.20.0
+**Version:** 0.20.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -172,6 +174,10 @@
 
 - Update- und Sicherungsskript für beide Installationsarten (#031). Beim Durchspielen zwei Fehler gefunden: Die Zustandsprüfung des Web-Containers konnte nie gelingen (Next bindet an `HOSTNAME`, Docker setzt dort den Containernamen), und eine fehlgeschlagene Sicherung hielt die Aktualisierung nicht auf
 - Lehre: Ein Skript, das nie unter echten Bedingungen gelaufen ist, ist eine Behauptung. Erst der Durchlauf gegen einen laufenden Stapel hat beide Fehler gezeigt
+
+- Erster echter Einsatz durch Florian – und prompt zwei Fehler, die kein Test gezeigt hatte (#032, #033)
+- #033 war hausgemacht: Mein `HOSTNAME=0.0.0.0` aus #031 hat den Healthcheck repariert und dafür alle Weiterleitungen aus Server Actions auf `0.0.0.0` gelenkt. Vorher stand dort der Containername – derselbe Fehler, nur unauffälliger
+- Lehre: Weiterleitungen gehören aus der konfigurierten Adresse gebaut, nie aus dem, was der Server über sich selbst weiß
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
