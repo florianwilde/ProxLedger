@@ -166,7 +166,6 @@ async function seedDemo() {
         faelligAm: datum(vorlage.faelligAm),
         nettoBetrag: zugehoerig.reduce((summe, l) => summe + (l.einkauf?.nettoBetrag ?? 0), 0),
         ustSatz: vorlage.ustSatz,
-        rabatt: vorlage.rabatt ?? null,
         zahlungsart: vorlage.zahlungsart ?? null,
         bezahlt: vorlage.bezahlt,
         bezahltAm: datum(vorlage.bezahltAm),
@@ -175,6 +174,8 @@ async function seedDemo() {
             id: `prp-${l.id}`,
             bezeichnung: `${l.key} · ${l.start} bis ${l.ende}`,
             nettoBetrag: l.einkauf?.nettoBetrag ?? 0,
+            // Der Rabatt hängt seit #037 an der Position – wie auf der echten Proxmox-Rechnung.
+            rabatt: vorlage.rabatt ?? null,
           })),
         },
       },

@@ -405,6 +405,38 @@ const kundenrechnungUnbezahlt: Regel = {
   },
 };
 
+/**
+ * Der übliche Ablauf: Erst kommt die unbezahlte Rechnung von Proxmox, dann stellt man dem Kunden
+ * seine Rechnung, und **nachdem der Kunde gezahlt hat**, zahlt man selbst bei Proxmox. Hat der Kunde
+ * bezahlt und die Einkaufsrechnung ist noch offen, liegt das Geld da und die Rechnung auch – das ist
+ * der Moment zum Zahlen, unabhängig vom Fälligkeitsdatum (#037).
+ */
+const kundeBezahltEinkaufOffen: Regel = {
+  name: "kunde-bezahlt-einkauf-offen",
+  beschreibung: "Der Kunde hat bezahlt, die Proxmox-Rechnung ist noch offen",
+  standardSchwellwerte: {},
+  pruefe(kontext) {
+    return kontext.laufzeiten.flatMap((laufzeit) => {
+      if (!laufzeit.verkaufBezahlt || laufzeit.einkaufBezahlt !== false) return [];
+
+      return [
+        {
+          fingerprint: `kunde-bezahlt-einkauf-offen:${laufzeit.id}`,
+          regel: "kunde-bezahlt-einkauf-offen",
+          schwere: "INFO" as AlertSchwere,
+          titel: "Kunde hat bezahlt – Proxmox-Rechnung noch offen",
+          beschreibung: `${laufzeit.hostname} · ${kundenHinweis(laufzeit.kundeName)} · Einkauf ${
+            laufzeit.einkaufNummer ?? "ohne Nummer"
+          } über ${formatEuro(laufzeit.einkaufBetrag)} netto ist noch nicht bezahlt`,
+          hostId: laufzeit.hostId,
+          kundeId: laufzeit.kundeId,
+          laufzeitId: laufzeit.id,
+        },
+      ];
+    });
+  },
+};
+
 export const REGELN: Regel[] = [
   subscriptionLaeuftAb,
   statusNichtAktiv,
@@ -417,6 +449,7 @@ export const REGELN: Regel[] = [
   proxmoxRechnungFaellig,
   kundenrechnungFehlt,
   kundenrechnungUnbezahlt,
+  kundeBezahltEinkaufOffen,
 ];
 
 /** Wendet alle aktiven Regeln an. */

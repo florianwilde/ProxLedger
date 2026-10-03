@@ -119,8 +119,8 @@ export function SystemFormular({ werte, appUrl }: { werte: Einstellungen; appUrl
 
             <Feld
               name="steuersatz"
-              beschriftung="Steuersatz in Prozent"
-              hinweis="Vorgabe für neue Rechnungspositionen."
+              beschriftung="Steuersatz Verkauf in Prozent"
+              hinweis="Vorgabe für neue Kundenrechnungen."
               fehler={fehler.steuersatz}
             >
               <input
@@ -132,6 +132,24 @@ export function SystemFormular({ werte, appUrl }: { werte: Einstellungen; appUrl
                 id="steuersatz"
                 name="steuersatz"
                 defaultValue={werte.steuersatz}
+              />
+            </Feld>
+
+            <Feld
+              name="steuersatzEinkauf"
+              beschriftung="Steuersatz Einkauf in Prozent"
+              hinweis="Für die Proxmox-Rechnungen. 0 bei Reverse Charge – der Normalfall mit USt-IdNr."
+              fehler={fehler.steuersatzEinkauf}
+            >
+              <input
+                type="number"
+                step="0.1"
+                min={0}
+                max={100}
+                className="form-control"
+                id="steuersatzEinkauf"
+                name="steuersatzEinkauf"
+                defaultValue={werte.steuersatzEinkauf}
               />
             </Feld>
 

@@ -17,6 +17,20 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.22.0] – 2026-10-03
+
+### Geändert
+- **Der Rabatt gehört jetzt zur Rechnungsposition statt zur Rechnung** – so, wie Proxmox abrechnet: je Subscription-Key eine Zeile mit Listenpreis und eine mit „Client Discount“. Nur so bleibt er bei einer Sammelrechnung dem richtigen Host zugeordnet (#037)
+- Der Rechnungsbetrag ist die Summe der Positionen nach Abzug ihrer Rabatte; Marge und Summen rechnen mit dem tatsächlich gezahlten Betrag (#037)
+- Eigener Steuersatz für den Einkauf, Vorgabe 0 % wegen Reverse Charge (#037)
+- Das Betragsfeld heißt „Listenpreis netto“ und zeigt beim Tippen, womit gerechnet wird (#037)
+
+### Hinzugefügt
+- Zwölfte Warnregel `kunde-bezahlt-einkauf-offen`: Der Kunde hat bezahlt, die Proxmox-Rechnung ist noch offen – der Moment, an dem man selbst zahlt (#037)
+
+### Behoben
+- Der Rabatt wurde bisher **nirgends abgezogen**, weder in der Summe noch in der Marge (#037)
+
 ## [0.21.0] – 2026-10-03
 
 ### Hinzugefügt

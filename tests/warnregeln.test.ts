@@ -72,9 +72,9 @@ function ausRegel(k: RegelKontext, name: string) {
 }
 
 describe("Warnregeln", () => {
-  it("prüft alle elf Regeln, wenn nichts abgeschaltet ist", () => {
-    expect(REGELN).toHaveLength(11);
-    expect(new Set(REGELN.map((r) => r.name)).size).toBe(11);
+  it("prüft alle zwölf Regeln, wenn nichts abgeschaltet ist", () => {
+    expect(REGELN).toHaveLength(12);
+    expect(new Set(REGELN.map((r) => r.name)).size).toBe(12);
   });
 
   describe("Subscription läuft ab", () => {
@@ -375,5 +375,43 @@ describe("Warnregeln", () => {
 
     const fingerprints = alleRegelnPruefen(k).map((kandidat) => kandidat.fingerprint);
     expect(new Set(fingerprints).size).toBe(fingerprints.length);
+  });
+
+  describe("Kunde hat bezahlt, Einkauf noch offen", () => {
+    it("meldet, sobald der Kunde bezahlt hat und die Proxmox-Rechnung offen ist", () => {
+      // Der übliche Ablauf: unbezahlte Rechnung von Proxmox, Kundenrechnung, Kunde zahlt,
+      // dann zahlt man selbst. Dieser Zustand ist der Moment zum Zahlen.
+      const k = kontext({
+        laufzeiten: [laufzeit({ einkaufBezahlt: false, verkaufErstellt: true, verkaufBezahlt: true })],
+      });
+
+      const treffer = alleRegelnPruefen(k).filter((a) => a.regel === "kunde-bezahlt-einkauf-offen");
+      expect(treffer).toHaveLength(1);
+      expect(treffer[0].schwere).toBe("INFO");
+    });
+
+    it("schweigt, solange der Kunde noch nicht bezahlt hat", () => {
+      const k = kontext({
+        laufzeiten: [laufzeit({ einkaufBezahlt: false, verkaufErstellt: true, verkaufBezahlt: false })],
+      });
+
+      expect(alleRegelnPruefen(k).filter((a) => a.regel === "kunde-bezahlt-einkauf-offen")).toHaveLength(0);
+    });
+
+    it("schweigt, wenn die Proxmox-Rechnung längst bezahlt ist", () => {
+      const k = kontext({
+        laufzeiten: [laufzeit({ einkaufBezahlt: true, verkaufErstellt: true, verkaufBezahlt: true })],
+      });
+
+      expect(alleRegelnPruefen(k).filter((a) => a.regel === "kunde-bezahlt-einkauf-offen")).toHaveLength(0);
+    });
+
+    it("schweigt, wenn es noch gar keine Einkaufsrechnung gibt", () => {
+      const k = kontext({
+        laufzeiten: [laufzeit({ einkaufBezahlt: null, verkaufErstellt: true, verkaufBezahlt: true })],
+      });
+
+      expect(alleRegelnPruefen(k).filter((a) => a.regel === "kunde-bezahlt-einkauf-offen")).toHaveLength(0);
+    });
   });
 });
