@@ -6,6 +6,10 @@ installieren Node.js 24 und PostgreSQL 17, holen ProxLedger aus dem Git-Reposito
 systemd-Dienste ein (Dashboard und Worker) und schreiben die erzeugten Zugangsdaten nach
 `/opt/proxledger/.credentials`.
 
+**Ressourcen:** Die Vorgabe ist 2 CPU-Kerne, **4 GB RAM** und 12 GB Platte. Die 4 GB braucht
+`next build` während der Installation; im Betrieb genügen 2 GB, die sich im Nachhinein in Proxmox
+wieder absenken lassen.
+
 | Datei | Zweck |
 |---|---|
 | `ct/proxledger.sh` | Container anlegen, Ressourcen abfragen, Aktualisierung (`update_script`) |
@@ -19,8 +23,26 @@ Auf dem Proxmox-VE-Host als root:
 bash -c "$(curl -fsSL https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
 ```
 
-Das Gerüst (`build.func`, `install.func`) lädt das Skript von den community-scripts nach – das ist
-öffentlich und ohne Konto erreichbar. Nur ProxLedger selbst kommt aus dem eigenen Git.
+Das Gerüst (`build.func`) lädt das Skript von den community-scripts nach – das ist öffentlich und ohne
+Konto erreichbar. Nur ProxLedger selbst kommt aus dem eigenen Git.
+
+**Wichtig:** Ein per `curl` geladenes ct-Skript kann seine eigene Herkunft nicht ermitteln. Ohne
+Angabe sucht das Gerüst `install/proxledger-install.sh` bei den community-scripts auf GitHub und
+bricht mit *404 – Could not fetch install/proxledger-install.sh* ab. Das ct-Skript setzt deshalb
+
+```bash
+COMMUNITY_SCRIPTS_URL="https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts"
+```
+
+selbst. Für einen anderen Zweig oder einen Fork lässt sich die Angabe von außen überschreiben:
+
+```bash
+COMMUNITY_SCRIPTS_URL=https://git.example.de/<nutzer>/ProxLedger/raw/branch/<zweig>/deploy/community-scripts \
+  bash -c "$(curl -fsSL …/ct/proxledger.sh)"
+```
+
+Das Verzeichnis dahinter muss `ct/` und `install/` enthalten – deshalb zeigt die Angabe auf
+`deploy/community-scripts`, nicht auf die Wurzel des Repositorys.
 
 Zwei Umgebungsvariablen steuern die Quelle, solange das Repository nicht öffentlich ist:
 
