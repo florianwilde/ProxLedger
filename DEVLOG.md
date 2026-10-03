@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 19 h 53 min
+**Gesamt:** 20 h 33 min
 
 | Issue | Zeit |
 |---|---|
@@ -43,6 +43,7 @@
 | #035 Tabellen als Karten | 0 h 50 min |
 | #036 Standort am Host | 0 h 30 min |
 | #037 Rabatt je Position | 0 h 55 min |
+| #038 Überbreite auf dem Handy | 0 h 40 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -65,7 +66,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.22.0
+**Version:** 0.22.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -193,6 +194,10 @@
 - Eine echte Proxmox-Rechnung hat drei Fehler im Rechnungsteil aufgedeckt (#037): Rabatt an der falschen Ebene, nirgends abgezogen, und 19 % USt als Vorgabe, wo Reverse Charge gilt
 - Florians Schilderung des Ablaufs (unbezahlte Rechnung → Kundenrechnung → Kunde zahlt → selbst zahlen → PAID-Fassung) ergab die zwölfte Warnregel
 - Lehre: Ein Beleg aus der Praxis sagt mehr über das Datenmodell als jede Annahme darüber, wie Rechnungen aussehen
+
+- Überbreite auf dem Handy (#038): Drei Verursacher, ein Muster – ein Element breiter als das Fenster zoomt die ganze Seite heraus
+- Dabei einen eigenen Fehler aus #037 gefunden: Die Detailseite rechnete weiter mit dem Listenpreis. Beim Ändern einer Rechengröße reicht es nicht, die Abfragen anzupassen – auch die Seiten rechnen selbst
+- Das Aufnahme-Skript kann jetzt gezielt in Telefonbreite aufnehmen; damit ließ sich die Behebung belegen statt nur behaupten
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

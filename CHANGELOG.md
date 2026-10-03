@@ -17,6 +17,15 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.22.1] – 2026-10-03
+
+### Behoben
+- **Die ganze Seite wurde auf dem Telefon herausgezoomt**, sobald die Warnungen geöffnet wurden oder eine Host-Detailansicht eine lange Server-ID enthielt. Ursache war jeweils ein Element breiter als das Fenster (#038)
+- Die Laufzeit-Detailseite rechnete noch mit dem Listenpreis statt mit dem Betrag nach Rabatt – Marge und der Vorschlag für die Kundenrechnung waren um den Rabatt zu hoch (#037)
+
+### Hinzugefügt
+- `npm run screenshots -- --mobil name=/pfad` für gezielte Aufnahmen in Telefonbreite (#038)
+
 ## [0.22.0] – 2026-10-03
 
 ### Geändert
