@@ -401,6 +401,18 @@ body {
   max-width: calc(100vw - 1rem);
 }
 
+/*
+ * Die Laufzeit-Spalte ist auf dem Telefon der einzige Weg zu den Rechnungsformularen, deshalb
+ * bleibt sie dort sichtbar. Zwischen 768 und 992 px ist die Tabelle am engsten – dort entfällt sie.
+ * Bewusst eine eigene Klasse statt der Bootstrap-Hilfsklassen: deren `display: … !important`
+ * überschreibt das Kartenlayout (#039).
+ */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .pl-spalte-laufzeit {
+    display: none;
+  }
+}
+
 /* ---------- Mobil ---------- */
 
 @media (max-width: 575.98px) {

@@ -42,4 +42,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#036](036-standort-am-host.md) | Standort am Host setzen | erledigt | v0.21.0 | 1 h | 0 h 30 min |
 | [#037](037-rabatt-und-ablauf.md) | Rabatt je Position und der tatsächliche Ablauf | erledigt | v0.22.0 | 3 h | 0 h 55 min |
 | [#038](038-ueberbreite-handy.md) | Seite wird auf dem Handy herausgezoomt | erledigt | v0.22.1 | 2 h | 0 h 40 min |
-| | **Summe** | | | **162 h** | **20 h 33 min** |
+| [#039](039-zugang-zur-laufzeit.md) | Auf dem Telefon führte kein Weg zur Laufzeit | erledigt | v0.22.2 | 1 h | 0 h 30 min |
+| | **Summe** | | | **163 h** | **21 h 03 min** |

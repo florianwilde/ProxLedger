@@ -17,6 +17,15 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.22.2] – 2026-10-03
+
+### Behoben
+- **Auf dem Telefon führte kein Weg zu den Rechnungsformularen**: Im Reiter *Rechnungen* der Host-Detailansicht war die Laufzeit nicht verlinkt, und in der Rechnungsliste ist diese Spalte erst ab 992 px sichtbar (#039)
+- Der Reiter *Rechnungen* rechnete den Einkauf noch ohne Rabatt (#039)
+
+### Geändert
+- Der Reiter *Rechnungen* nutzt auf dem Telefon das Kartenlayout (#039)
+
 ## [0.22.1] – 2026-10-03
 
 ### Behoben
