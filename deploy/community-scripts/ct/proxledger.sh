@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-_CS_DEFAULT_URL="https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main"
+# Woher die App-Skripte kommen. Ein per curl geladenes ct-Skript kann seine eigene Herkunft nicht
+# ermitteln – ohne diese Angabe sucht das Geruest install/proxledger-install.sh bei den
+# community-scripts und bricht mit 404 ab. Ueberschreibbar fuer eigene Zweige oder Forks.
+COMMUNITY_SCRIPTS_URL="${COMMUNITY_SCRIPTS_URL:-https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts}"
+export COMMUNITY_SCRIPTS_URL
+_CS_DEFAULT_URL="$COMMUNITY_SCRIPTS_URL"
 _cs_boot="${COMMUNITY_SCRIPTS_CORE_DIR:-$(dirname "${BASH_SOURCE[0]}")/../../core}/core/build.func"
 source "$_cs_boot" 2>/dev/null || source <(curl -fsSL "${COMMUNITY_SCRIPTS_CORE_URL:-https://raw.githubusercontent.com/community-scripts/core/main}/core/build.func")
 # Copyright (c) 2021-2026 tteck
@@ -10,8 +15,10 @@ source "$_cs_boot" 2>/dev/null || source <(curl -fsSL "${COMMUNITY_SCRIPTS_CORE_
 APP="ProxLedger"
 var_tags="${var_tags:-monitoring;licensing}"
 var_cpu="${var_cpu:-2}"
-var_ram="${var_ram:-2048}"
-var_disk="${var_disk:-10}"
+# 4 GB fuer die Installation: `next build` braucht deutlich mehr als 2 GB und bricht sonst mit
+# einem Speicherfehler ab. Nach der Installation genuegen 2 GB im Betrieb.
+var_ram="${var_ram:-4096}"
+var_disk="${var_disk:-12}"
 var_os="${var_os:-debian}"
 var_version="${var_version:-13}"
 var_arm64="${var_arm64:-yes}"
