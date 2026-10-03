@@ -121,12 +121,22 @@ export default async function DashboardSeite() {
                   <table className="table table-striped align-middle">
                     <thead>
                       <tr>
+                        {/* Auf dem Handy bleiben Host und Ablauf; der Rest käme ohnehin nur
+                            per Seitwärtsscrollen ins Bild (#034). */}
                         <th scope="col">Host</th>
-                        <th scope="col">Kunde</th>
-                        <th scope="col">Key</th>
+                        <th scope="col" className="d-none d-md-table-cell">
+                          Kunde
+                        </th>
+                        <th scope="col" className="d-none d-lg-table-cell">
+                          Key
+                        </th>
                         <th scope="col">Ablauf</th>
-                        <th scope="col">Proxmox</th>
-                        <th scope="col">Kundenrechnung</th>
+                        <th scope="col" className="d-none d-sm-table-cell">
+                          Proxmox
+                        </th>
+                        <th scope="col" className="d-none d-sm-table-cell">
+                          Kundenrechnung
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -137,8 +147,12 @@ export default async function DashboardSeite() {
                               {host.hostname}
                             </Link>
                             {host.meldetNicht ? <KeineMeldungBadge /> : null}
+                            {/* Auf schmalen Bildschirmen steht der Kunde hier mit darunter. */}
+                            <div className="small text-body-secondary d-md-none">
+                              {host.kunde ? host.kunde.name : "Nicht zugeordnet"}
+                            </div>
                           </td>
-                          <td>
+                          <td className="d-none d-md-table-cell">
                             {host.kunde ? (
                               <Link href={`/kunden/${host.kunde.id}`} className="text-decoration-none">
                                 {host.kunde.name}
@@ -152,16 +166,16 @@ export default async function DashboardSeite() {
                               </Link>
                             )}
                           </td>
-                          <td>
+                          <td className="d-none d-lg-table-cell">
                             <CopyableCode wert={host.subKey} />
                           </td>
                           <td>
                             <AblaufBadge datum={host.nextduedate?.toISOString() ?? null} heute={heute} />
                           </td>
-                          <td>
+                          <td className="d-none d-sm-table-cell">
                             <EinkaufBadge bezahlt={host.einkaufBezahlt} />
                           </td>
-                          <td>
+                          <td className="d-none d-sm-table-cell">
                             <VerkaufBadge erstellt={host.verkaufErstellt} bezahlt={host.verkaufBezahlt} />
                           </td>
                         </tr>

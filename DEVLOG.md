@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 16 h 58 min
+**Gesamt:** 17 h 38 min
 
 | Issue | Zeit |
 |---|---|
@@ -39,6 +39,7 @@
 | #031 Update für beide Varianten | 0 h 45 min |
 | #032 LXC-Installation korrigiert | 0 h 20 min |
 | #033 Weiterleitung auf Lausch-Adresse | 0 h 30 min |
+| #034 Bedienung auf dem Handy | 0 h 40 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -61,7 +62,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.20.1
+**Version:** 0.20.2
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -178,6 +179,9 @@
 - Erster echter Einsatz durch Florian – und prompt zwei Fehler, die kein Test gezeigt hatte (#032, #033)
 - #033 war hausgemacht: Mein `HOSTNAME=0.0.0.0` aus #031 hat den Healthcheck repariert und dafür alle Weiterleitungen aus Server Actions auf `0.0.0.0` gelenkt. Vorher stand dort der Containername – derselbe Fehler, nur unauffälliger
 - Lehre: Weiterleitungen gehören aus der konfigurierten Adresse gebaut, nie aus dem, was der Server über sich selbst weiß
+
+- Mobile Bedienung (#034): Das Menü ließ sich auf dem Telefon nicht schließen – AdminLTE-Markup ohne AdminLTE-JavaScript. Eigener Zustand, abdunkelnde Fläche, Schließen beim Navigieren und mit Escape
+- Lehre: Die Mobilansicht war mit Screenshots geprüft, nicht mit den Fingern. Ein Bild zeigt nicht, dass etwas nicht wieder weggeht
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

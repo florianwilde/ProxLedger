@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogoMitSchriftzug } from "@/components/Logo";
 import type { Rolle } from "@/generated/prisma/enums";
 import { darf } from "@/server/auth/rollen";
+import { menuSchliessen, useMenuOffen } from "./menuZustand";
 
 interface MenuEintrag {
   href: string;
@@ -30,6 +31,21 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const [suche, setSuche] = useState("");
+  const menuOffen = useMenuOffen();
+
+  // Nach dem Navigieren hat das Menü seinen Zweck erfüllt – auf dem Handy verdeckt es sonst alles.
+  useEffect(() => {
+    menuSchliessen();
+  }, [pathname]);
+
+  // Escape schließt, wie bei jedem anderen Overlay auch.
+  useEffect(() => {
+    function taste(ereignis: KeyboardEvent) {
+      if (ereignis.key === "Escape") menuSchliessen();
+    }
+    window.addEventListener("keydown", taste);
+    return () => window.removeEventListener("keydown", taste);
+  }, []);
 
   const haupt: MenuEintrag[] = [
     { href: "/", titel: "Dashboard", icon: "bi-speedometer2" },
@@ -105,11 +121,30 @@ export function Sidebar({
   }
 
   return (
-    <aside className="app-sidebar shadow" data-bs-theme="dark">
-      <div className="sidebar-brand">
+    <>
+      {/* Fläche hinter dem Menü: antippen schließt. Ohne sie bleibt das Menü auf dem Handy stehen. */}
+      {menuOffen ? (
+        <button
+          type="button"
+          className="pl-menu-hintergrund d-lg-none"
+          aria-label="Menü schließen"
+          onClick={menuSchliessen}
+        />
+      ) : null}
+
+      <aside className="app-sidebar shadow" data-bs-theme="dark">
+      <div className="sidebar-brand d-flex align-items-center justify-content-between">
         <Link href="/" className="brand-link">
           <LogoMitSchriftzug variante="sidebar" groesse={34} />
         </Link>
+        <button
+          type="button"
+          className="btn btn-link text-white d-lg-none pl-touch-target me-2"
+          aria-label="Menü schließen"
+          onClick={menuSchliessen}
+        >
+          <i className="bi bi-x-lg" aria-hidden="true" />
+        </button>
       </div>
 
       <div className="pl-sidebar-user">
@@ -147,6 +182,7 @@ export function Sidebar({
           </ul>
         </nav>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

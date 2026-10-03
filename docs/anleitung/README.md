@@ -473,6 +473,11 @@ Server-ID stehen in der Detailansicht unter *Subscription-Historie*.
 
 ## Anhang: dunkles Design und Mobilansicht
 
+Auf dem Telefon öffnet das Symbol links oben das Menü; es schließt sich durch Antippen der
+abgedunkelten Fläche, über das Kreuz im Menükopf, mit Escape – und von selbst, sobald ein Eintrag
+gewählt wurde. Die Tabellen zeigen auf schmalen Bildschirmen nur die wichtigsten Spalten; die
+übrigen Angaben stehen auf der jeweiligen Detailseite.
+
 Das Dashboard folgt der Einstellung des Betriebssystems und lässt sich über das Mondsymbol in der
 Kopfleiste umschalten.
 

@@ -186,6 +186,19 @@ body {
   display: none;
 }
 
+/*
+ * Fläche hinter dem geöffneten Menü auf schmalen Bildschirmen. Ein Knopf statt eines div,
+ * damit sie auch per Tastatur erreichbar ist.
+ */
+.pl-menu-hintergrund {
+  position: fixed;
+  inset: 0;
+  z-index: 1037; /* unter dem Menü (1038), über allem anderen */
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 0;
+}
+
 /* ---------- Inhaltsbereich ---------- */
 
 .app-content-header {

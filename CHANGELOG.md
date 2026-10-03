@@ -17,6 +17,15 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.20.2] – 2026-10-03
+
+### Behoben
+- **Das Seitenmenü ließ sich auf dem Handy nicht schließen.** Es gab weder eine Fläche zum Antippen noch ein Schließen beim Navigieren – das Markup stammt von AdminLTE, dessen JavaScript wir bewusst nicht einbinden (#034)
+- Die Dashboard-Tabelle war auf dem Telefon rechts abgeschnitten; sie zeigt dort jetzt Host und Ablauf, den Kunden klein darunter (#034)
+
+### Hinzugefügt
+- Schließen-Knopf im Menükopf, Schließen per Escape, und der Inhalt hinter dem offenen Menü scrollt nicht mehr mit (#034)
+
 ## [0.20.1] – 2026-10-03
 
 ### Behoben
