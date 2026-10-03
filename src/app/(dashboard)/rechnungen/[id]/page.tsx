@@ -11,6 +11,8 @@ import { formatDatum, formatEuro } from "@/lib/format";
 import { laufzeitBestaetigenAktion, laufzeitVerwerfenAktion } from "@/server/actions/rechnungen";
 import { einstellungen, faelligkeitsVorschlag } from "@/server/einstellungen";
 import { laufzeitDetail } from "@/server/queries/rechnungen";
+import { LaufzeitBearbeiten } from "@/components/rechnungen/LaufzeitBearbeiten";
+import { prisma } from "@/lib/db";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -33,7 +35,22 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
   const marge = einkaufBetrag !== null && verkaufBetrag !== null ? verkaufBetrag - einkaufBetrag : null;
 
   // Vorgaben aus den Einstellungen füllen leere Felder vor (#025).
-  const [vorgaben, faelligVorschlag] = await Promise.all([einstellungen(), faelligkeitsVorschlag()]);
+  const [vorgaben, faelligVorschlag, nachbarn] = await Promise.all([
+    einstellungen(),
+    faelligkeitsVorschlag(),
+    prisma.laufzeit.findMany({
+      where: { hostId: laufzeit.host.id, id: { not: laufzeit.id } },
+      orderBy: { start: "desc" },
+      select: {
+        id: true,
+        key: true,
+        start: true,
+        ende: true,
+        proxmoxPositionId: true,
+        kundenPositionId: true,
+      },
+    }),
+  ]);
   const verkaufVorschlag =
     verkaufBetrag ??
     (einkaufBetrag === null ? null : Math.round(einkaufBetrag * (1 + vorgaben.margeProzent / 100) * 100) / 100);
@@ -127,6 +144,23 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
                     {marge === null ? "–" : formatEuro(marge)}
                   </dd>
                 </dl>
+
+                <hr />
+                <LaufzeitBearbeiten
+                  laufzeitId={laufzeit.id}
+                  hostId={laufzeit.host.id}
+                  schluessel={laufzeit.key}
+                  start={laufzeit.start.toISOString().slice(0, 10)}
+                  ende={laufzeit.ende.toISOString().slice(0, 10)}
+                  notizen={laufzeit.notizen}
+                  nachbarn={nachbarn.map((nachbar) => ({
+                    id: nachbar.id,
+                    zeitraum: `${formatDatum(nachbar.start)} – ${formatDatum(nachbar.ende)}`,
+                    key: nachbar.key,
+                    hatEinkauf: nachbar.proxmoxPositionId !== null,
+                    hatVerkauf: nachbar.kundenPositionId !== null,
+                  }))}
+                />
               </Card>
 
               {einkauf && einkauf.positionen.length > 1 ? (

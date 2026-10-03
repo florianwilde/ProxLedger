@@ -17,6 +17,14 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.25.0] – 2026-10-03
+
+### Hinzugefügt
+- **Laufzeit von Hand anlegen** – für Hosts, die (noch) kein Ablaufdatum melden, und für Nachträge (#043)
+- **Laufzeit bearbeiten**: Key, Beginn, Ende und Notiz lassen sich nachträglich ändern (#043)
+- **Laufzeiten zusammenführen**, wenn neben einer erfassten Laufzeit ein Vorschlag mit abweichendem Datum steht; die Rechnungen wandern mit (#043)
+- Kundenansicht: Laufzeit und Host verlinkt, dazu Marge und Rabatt je Zeile (#043)
+
 ## [0.24.1] – 2026-10-03
 
 ### Behoben

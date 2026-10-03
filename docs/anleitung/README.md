@@ -279,6 +279,22 @@ Positionen und wird automatisch nachgeführt.
 Die Jahresbahn zeigt zwölf Monate mit einer Linie für „heute“, gruppiert nach Kunde. Darunter stehen die
 Abläufe der nächsten 90 Tage und die bereits abgelaufenen Subscriptions.
 
+### Woher Laufzeiten kommen
+
+Eine Laufzeit ist ein Lizenzjahr eines Hosts. Es gibt zwei Wege:
+
+1. **Vom Agent vorgeschlagen.** Meldet ein Host ein Ablaufdatum, legt ProxLedger eine Laufzeit von
+   diesem Datum bis ein Jahr später an – zunächst als *Vorschlag*. Unter *Rechnungen → Vorschläge*
+   bestätigst oder verwirfst du ihn.
+2. **Von Hand angelegt** über *Rechnungen → Laufzeit von Hand anlegen*. Nötig, wenn ein Host noch kein
+   Ablaufdatum meldet – etwa weil der Key erst bestellt ist – oder wenn ein zurückliegendes Lizenzjahr
+   nachgetragen wird.
+
+Jede Laufzeit lässt sich später ändern (*Laufzeit bearbeiten* in der Detailansicht): Key, Beginn, Ende
+und Notiz. Stehen für denselben Host zwei Laufzeiten, die dasselbe Lizenzjahr meinen – etwa weil das
+gemeldete Datum um einen Tag abweicht –, lassen sie sich **zusammenführen**. Die aufgelöste Laufzeit
+gibt ihre Rechnungen an die verbleibende ab.
+
 ### Der übliche Ablauf
 
 1. Proxmox schickt die Rechnung zunächst als **UNPAID**. Sie wird hier erfasst, Haken „bezahlt“ bleibt leer.
