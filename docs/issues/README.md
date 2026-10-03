@@ -41,4 +41,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#035](035-mobile-tabellen.md) | Tabellen auf dem Handy als Karten | erledigt | v0.21.0 | 3 h | 0 h 50 min |
 | [#036](036-standort-am-host.md) | Standort am Host setzen | erledigt | v0.21.0 | 1 h | 0 h 30 min |
 | [#037](037-rabatt-und-ablauf.md) | Rabatt je Position und der tatsächliche Ablauf | erledigt | v0.22.0 | 3 h | 0 h 55 min |
-| | **Summe** | | | **160 h** | **19 h 53 min** |
+| [#038](038-ueberbreite-handy.md) | Seite wird auf dem Handy herausgezoomt | erledigt | v0.22.1 | 2 h | 0 h 40 min |
+| | **Summe** | | | **162 h** | **20 h 33 min** |

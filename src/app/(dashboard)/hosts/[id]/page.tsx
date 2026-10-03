@@ -225,62 +225,66 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                     inhalt: (
                       <>
                         <h3 className="h6">Keys</h3>
-                        <table className="table table-striped align-middle mb-4">
-                          <thead>
-                            <tr>
-                              <th scope="col">Key</th>
-                              <th scope="col">Erstmals gemeldet</th>
-                              <th scope="col">Zuletzt gemeldet</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {host.keyHistorie.map((eintrag) => (
-                              <tr key={eintrag.id}>
-                                <td>
-                                  <CopyableCode wert={eintrag.key} />
-                                </td>
-                                <td>{formatDatum(eintrag.ersteMeldung)}</td>
-                                <td>{formatDatum(eintrag.letzteMeldung)}</td>
-                              </tr>
-                            ))}
-                            {host.keyHistorie.length === 0 ? (
+                        <div className="table-responsive mb-4">
+                          <table className="table table-striped align-middle mb-0">
+                            <thead>
                               <tr>
-                                <td colSpan={3} className="text-body-secondary">
-                                  Noch kein Key gemeldet.
-                                </td>
+                                <th scope="col">Key</th>
+                                <th scope="col">Erstmals gemeldet</th>
+                                <th scope="col">Zuletzt gemeldet</th>
                               </tr>
-                            ) : null}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody>
+                              {host.keyHistorie.map((eintrag) => (
+                                <tr key={eintrag.id}>
+                                  <td>
+                                    <CopyableCode wert={eintrag.key} />
+                                  </td>
+                                  <td>{formatDatum(eintrag.ersteMeldung)}</td>
+                                  <td>{formatDatum(eintrag.letzteMeldung)}</td>
+                                </tr>
+                              ))}
+                              {host.keyHistorie.length === 0 ? (
+                                <tr>
+                                  <td colSpan={3} className="text-body-secondary">
+                                    Noch kein Key gemeldet.
+                                  </td>
+                                </tr>
+                              ) : null}
+                            </tbody>
+                          </table>
+                        </div>
 
                         <h3 className="h6">Server-IDs</h3>
-                        <table className="table table-striped align-middle mb-0">
-                          <thead>
-                            <tr>
-                              <th scope="col">Server-ID</th>
-                              <th scope="col">Erstmals gemeldet</th>
-                              <th scope="col">Zuletzt gemeldet</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {host.serverIdHistorie.map((eintrag) => (
-                              <tr key={eintrag.id}>
-                                <td>
-                                  <CopyableCode wert={eintrag.serverId} />
-                                </td>
-                                <td>{formatDatum(eintrag.ersteMeldung)}</td>
-                                <td>{formatDatum(eintrag.letzteMeldung)}</td>
-                              </tr>
-                            ))}
-                            {host.serverIdHistorie.length === 0 ? (
+                        <div className="table-responsive">
+                          <table className="table table-striped align-middle mb-0">
+                            <thead>
                               <tr>
-                                <td colSpan={3} className="text-body-secondary">
-                                  Noch keine Server-ID gemeldet.
-                                </td>
+                                <th scope="col">Server-ID</th>
+                                <th scope="col">Erstmals gemeldet</th>
+                                <th scope="col">Zuletzt gemeldet</th>
                               </tr>
-                            ) : null}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody>
+                              {host.serverIdHistorie.map((eintrag) => (
+                                <tr key={eintrag.id}>
+                                  <td>
+                                    <CopyableCode wert={eintrag.serverId} />
+                                  </td>
+                                  <td>{formatDatum(eintrag.ersteMeldung)}</td>
+                                  <td>{formatDatum(eintrag.letzteMeldung)}</td>
+                                </tr>
+                              ))}
+                              {host.serverIdHistorie.length === 0 ? (
+                                <tr>
+                                  <td colSpan={3} className="text-body-secondary">
+                                    Noch keine Server-ID gemeldet.
+                                  </td>
+                                </tr>
+                              ) : null}
+                            </tbody>
+                          </table>
+                        </div>
                         {host.serverIdHistorie.length > 1 ? (
                           <p className="small pl-text-warning mt-2 mb-0">
                             Mehrere Server-IDs bedeuten Hardwaretausch oder Neuinstallation – der Key muss
@@ -429,53 +433,55 @@ export default async function HostDetailSeite({ params }: { params: Promise<{ id
                     titel: "Tokens",
                     icon: "bi-key-fill",
                     inhalt: (
-                      <table className="table table-striped align-middle mb-0">
-                        <thead>
-                          <tr>
-                            <th scope="col">Anfang</th>
-                            <th scope="col">Erstellt</th>
-                            <th scope="col">Zuletzt benutzt</th>
-                            <th scope="col">Zustand</th>
-                            <th scope="col" className="text-end">
-                              Aktion
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {host.tokens.map((token) => (
-                            <tr key={token.id}>
-                              <td className="pl-mono">{token.praefix}…</td>
-                              <td>{formatDatum(token.erstelltAm)}</td>
-                              <td>{formatDatumZeit(token.letzteNutzungAm)}</td>
-                              <td>
-                                {token.widerrufenAm ? (
-                                  <Badge farbe="neutral">Widerrufen</Badge>
-                                ) : (
-                                  <Badge farbe="success">Aktiv</Badge>
-                                )}
-                              </td>
-                              <td className="text-end">
-                                {token.widerrufenAm ? null : (
-                                  <form action={hostTokenWiderrufen}>
-                                    <input type="hidden" name="id" value={token.id} />
-                                    <input type="hidden" name="hostId" value={host.id} />
-                                    <button type="submit" className="btn btn-sm btn-outline-danger">
-                                      Widerrufen
-                                    </button>
-                                  </form>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                          {host.tokens.length === 0 ? (
+                      <div className="table-responsive">
+                        <table className="table table-striped align-middle mb-0">
+                          <thead>
                             <tr>
-                              <td colSpan={5} className="text-body-secondary">
-                                Kein Token vorhanden – dieser Host stammt aus den Demo-Daten.
-                              </td>
+                              <th scope="col">Anfang</th>
+                              <th scope="col">Erstellt</th>
+                              <th scope="col">Zuletzt benutzt</th>
+                              <th scope="col">Zustand</th>
+                              <th scope="col" className="text-end">
+                                Aktion
+                              </th>
                             </tr>
-                          ) : null}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {host.tokens.map((token) => (
+                              <tr key={token.id}>
+                                <td className="pl-mono">{token.praefix}…</td>
+                                <td>{formatDatum(token.erstelltAm)}</td>
+                                <td>{formatDatumZeit(token.letzteNutzungAm)}</td>
+                                <td>
+                                  {token.widerrufenAm ? (
+                                    <Badge farbe="neutral">Widerrufen</Badge>
+                                  ) : (
+                                    <Badge farbe="success">Aktiv</Badge>
+                                  )}
+                                </td>
+                                <td className="text-end">
+                                  {token.widerrufenAm ? null : (
+                                    <form action={hostTokenWiderrufen}>
+                                      <input type="hidden" name="id" value={token.id} />
+                                      <input type="hidden" name="hostId" value={host.id} />
+                                      <button type="submit" className="btn btn-sm btn-outline-danger">
+                                        Widerrufen
+                                      </button>
+                                    </form>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                            {host.tokens.length === 0 ? (
+                              <tr>
+                                <td colSpan={5} className="text-body-secondary">
+                                  Kein Token vorhanden – dieser Host stammt aus den Demo-Daten.
+                                </td>
+                              </tr>
+                            ) : null}
+                          </tbody>
+                        </table>
+                      </div>
                     ),
                   },
                 ]}

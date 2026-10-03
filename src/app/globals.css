@@ -395,6 +395,12 @@ body {
   width: 13rem;
 }
 
+/* Klapplisten in der Kopfzeile (Warnungen, Benutzermenü). */
+.pl-klappliste {
+  width: 22rem;
+  max-width: calc(100vw - 1rem);
+}
+
 /* ---------- Mobil ---------- */
 
 @media (max-width: 575.98px) {
@@ -425,6 +431,30 @@ body {
  * Zellen ohne `data-label` stehen für sich – etwa eine Zeile mit Knöpfen.
  */
 @media (max-width: 767.98px) {
+  /*
+   * Auf dem Telefon ist die Klappliste breiter als das Fenster – der Browser zoomt dann die
+   * **ganze Seite** heraus, damit sie hineinpasst. Deshalb hier fest am Fenster ausrichten
+   * statt am Knopf (#038).
+   */
+  .pl-klappliste {
+    position: fixed;
+    top: 3.5rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+    max-width: none;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  /*
+   * Lange Schlüssel und Server-IDs dürfen umbrechen. Sonst machen sie die Seite breiter als das
+   * Fenster – und der Browser zoomt die ganze Seite heraus, damit sie hineinpasst (#038).
+   */
+  .pl-mono {
+    overflow-wrap: anywhere;
+  }
+
   .pl-karten-tabelle,
   .pl-karten-tabelle tbody,
   .pl-karten-tabelle tr,

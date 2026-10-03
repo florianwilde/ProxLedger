@@ -140,8 +140,7 @@ export function Header({
               ) : null}
             </button>
             <div
-              className={`dropdown-menu dropdown-menu-end shadow ${glockeOffen ? "show" : ""}`}
-              style={{ width: "22rem" }}
+              className={`dropdown-menu dropdown-menu-end shadow pl-klappliste ${glockeOffen ? "show" : ""}`}
             >
               <span className="dropdown-header">{alerts.length} offene Warnungen</span>
               <div className="dropdown-divider" />
@@ -206,7 +205,9 @@ export function Header({
               <i className="bi bi-person-circle" aria-hidden="true" />
               <span className="d-none d-sm-inline">{benutzer}</span>
             </button>
-            <div className={`dropdown-menu dropdown-menu-end shadow ${benutzerOffen ? "show" : ""}`}>
+            <div
+              className={`dropdown-menu dropdown-menu-end shadow pl-klappliste ${benutzerOffen ? "show" : ""}`}
+            >
               <span className="dropdown-header">
                 Angemeldet als {benutzer} · {ROLLEN_TEXT[rolle]}
               </span>

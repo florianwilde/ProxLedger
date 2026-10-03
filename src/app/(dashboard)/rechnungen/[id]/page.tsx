@@ -25,7 +25,10 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
 
   const einkauf = laufzeit.proxmoxPosition?.rechnung ?? null;
   const verkauf = laufzeit.kundenPosition?.rechnung ?? null;
-  const einkaufBetrag = laufzeit.proxmoxPosition ? Number(laufzeit.proxmoxPosition.nettoBetrag) : null;
+  // Gerechnet wird mit dem Betrag nach Abzug des Rabatts – das ist, was tatsächlich gezahlt wird (#037).
+  const einkaufListenpreis = laufzeit.proxmoxPosition ? Number(laufzeit.proxmoxPosition.nettoBetrag) : null;
+  const einkaufRabatt = Number(laufzeit.proxmoxPosition?.rabatt ?? 0);
+  const einkaufBetrag = einkaufListenpreis === null ? null : einkaufListenpreis - einkaufRabatt;
   const verkaufBetrag = laufzeit.kundenPosition ? Number(laufzeit.kundenPosition.nettoBetrag) : null;
   const marge = einkaufBetrag !== null && verkaufBetrag !== null ? verkaufBetrag - einkaufBetrag : null;
 
@@ -109,7 +112,14 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
                 <hr />
                 <dl className="row mb-0">
                   <dt className="col-5 fw-normal text-body-secondary">Einkauf netto</dt>
-                  <dd className="col-7">{formatEuro(einkaufBetrag)}</dd>
+                  <dd className="col-7">
+                    {formatEuro(einkaufBetrag)}
+                    {einkaufRabatt > 0 ? (
+                      <span className="small text-body-secondary d-block">
+                        {formatEuro(einkaufListenpreis)} − {formatEuro(einkaufRabatt)} Rabatt
+                      </span>
+                    ) : null}
+                  </dd>
                   <dt className="col-5 fw-normal text-body-secondary">Verkauf netto</dt>
                   <dd className="col-7">{formatEuro(verkaufBetrag)}</dd>
                   <dt className="col-5 fw-normal text-body-secondary">Marge</dt>
@@ -164,7 +174,7 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
                     nummer: einkauf?.nummer ?? null,
                     datum: einkauf?.datum.toISOString() ?? null,
                     faelligAm: einkauf?.faelligAm?.toISOString() ?? faelligVorschlag,
-                    nettoBetrag: einkaufBetrag,
+                    nettoBetrag: einkaufListenpreis,
                     ustSatz: Number(einkauf?.ustSatz ?? vorgaben.steuersatz),
                     rabatt:
                       laufzeit.proxmoxPosition?.rabatt === null ||

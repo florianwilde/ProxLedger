@@ -25,6 +25,14 @@ const BASIS = process.env.SCREENSHOT_URL ?? "http://localhost:3000";
 const ZIEL = path.join(process.cwd(), "docs", "anleitung", "bilder");
 const ALLE = process.argv.includes("--alle");
 
+/** Zusätzliche Handy-Aufnahmen von der Befehlszeile: --mobil name=/pfad */
+const MOBIL_ZUSATZ = process.argv
+  .filter((wert, i) => process.argv[i - 1] === "--mobil")
+  .map((eintrag) => {
+    const [name, ...rest] = eintrag.split("=");
+    return { name, pfad: rest.join("="), titel: "Handy" };
+  });
+
 /** Zusätzliche Seiten von der Befehlszeile: --seite name=/pfad */
 const ZUSATZ = process.argv
   .filter((wert, i) => process.argv[i - 1] === "--seite")
@@ -184,6 +192,11 @@ async function main() {
 
   for (const seite of [...SEITEN, ...ZUSATZ]) {
     await aufnehmen(hell, seite.pfad, path.join(ZIEL, `${seite.name}.png`), 1680, 1150, adresse);
+    console.log(`  ${seite.name}.png – ${seite.titel}`);
+  }
+
+  for (const seite of MOBIL_ZUSATZ) {
+    await aufnehmen(hell, seite.pfad, path.join(ZIEL, `${seite.name}.png`), 390, 1800, adresse);
     console.log(`  ${seite.name}.png – ${seite.titel}`);
   }
 
