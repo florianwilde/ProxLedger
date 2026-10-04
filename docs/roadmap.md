@@ -1,72 +1,117 @@
 # Roadmap
 
-Stand: 19.09.2026, Fassung 0.17.0
+Stand: 04.10.2026, Fassung 0.26.0
 
-## Was steht
+Die erste Fassung dieser Roadmap entstand vor dem produktiven Einsatz. Seitdem läuft ProxLedger mit
+echten Daten, und das hat die Reihenfolge deutlich verändert: Was aus der Benutzung kam, war fast
+immer wichtiger als das, was vorher auf der Liste stand.
 
-Alles, was im ursprünglichen Auftrag stand, ist gebaut und in Betrieb erprobt:
+## Was seit dem Produktivgang dazukam
 
-- Agent für PVE, PBS und PMG; Push-Modell über systemd-Timer, Zwischenspeicher bei Ausfall
-- Zuordnung Key → Host → Kunde, Laufzeiten je Lizenzjahr, Einkaufs- und Verkaufsrechnung mit Marge
-- Elf Warnregeln, Benachrichtigungen per E-Mail und Webhook, Zusammenfassung
-- Anmeldung lokal und per OIDC, Audit-Log, verschlüsselte Zugangsdaten, Härtung nach OWASP
-- Auslieferung als Docker-Stack und als LXC-Container (eigener Installer und Helper-Script-Weg)
-- Handbuch mit Bildern, 190 Tests, CI bei jedem Push
+Rollen und Benutzerverwaltung, Passkeys, Einstellungen im Dashboard, Betriebsdokumentation, die
+mobile Bedienung, Schlagworte und Notizen in der Übersicht, Stilllegen doppelter Hosts, Laufzeiten
+anlegen/bearbeiten/zusammenführen, Rabatt je Rechnungsposition, Eigenbedarf.
 
-## Was bis 1.0.0 fehlt
+Ebenso die Fehler, die erst der Einsatz gezeigt hat: QDevice-Spalte im Cluster, PBS-Rahmentabelle,
+Weiterleitungen auf die Lausch-Adresse, Standort beim Zuweisen gelöscht, Einkauf ohne Rabatt an drei
+Stellen.
 
-Nichts davon ist eine Baustelle im Code – es fehlt **Erprobung** und eine Handvoll Kanten:
+---
 
-| Punkt | Warum es zählt | Aufwand |
+## Bis 1.0.0
+
+Kein neuer Funktionsumfang – es fehlt Erprobung.
+
+| Punkt | Warum | Aufwand |
 |---|---|---|
-| **Mail Gateway im Feldtest** (#023) | Der einzige Produktzweig, den nie ein echter Host bestätigt hat. Bei PBS lag die Annahme daneben, und der Agent hätte dort nichts gemeldet – bei PMG kann es genauso sein. | 1 h, sobald ein Host da ist |
-| **PBS mit aktiver Subscription** (#023) | Bisher nur der Fall „keine Subscription“ geprüft. Ablaufdatum, Sockel und Level sind auf PBS ungeprüft. | 30 min |
-| **Ein Monat Dauerbetrieb** | Timer, Nachsendung, nächtliches Aufräumen und die Zusammenfassung laufen erst seit einem Tag. Ein Lizenzablauf in echt wäre der beste Beweis. | Zeit, keine Arbeit |
-| **Sicherung einmal zurückspielen** | `deploy/backup.sh` schreibt Sicherungen. Eine Sicherung, die nie zurückgespielt wurde, ist keine Sicherung. | 30 min |
+| **PMG im Feldtest** ([#023](issues/023-feldtest-pbs-pmg.md)) | Der einzige Produktzweig ohne echten Host. Bei PBS lag die Annahme daneben, und der Agent hätte dort nichts gemeldet. | 1 h, sobald ein Host da ist |
+| **PBS mit aktiver Lizenz** | Bisher nur „keine Subscription“ geprüft. | 30 min |
+| **Sicherung einmal zurückspielen** | Eine Sicherung, die nie zurückgespielt wurde, ist keine. | 30 min |
+| **Ein Lizenzjahr durchlaufen lassen** | Warnung → Verlängerung → Einkauf → Kundenrechnung → bezahlt, einmal vollständig in echt. Die nächsten Abläufe stehen am 17.10.2026 an. | nur Zeit |
 
-Danach ist 1.0.0 gerechtfertigt. Meine Empfehlung: erst laufen lassen, dann das Etikett vergeben.
+---
 
-## Nach 1.0 – Vorschläge, nach Nutzen sortiert
+## Danach – nach Nutzen sortiert
 
-### Lohnt sich am ehesten
+### 1. Proxmox-Rechnung einlesen statt abtippen
 
-1. **Verlängerung mit einem Klick.** Heute wird eine Laufzeit bestätigt und die Rechnung von Hand
-   erfasst. Ein Knopf „verlängern“, der die Folgelaufzeit anlegt, den Einkauf vormerkt und die
-   Kundenrechnung mit dem eingestellten Aufschlag vorbereitet, spart bei jedem Lizenzjahr Klicks.
-2. **Rechnungsnummern automatisch.** Ein Schema wie `PL-{jahr}-{nummer}` mit fortlaufendem Zähler;
-   heute tippt man jede Nummer. (In #025 bewusst weggelassen, weil es eine Vergabelogik braucht.)
-3. **Mehrere Benutzer mit Rollen.** Derzeit darf jeder Angemeldete alles – in `docs/sicherheit.md`
-   offen vermerkt. Für Buchhaltung (nur Rechnungen) und Technik (nur Hosts) wären zwei Rollen genug.
-   Dazu gehört eine Benutzerverwaltung in der Oberfläche statt auf der Kommandozeille.
-4. **Währung und Zeitzone auch in der Browseransicht.** Beides steht schon in den Einstellungen, wirkt
-   aber nur in PDF, CSV und Benachrichtigungen; die Oberfläche rechnet fest in Euro.
+Die Rechnungen von Proxmox haben eine feste Form: je Key eine Zeile mit Zeitraum und Betrag, dazu die
+Rabattzeilen. Ein Import, der das PDF liest und die Positionen den Laufzeiten über den Key zuordnet,
+spart bei jeder Sammelrechnung das meiste Tippen – und vermeidet Zahlendreher.
 
-### Sinnvoll, wenn es wächst
+**Aufwand:** mittel (PDF-Text auslesen, Zeilen erkennen, Zuordnung bestätigen lassen).
+**Voraussetzung:** zwei, drei echte Rechnungen als Vorlage.
 
-5. **Kundenportal oder Bericht per E-Mail.** Ein monatlicher Stand je Kunde, automatisch verschickt –
-   spart Rückfragen.
-6. **Angebot vor der Verlängerung.** Aus der Jahresbahn heraus ein PDF-Angebot für das kommende
-   Lizenzjahr erzeugen.
-7. **Import der Proxmox-Shop-Rechnungen.** Wer dort per Sammelrechnung kauft, tippt heute jede Position
-   ab. Ein CSV- oder PDF-Import mit Zuordnung über den Key wäre eine echte Ersparnis.
-8. **Metriken für Prometheus** (`/metrics`): Hosts je Zustand, Tage bis zum nächsten Ablauf, Alter des
-   letzten Reports. Wer schon Grafana betreibt, sieht ProxLedger damit im gewohnten Bild.
-9. **Zwei-Faktor-Anmeldung** für den lokalen Zugang. Heute lautet die Antwort „dann nimm OIDC“ – das
-   ist vertretbar, aber nicht für jeden.
+### 2. Verlängerung mit einem Klick
 
-### Nur falls der Bedarf entsteht
+Heute wird eine Laufzeit bestätigt und die Folgelaufzeit von Hand angelegt. Ein Knopf „verlängern“,
+der die nächste Laufzeit anlegt, den Einkauf vormerkt und die Kundenrechnung mit dem eingestellten
+Aufschlag vorbereitet, nimmt bei jedem Lizenzjahr vier Schritte ab.
 
-10. **Mandantenfähigkeit.** Mehrere Systemhäuser in einer Installation. Das ist ein Umbau, kein
-    Anbau – die Zugriffskontrolle müsste durchgängig auf Mandanten umgestellt werden.
-11. **Agent für weitere Produkte** (Proxmox Datacenter Manager), sobald der Bedarf da ist.
-12. **Hochverfügbarkeit.** Die Ratenbremse liegt im Prozessspeicher; für mehrere Instanzen müsste sie
-    in die Datenbank wandern. Bei einem Dashboard für ein Systemhaus ist das Aufwand ohne Gewinn.
+**Aufwand:** klein bis mittel.
 
-## Was ich bewusst nicht vorschlage
+### 3. Kundenrechnung als Dokument
 
-- **Pull statt Push.** Das Dashboard würde dann Zugänge zu allen Kundenhosts brauchen. Der jetzige Weg
-  kommt ohne gespeicherte root-Zugänge aus; das ist ein Sicherheitsgewinn, den man nicht aufgeben sollte.
-- **Eigene Benutzer- und Rechteverwaltung mit Gruppen, Vererbung und allem.** Wer das braucht, hat schon
-  ein IdP – dafür gibt es OIDC.
-- **Agent mit Abhängigkeiten** (Python, jq). Er kommt heute mit Bash und curl aus und läuft damit auf
-  jedem Proxmox-Host, auch auf einem alten.
+ProxLedger führt die Kundenrechnung bisher nur als Datensatz – geschrieben wird sie woanders. Mit
+Nummernkreis, Firmenangaben (stehen schon in den Einstellungen) und PDF-Ausgabe wäre der Kreis
+geschlossen. Zu klären wäre, ob das die vorhandene Buchhaltung ersetzen soll oder nur ergänzt.
+
+**Aufwand:** mittel. **Rückfrage zuerst:** Soll ProxLedger Rechnungen *schreiben* oder nur *führen*?
+
+### 4. Oberflächentests mit echtem Browser
+
+Die letzten sechs Fehler hat keiner der 251 Tests gefunden – alle kamen aus der Benutzung: Menü ließ
+sich nicht schließen, Seite zoomte heraus, kein Weg zur Laufzeit, falscher Betrag in einer Tabelle.
+Ein knappes Dutzend Abläufe mit Playwright (anmelden, Host zuweisen, Rechnung erfassen, auf dem
+Telefon navigieren) würde genau diese Klasse abdecken.
+
+**Aufwand:** mittel. **Nutzen:** steigt mit jeder weiteren Änderung.
+
+### 5. Verlauf statt einer Notiz
+
+Die Notiz am Host ist ein Textfeld – was wann passiert ist, verschwindet darin. Datierte Einträge
+(„17.10.2026 · Sockets von 1 auf 2 erhöht“) wären bei Wechseln und Hardwaretausch nützlich.
+
+**Aufwand:** klein.
+
+### 6. Ablauf-Kalender abonnieren
+
+Ein ICS-Feed mit allen Ablaufdaten, den man in Outlook oder Nextcloud einbindet. Dann stehen die
+Verlängerungen im gewohnten Kalender, nicht nur im Dashboard.
+
+**Aufwand:** klein.
+
+### 7. Kundenzugang wirklich nutzen
+
+Die Rolle *Kunde* existiert samt eingeschränkter Sicht, aber es gibt keinen Weg, jemanden einzuladen:
+kein Einladungslink, keine erste Anmeldung ohne Passwort. Ohne das bleibt die Rolle Theorie.
+
+**Aufwand:** klein bis mittel.
+
+### 8. Metriken für Prometheus
+
+`/metrics` mit Hosts je Zustand, Tagen bis zum nächsten Ablauf und Alter des letzten Reports. Wer
+Grafana betreibt, sieht ProxLedger damit im gewohnten Bild – und merkt auch, wenn das Dashboard
+selbst steht.
+
+**Aufwand:** klein.
+
+---
+
+## Später, falls der Bedarf entsteht
+
+- **Mandantenfähigkeit** – mehrere Systemhäuser in einer Installation. Ein Umbau, kein Anbau.
+- **Agent für Proxmox Datacenter Manager**, sobald es dort Subscriptions gibt, die das rechtfertigen.
+- **Mehrere Instanzen** (Hochverfügbarkeit). Die Ratenbremse liegt im Prozessspeicher und müsste in
+  die Datenbank wandern. Für ein Dashboard eines Systemhauses Aufwand ohne Gewinn.
+- **Angebot vor der Verlängerung** als PDF aus der Jahresbahn heraus.
+
+## Bewusst nicht
+
+- **Pull statt Push.** Das Dashboard bräuchte Zugang zu allen Kundenhosts. Der jetzige Weg kommt ohne
+  gespeicherte root-Zugänge aus – ein Sicherheitsgewinn, den man nicht aufgeben sollte.
+- **Eigene Rechteverwaltung mit Gruppen und Vererbung.** Wer das braucht, hat ein IdP; dafür gibt es OIDC.
+- **Agent mit Abhängigkeiten** (Python, jq). Er kommt mit Bash und curl aus und läuft damit auf jedem
+  Proxmox-Host.
+- **Hosts automatisch zusammenführen.** Beim Doppeleintrag müsste geraten werden, welcher Eintrag
+  welche Rechnung erbt. Die Warnung nennt beide; entscheiden soll der Mensch.
