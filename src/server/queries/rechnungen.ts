@@ -67,7 +67,13 @@ export async function rechnungsListe(filter: RechnungsFilter) {
     where,
     orderBy: [{ start: "desc" }],
     include: {
-      host: { select: { id: true, hostname: true, kunde: { select: { id: true, name: true } } } },
+      host: {
+        select: {
+          id: true,
+          hostname: true,
+          kunde: { select: { id: true, name: true, eigenbedarf: true } },
+        },
+      },
       proxmoxPosition: { include: { rechnung: true } },
       kundenPosition: { include: { rechnung: true } },
     },
@@ -82,6 +88,8 @@ export async function rechnungsListe(filter: RechnungsFilter) {
         ? Number(laufzeit.proxmoxPosition.nettoBetrag) - Number(laufzeit.proxmoxPosition.rabatt ?? 0)
         : null;
     const verkauf = laufzeit.kundenPosition ? Number(laufzeit.kundenPosition.nettoBetrag) : null;
+    // Eigene Hosts werden nicht weiterberechnet; eine Marge daraus wäre eine erfundene Zahl (#044).
+    const eigenbedarf = laufzeit.host.kunde?.eigenbedarf ?? false;
 
     return {
       id: laufzeit.id,
@@ -101,21 +109,26 @@ export async function rechnungsListe(filter: RechnungsFilter) {
       verkaufBetrag: verkauf,
       verkaufErstellt: laufzeit.kundenPosition?.rechnung.erstellt ?? false,
       verkaufBezahlt: laufzeit.kundenPosition?.rechnung.bezahlt ?? false,
-      marge: einkauf !== null && verkauf !== null ? verkauf - einkauf : null,
+      eigenbedarf,
+      marge: !eigenbedarf && einkauf !== null && verkauf !== null ? verkauf - einkauf : null,
     };
   });
 
+  // Eigenbedarf zählt beim Einkauf mit – es sind echte Kosten –, bleibt bei Verkauf und Marge
+  // aber außen vor.
   const summen = zeilen.reduce(
     (summe, zeile) => ({
       einkauf: summe.einkauf + (zeile.einkaufBetrag ?? 0),
       verkauf: summe.verkauf + (zeile.verkaufBetrag ?? 0),
+      einkaufVerkauft: summe.einkaufVerkauft + (zeile.eigenbedarf ? 0 : (zeile.einkaufBetrag ?? 0)),
+      eigenbedarf: summe.eigenbedarf + (zeile.eigenbedarf ? (zeile.einkaufBetrag ?? 0) : 0),
     }),
-    { einkauf: 0, verkauf: 0 },
+    { einkauf: 0, verkauf: 0, einkaufVerkauft: 0, eigenbedarf: 0 },
   );
 
   return {
     zeilen,
-    summen: { ...summen, marge: summen.verkauf - summen.einkauf },
+    summen: { ...summen, marge: summen.verkauf - summen.einkaufVerkauft },
   };
 }
 
@@ -145,7 +158,7 @@ export async function laufzeitDetail(id: string) {
           id: true,
           hostname: true,
           produkt: true,
-          kunde: { select: { id: true, name: true } },
+          kunde: { select: { id: true, name: true, eigenbedarf: true } },
         },
       },
       proxmoxPosition: {

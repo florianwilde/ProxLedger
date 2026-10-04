@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 23 h 58 min
+**Gesamt:** 24 h 38 min
 
 | Issue | Zeit |
 |---|---|
@@ -49,6 +49,7 @@
 | #041 Doppelte Hosts | 0 h 50 min |
 | #042 QDevice im Cluster | 0 h 20 min |
 | #043 Laufzeiten bearbeiten | 1 h 05 min |
+| #044 Eigenbedarf | 0 h 40 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -71,7 +72,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.25.0
+**Version:** 0.26.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -219,6 +220,9 @@
 
 - Laufzeiten (#043): Anlegen gab es nur als Server-Aktion ohne Oberfläche, Ändern und Zusammenführen gar nicht. Dabei tritt der Doppelfall zwangsläufig auf, sobald das gemeldete Ablaufdatum von der Bestellung abweicht
 - Beim Zusammenführen muss die Quelle ihre Rechnungsposition zuerst loslassen – die Datenbank lässt eine Position nur an einer Laufzeit zu. Der Test hat die falsche Reihenfolge sofort gezeigt
+
+- Eigenbedarf (#044): Eigene Hosts brauchen einen Kunden, sonst fehlen sie in jeder Auswertung – als gewöhnlicher Kunde erzeugen sie aber Aufgaben, die es nicht gibt, und eine negative Marge
+- Die Einkaufsseite bleibt vollständig: Eigene Hosts kosten echtes Geld
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

@@ -41,6 +41,8 @@ export interface LaufzeitDaten {
   hostId: string;
   hostname: string;
   kundeId: string | null;
+  /** Eigene Hosts werden nicht weiterberechnet – die Verkaufsseite entfällt (#044). */
+  kundeEigenbedarf: boolean;
   kundeName: string | null;
   key: string;
   start: Date;
@@ -359,7 +361,10 @@ const kundenrechnungFehlt: Regel = {
   standardSchwellwerte: {},
   pruefe(kontext) {
     return kontext.laufzeiten
-      .filter((laufzeit) => laufzeit.einkaufNummer !== null && !laufzeit.verkaufErstellt)
+      .filter(
+        (laufzeit) =>
+          laufzeit.einkaufNummer !== null && !laufzeit.verkaufErstellt && !laufzeit.kundeEigenbedarf,
+      )
       .filter((laufzeit) => laufzeit.kundeId !== null)
       .map((laufzeit) => ({
         fingerprint: `kundenrechnung-fehlt:${laufzeit.id}`,
@@ -384,6 +389,7 @@ const kundenrechnungUnbezahlt: Regel = {
     const tage = schwellwert(kontext, "kundenrechnung-unbezahlt", "tage", 30);
 
     return kontext.laufzeiten.flatMap((laufzeit) => {
+      if (laufzeit.kundeEigenbedarf) return [];
       if (!laufzeit.verkaufErstellt || laufzeit.verkaufBezahlt || !laufzeit.verkaufDatum) return [];
       const offenSeit = -tageBis(laufzeit.verkaufDatum, kontext.jetzt);
       if (offenSeit < tage) return [];
@@ -463,6 +469,8 @@ const kundeBezahltEinkaufOffen: Regel = {
   standardSchwellwerte: {},
   pruefe(kontext) {
     return kontext.laufzeiten.flatMap((laufzeit) => {
+      // Beim Eigenbedarf gibt es keine Kundenzahlung, auf die man warten würde.
+      if (laufzeit.kundeEigenbedarf) return [];
       if (!laufzeit.verkaufBezahlt || laufzeit.einkaufBezahlt !== false) return [];
 
       return [

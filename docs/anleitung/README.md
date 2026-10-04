@@ -237,6 +237,16 @@ mit Marge. Die vier Kästen oben fassen Hosts, Einkauf, Verkauf und Marge zusamm
 Standorte sind optional und lohnen sich bei Kunden mit mehreren Filialen: Sie erscheinen in der
 Host-Tabelle und lassen sich bei der Zuweisung mit angeben.
 
+### Eigene Hosts
+
+Auch die eigenen Hosts gehören einem Kunden zugeordnet – sonst fehlen sie in jeder Auswertung und
+lösen die Warnung „Host ohne Kunde“ aus. Lege dafür dich selbst als Kunden an und setze im
+Kundenformular den Haken **Eigenbedarf**.
+
+Für solche Kunden entfällt alles, was mit Weiterberechnung zu tun hat: keine Kundenrechnung, keine
+Warnungen darüber, keine Aufgabe „Kundenrechnung erstellen“ und keine Marge. Die Proxmox-Rechnung
+wird weiterhin geführt und erinnert ans Bezahlen – die Kosten fallen ja an.
+
 ---
 
 ## 6. Laufzeiten und Rechnungen

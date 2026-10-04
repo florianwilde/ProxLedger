@@ -60,6 +60,9 @@ export default async function KundenSeite() {
                           <Link href={`/kunden/${kunde.id}`} className="fw-semibold text-decoration-none">
                             {kunde.name}
                           </Link>
+                          {kunde.eigenbedarf ? (
+                            <span className="badge pl-bg-neutral ms-2">Eigenbedarf</span>
+                          ) : null}
                           <div className="small text-body-secondary">{kunde.ansprechpartner ?? "–"}</div>
                         </td>
                         <td className="pl-mono" data-label="Kundennummer">

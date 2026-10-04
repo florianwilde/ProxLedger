@@ -35,6 +35,7 @@ export async function kundenListe() {
     return {
       id: kunde.id,
       name: kunde.name,
+      eigenbedarf: kunde.eigenbedarf,
       kundennummer: kunde.kundennummer,
       ansprechpartner: kunde.ansprechpartner,
       hosts: kunde._count.hosts,

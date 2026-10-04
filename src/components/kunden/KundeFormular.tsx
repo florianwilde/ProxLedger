@@ -11,6 +11,7 @@ export interface KundeFormularWerte {
   ansprechpartner: string | null;
   email: string | null;
   telefon: string | null;
+  eigenbedarf: boolean;
   notizen: string | null;
 }
 
@@ -96,6 +97,26 @@ export function KundeFormular({ werte }: { werte?: KundeFormularWerte }) {
             Telefon
           </label>
           <input id="telefon" name="telefon" className="form-control" defaultValue={werte?.telefon ?? ""} />
+        </div>
+
+        <div className="col-12">
+          <div className="form-check">
+            <input
+              className="form-check-input pl-touch-target"
+              type="checkbox"
+              id="eigenbedarf"
+              name="eigenbedarf"
+              value="an"
+              defaultChecked={werte?.eigenbedarf ?? false}
+            />
+            <label className="form-check-label" htmlFor="eigenbedarf">
+              Eigenbedarf – diese Hosts werden nicht weiterberechnet
+            </label>
+            <div className="form-text">
+              Für solche Kunden entfällt die Kundenrechnung: keine Warnungen darüber, keine Marge. Die
+              Einkaufsrechnung von Proxmox wird weiterhin geführt.
+            </div>
+          </div>
         </div>
 
         <div className="col-12">

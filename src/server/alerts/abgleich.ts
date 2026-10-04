@@ -19,7 +19,13 @@ export async function kontextLaden(jetzt: Date = new Date()): Promise<RegelKonte
     prisma.laufzeit.findMany({
       where: { status: "BESTAETIGT", host: { archiviertAm: null } },
       include: {
-        host: { select: { hostname: true, kundeId: true, kunde: { select: { name: true } } } },
+        host: {
+          select: {
+            hostname: true,
+            kundeId: true,
+            kunde: { select: { name: true, eigenbedarf: true } },
+          },
+        },
         proxmoxPosition: { include: { rechnung: true } },
         kundenPosition: { include: { rechnung: true } },
       },
@@ -51,6 +57,7 @@ export async function kontextLaden(jetzt: Date = new Date()): Promise<RegelKonte
       hostname: laufzeit.host.hostname,
       kundeId: laufzeit.host.kundeId,
       kundeName: laufzeit.host.kunde?.name ?? null,
+      kundeEigenbedarf: laufzeit.host.kunde?.eigenbedarf ?? false,
       key: laufzeit.key,
       start: laufzeit.start,
       ende: laufzeit.ende,

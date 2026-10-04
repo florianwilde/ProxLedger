@@ -41,6 +41,7 @@ function laufzeit(überschreibungen: Partial<LaufzeitDaten> = {}): LaufzeitDaten
     hostname: "pve-01",
     kundeId: "k1",
     kundeName: "Brandl Elektrotechnik GmbH",
+    kundeEigenbedarf: false,
     key: "pve1c-aaaa",
     start: inTagen(-100),
     ende: inTagen(265),

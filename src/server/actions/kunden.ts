@@ -25,6 +25,7 @@ const kundeSchema = z.object({
   ansprechpartner: z.string().nullable(),
   email: z.union([z.string().email("Keine gültige E-Mail-Adresse."), z.null()]),
   telefon: z.string().nullable(),
+  eigenbedarf: z.boolean().default(false),
   notizen: z.string().nullable(),
 });
 
@@ -38,6 +39,7 @@ export async function kundeSpeichern(_vorher: AktionsErgebnis, formular: FormDat
     ansprechpartner: leerZuNull(formular.get("ansprechpartner")),
     email: leerZuNull(formular.get("email")),
     telefon: leerZuNull(formular.get("telefon")),
+    eigenbedarf: formular.get("eigenbedarf") === "an",
     notizen: leerZuNull(formular.get("notizen")),
   });
 
