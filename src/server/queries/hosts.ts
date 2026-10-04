@@ -67,6 +67,8 @@ export async function kennzahlen(jetzt: Date = new Date()) {
             ...laufzeitSicht,
             status: "BESTAETIGT",
             proxmoxPosition: { isNot: null },
+            // Eigenbedarf wird nicht weiterberechnet – hier ist nichts offen (#044).
+            host: { kunde: { eigenbedarf: false } },
             OR: [{ kundenPosition: null }, { kundenPosition: { rechnung: { erstellt: false } } }],
           },
         }),

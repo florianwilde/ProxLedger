@@ -17,6 +17,11 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.26.0] – 2026-10-04
+
+### Hinzugefügt
+- Kennzeichen **Eigenbedarf** am Kunden: für eigene Hosts entfallen Kundenrechnung, die zugehörigen Warnungen, die Aufgabe „Kundenrechnung erstellen“ und die Marge – die Proxmox-Rechnung wird weiterhin geführt (#044)
+
 ## [0.25.0] – 2026-10-03
 
 ### Hinzugefügt

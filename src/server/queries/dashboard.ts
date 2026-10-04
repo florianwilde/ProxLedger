@@ -72,7 +72,7 @@ export async function offeneAufgaben(grenze = 12) {
     },
     orderBy: { start: "asc" },
     include: {
-      host: { select: { id: true, hostname: true, kunde: { select: { name: true } } } },
+      host: { select: { id: true, hostname: true, kunde: { select: { name: true, eigenbedarf: true } } } },
       proxmoxPosition: { include: { rechnung: true } },
       kundenPosition: { include: { rechnung: true } },
     },
@@ -111,7 +111,8 @@ export async function offeneAufgaben(grenze = 12) {
       });
     }
 
-    if (einkauf && !laufzeit.kundenPosition?.rechnung.erstellt) {
+    // Für Eigenbedarf gibt es keine Kundenrechnung zu schreiben (#044).
+    if (einkauf && !laufzeit.host.kunde?.eigenbedarf && !laufzeit.kundenPosition?.rechnung.erstellt) {
       aufgaben.push({
         id: `${laufzeit.id}-verkauf`,
         titel: "Kundenrechnung erstellen",

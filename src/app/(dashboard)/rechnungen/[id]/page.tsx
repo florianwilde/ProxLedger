@@ -55,6 +55,7 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
     verkaufBetrag ??
     (einkaufBetrag === null ? null : Math.round(einkaufBetrag * (1 + vorgaben.margeProzent / 100) * 100) / 100);
 
+  const eigenbedarf = laufzeit.host.kunde?.eigenbedarf ?? false;
   const zeitraum = `${formatDatum(laufzeit.start)} – ${formatDatum(laufzeit.ende)}`;
 
   return (
@@ -226,11 +227,22 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
 
               <Card
                 titel="Kundenrechnung (Verkauf)"
-                rahmen={verkauf?.erstellt ? "info" : "warning"}
+                rahmen={eigenbedarf ? "keiner" : verkauf?.erstellt ? "info" : "warning"}
                 werkzeuge={
-                  <VerkaufBadge erstellt={verkauf?.erstellt ?? false} bezahlt={verkauf?.bezahlt ?? false} />
+                  eigenbedarf ? (
+                    <span className="badge pl-bg-neutral">Eigenbedarf</span>
+                  ) : (
+                    <VerkaufBadge erstellt={verkauf?.erstellt ?? false} bezahlt={verkauf?.bezahlt ?? false} />
+                  )
                 }
               >
+                {eigenbedarf ? (
+                  <p className="mb-0 text-body-secondary">
+                    <strong>{laufzeit.host.kunde?.name}</strong> ist als Eigenbedarf gekennzeichnet – diese
+                    Hosts werden nicht weiterberechnet. Deshalb gibt es hier keine Kundenrechnung, keine
+                    Warnung darüber und keine Marge. Die Proxmox-Rechnung wird weiterhin geführt.
+                  </p>
+                ) : (
                 <KundenrechnungFormular
                   laufzeitId={laufzeit.id}
                   hostId={laufzeit.host.id}
@@ -247,6 +259,7 @@ export default async function LaufzeitSeite({ params }: { params: Promise<{ id: 
                     anhangName: verkauf?.anhang?.dateiname ?? null,
                   }}
                 />
+                )}
               </Card>
             </div>
           </div>

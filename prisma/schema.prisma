@@ -61,6 +61,9 @@ model Kunde {
   ansprechpartner String?
   email          String?
   telefon        String?
+  /// Eigenbedarf: eigene Hosts, die nicht weiterberechnet werden. Für sie entfallen
+  /// Kundenrechnung, die zugehörigen Warnungen und die Marge (#044).
+  eigenbedarf    Boolean  @default(false)
   notizen        String?
   erstelltAm     DateTime @default(now())
   geaendertAm    DateTime @updatedAt

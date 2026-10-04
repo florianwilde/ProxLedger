@@ -38,6 +38,7 @@ export default async function KundeBearbeitenSeite({ params }: { params: Promise
                     ansprechpartner: kunde.ansprechpartner,
                     email: kunde.email,
                     telefon: kunde.telefon,
+                    eigenbedarf: kunde.eigenbedarf,
                     notizen: kunde.notizen,
                   }}
                 />
