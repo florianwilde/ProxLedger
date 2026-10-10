@@ -1,6 +1,6 @@
 {
   "name": "proxledger",
-  "version": "0.26.0",
+  "version": "0.26.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -41,7 +41,7 @@
     "bootstrap-icons": "^1.13.1",
     "croner": "^10.0.1",
     "jose": "^6.2.12",
-    "next": "^16.3.8",
+    "next": "^16.4.0",
     "nodemailer": "^10.0.10",
     "openid-client": "^6.8.8",
     "react": "19.2.8",
@@ -56,11 +56,11 @@
     "dotenv": "^17.4.2",
     "esbuild": "^0.28.2",
     "eslint": "^9",
-    "eslint-config-next": "^16.3.8",
+    "eslint-config-next": "^16.4.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.7",
     "prisma": "^7.10.0",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "tsx": "^4.23.13",
     "typescript": "^5",
     "vitest": "^5.0.1"
@@ -71,6 +71,7 @@
   },
   "overrides": {
     "mysql2": "^3.24.4",
-    "deepmerge-ts": "^8.0.0"
+    "deepmerge-ts": "^8.0.0",
+    "source-map-js": "^1.2.2"
   }
 }

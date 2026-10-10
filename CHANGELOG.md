@@ -17,6 +17,13 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.26.1] – 2026-10-10
+
+### Sicherheit
+- `sharp` auf 0.35.5 angehoben: Für ältere Fassungen wurde eine als hoch eingestufte Lücke in der mitgelieferten librsvg gemeldet (CVE-2026-96889). ProxLedger nutzt `sharp` nur beim Erzeugen der Symbole, nicht zur Laufzeit – die Fassung gehört trotzdem aktualisiert
+- `source-map-js` über `overrides` auf 1.2.2 angehoben (Denial of Service, kam über postcss und vite mit)
+- Next.js auf 16.4.0
+
 ## [0.26.0] – 2026-10-04
 
 ### Hinzugefügt

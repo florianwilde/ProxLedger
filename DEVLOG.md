@@ -72,7 +72,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.26.0
+**Version:** 0.26.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -223,6 +223,10 @@
 
 - Eigenbedarf (#044): Eigene Hosts brauchen einen Kunden, sonst fehlen sie in jeder Auswertung – als gewöhnlicher Kunde erzeugen sie aber Aufgaben, die es nicht gibt, und eine negative Marge
 - Die Einkaufsseite bleibt vollständig: Eigene Hosts kosten echtes Geld
+
+### 10.10.2026 – Wartungsblick
+- `npm audit` turnusmäßig geprüft: zwei neue hohe Meldungen (`sharp`/librsvg, `source-map-js`). Beide angehoben, Tests und Build grün
+- Produktivinstanz antwortet: `https://proxledger.wilde-ste.de/api/gesundheit` meldet Datenbank erreichbar
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
