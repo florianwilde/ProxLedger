@@ -17,6 +17,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.27.0] – 2026-10-10
+
+### Hinzugefügt
+- `deploy/restore.sh`: spielt Datenbank **und** hochgeladene PDFs aus einer Sicherung zurück, startet die Dienste und prüft die Erreichbarkeit (#045)
+
+### Behoben
+- **Sicherungen ließen sich nur in eine leere Datenbank zurückspielen** – im Ernstfall also gerade nicht. `pg_dump` läuft jetzt mit `--clean --if-exists` (#045)
+- Für die hochgeladenen PDFs gab es keinen beschriebenen Weg zurück (#045)
+
+### Dokumentation
+- `docs/betrieb/sicherung.md` beschreibt den **geprobten** Ablauf: Daten zerstört, zurückgespielt, geprüft (#045)
+
 ## [0.26.1] – 2026-10-10
 
 ### Sicherheit
