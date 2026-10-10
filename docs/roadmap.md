@@ -1,6 +1,6 @@
 # Roadmap
 
-Stand: 04.10.2026, Fassung 0.26.0
+Stand: 10.10.2026, Fassung 0.27.0
 
 Die erste Fassung dieser Roadmap entstand vor dem produktiven Einsatz. Seitdem läuft ProxLedger mit
 echten Daten, und das hat die Reihenfolge deutlich verändert: Was aus der Benutzung kam, war fast
@@ -26,7 +26,7 @@ Kein neuer Funktionsumfang – es fehlt Erprobung.
 |---|---|---|
 | **PMG im Feldtest** ([#023](issues/023-feldtest-pbs-pmg.md)) | Der einzige Produktzweig ohne echten Host. Bei PBS lag die Annahme daneben, und der Agent hätte dort nichts gemeldet. | 1 h, sobald ein Host da ist |
 | **PBS mit aktiver Lizenz** | Bisher nur „keine Subscription“ geprüft. | 30 min |
-| **Sicherung einmal zurückspielen** | Eine Sicherung, die nie zurückgespielt wurde, ist keine. | 30 min |
+| ~~Sicherung einmal zurückspielen~~ | **Erledigt am 10.10.2026** ([#045](issues/045-wiederherstellung-geprobt.md)) – dabei kamen zwei Lücken heraus. Offen bleibt die Probe für die Installation als Dienst. | – |
 | **Ein Lizenzjahr durchlaufen lassen** | Warnung → Verlängerung → Einkauf → Kundenrechnung → bezahlt, einmal vollständig in echt. Die nächsten Abläufe stehen am 17.10.2026 an. | nur Zeit |
 
 ---

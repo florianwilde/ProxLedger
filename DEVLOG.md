@@ -2,7 +2,7 @@
 
 ## Zeitübersicht
 
-**Gesamt:** 24 h 38 min
+**Gesamt:** 25 h 28 min
 
 | Issue | Zeit |
 |---|---|
@@ -50,6 +50,7 @@
 | #042 QDevice im Cluster | 0 h 20 min |
 | #043 Laufzeiten bearbeiten | 1 h 05 min |
 | #044 Eigenbedarf | 0 h 40 min |
+| #045 Wiederherstellung geprobt | 0 h 50 min |
 
 | Meilenstein | Zeit |
 |---|---|
@@ -72,7 +73,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.26.1
+**Version:** 0.27.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -227,6 +228,9 @@
 ### 10.10.2026 – Wartungsblick
 - `npm audit` turnusmäßig geprüft: zwei neue hohe Meldungen (`sharp`/librsvg, `source-map-js`). Beide angehoben, Tests und Build grün
 - Produktivinstanz antwortet: `https://proxledger.wilde-ste.de/api/gesundheit` meldet Datenbank erreichbar
+
+- Wiederherstellung geprobt (#045): Daten zerstört, zurückgespielt, geprüft. Zwei Lücken kamen erst dabei heraus – ohne `--clean` ließ sich nur in eine leere Datenbank zurückspielen, und für die PDFs gab es gar keinen Weg
+- Damit ist einer der vier Punkte bis 1.0.0 erledigt. Offen bleiben PMG, PBS mit Lizenz und ein vollständiger Lizenzjahr-Durchlauf (17.10.)
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

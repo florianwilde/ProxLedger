@@ -30,7 +30,8 @@ echo "Sichere ProxLedger (${ART}) nach ${ZIEL} …"
 
 if [ "$ART" = "docker" ]; then
   echo "Sichere Datenbank …"
-  docker compose exec -T postgres pg_dump -U "${POSTGRES_USER:-proxledger}" "${POSTGRES_DB:-proxledger}" \
+  docker compose exec -T postgres pg_dump --clean --if-exists \
+    -U "${POSTGRES_USER:-proxledger}" "${POSTGRES_DB:-proxledger}" \
     | gzip > "${ZIEL}/datenbank-${STAND}.sql.gz"
 
   echo "Sichere hochgeladene Dateien …"
@@ -48,7 +49,7 @@ else
   }
 
   echo "Sichere Datenbank …"
-  pg_dump "$DATABASE_URL" | gzip > "${ZIEL}/datenbank-${STAND}.sql.gz"
+  pg_dump --clean --if-exists "$DATABASE_URL" | gzip > "${ZIEL}/datenbank-${STAND}.sql.gz"
 
   echo "Sichere hochgeladene Dateien …"
   UPLOADS="${UPLOAD_DIR:-${VERZEICHNIS}/data/uploads}"
