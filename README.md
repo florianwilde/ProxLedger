@@ -3,10 +3,11 @@
 Zentrales Dashboard für den Subscription-Status aller Proxmox-Hosts (VE, Backup Server, Mail Gateway).
 Auf jedem Host meldet ein schlanker Agent täglich per HTTPS seinen Status (Push-Modell) – auch aus Kundennetzen hinter NAT.
 
-> **Status:** einsatzbereit. Der Agent ist auf echten Hosts erprobt – Proxmox VE 9.2 mit und ohne
-> Subscription, im Cluster und einzeln, sowie Proxmox Backup Server 4.2 (#018, #023).
-> Ungeprüft: Mail Gateway und eine aktive Subscription auf PBS. Was bis 1.0 fehlt, steht in
-> [docs/roadmap.md](docs/roadmap.md).
+> **Status: 1.0.0 – im produktiven Einsatz.** Seit dem 03.10.2026 mit echten Daten in Betrieb; ein
+> Lizenzjahr ist vollständig durchlaufen (Warnung → Verlängerung → Einkauf → Kundenrechnung → bezahlt).
+> Erprobt auf Proxmox VE 9.2 mit und ohne Subscription, einzeln und im Cluster, sowie auf Proxmox
+> Backup Server 4.2 mit und ohne Lizenz. **Ungeprüft:** Mail Gateway – dort wird derzeit kein Host
+> betrieben. Was als Nächstes ansteht, steht in [docs/roadmap.md](docs/roadmap.md).
 
 ## Schnellstart
 

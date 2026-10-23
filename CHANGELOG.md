@@ -17,6 +17,25 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [1.0.0] – 2026-10-23
+
+Erste stabile Fassung. Kein neuer Funktionsumfang gegenüber 0.27.1 – was fehlte, war Erprobung, und
+die ist erbracht:
+
+- **Ein Lizenzjahr vollständig durchlaufen.** Für `hv-pve-01` und `hv-pve-02` (Robert Hofmann GmbH):
+  Warnung vor dem Ablauf am 17.10.2026, Verlängerung, Proxmox-Rechnung 291017 mit Rabatt je Position,
+  Kundenrechnung, beide bezahlt. Die Folgelaufzeiten stehen auf 17.10.2027.
+- **Proxmox Backup Server mit aktiver Lizenz bestätigt.** Drei PBS-Hosts melden Key und Ablaufdatum.
+- **Proxmox VE** ist seit dem Feldtest im September bestätigt: mit und ohne Subscription, einzeln und
+  im Cluster, mit und ohne QDevice.
+- **Wiederherstellung geprobt** (#045): Daten zerstört, zurückgespielt, geprüft.
+
+Im Betrieb seit dem 03.10.2026 mit 16 Hosts, vier Kunden und echten Rechnungen.
+
+**Weiterhin ungeprüft:** Proxmox Mail Gateway – dort wird derzeit kein Host betrieben; der Zweig ist
+im Handbuch als ungeprüft gekennzeichnet (#023). Ebenso steht die Wiederherstellungsprobe für die
+Installation als Dienst noch aus; geprobt ist der Docker-Weg.
+
 ## [0.27.1] – 2026-10-23
 
 ### Sicherheit

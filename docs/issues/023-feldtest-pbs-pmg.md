@@ -1,8 +1,8 @@
 # #023 Feldtest auf Proxmox Backup Server und Mail Gateway
-**Status:** offen
+**Status:** erledigt
 **Meilenstein:** v1.0.0
 **Labels:** agent, feldtest
-**Geschätzt:** 2 h   **Tatsächlich:** 0 h 35 min (PBS erledigt, PMG offen)
+**Geschätzt:** 2 h   **Tatsächlich:** 0 h 35 min
 
 ## Ziel
 Der Feldtest in #018 lief auf zwei Proxmox-VE-Hosts. Für Backup Server und Mail Gateway beruht die
@@ -23,7 +23,7 @@ falsch erwiesen (`--output-format json` gibt es dort nicht). Das gehört vor 1.0
 - [x] Erhobene Ausgaben als Testfälle in `tests/agent-skript.test.ts` aufnehmen – der heutige
       PBS-Testfall ist erfunden (JSON) und damit womöglich am echten Verhalten vorbei
 - [x] Agent auf einem PBS-Host installieren, einen Report abwarten, wieder deinstallieren
-- [ ] PMG offen lassen und die Lücke im Handbuch benennen
+- [x] PMG: von Florian am 23.10.2026 zurückgestellt – wird derzeit nicht betrieben, die Lücke bleibt im Handbuch benannt
 
 ## Notizen
 Der Cluster-Abgleich aus #022 betrifft nur PVE: PBS und PMG kennen kein `pvecm`, dort bleibt die
@@ -67,3 +67,14 @@ ist auch der letzte offene Punkt aus #018 erledigt.
 
 **Weiterhin offen:** PMG (kein Host) und der Fall „aktive Subscription auf PBS“ (nur unlizenzierte
 Hosts verfügbar). Dieses Issue bleibt deshalb offen.
+
+## Abschluss am 23.10.2026
+
+**PBS mit aktiver Lizenz: bestätigt.** In der produktiven Installation melden `pbs-cloud-01`,
+`bup-pbs-01` und `bup-lwwif-pbs-01` ihre `pbsb-…`-Keys samt Ablaufdatum (04.10.2027). Damit ist auch
+der lizenzierte Fall auf Proxmox Backup Server belegt – nach dem Fund der Rahmentabelle (#037) war
+das der letzte offene Punkt dieses Produktzweigs.
+
+**PMG: zurückgestellt.** Florian betreibt derzeit kein Mail Gateway; der Feldtest entfällt bis auf
+Weiteres. Im Handbuch steht weiterhin, dass dieser Zweig ungeprüft ist und der erste PMG-Host nach
+der Installation einmal gegenzuprüfen gehört (`proxledger-agent --dry-run`).
