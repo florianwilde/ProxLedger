@@ -1,6 +1,6 @@
 # Roadmap
 
-Stand: 10.10.2026, Fassung 0.27.0
+Stand: 23.10.2026, Fassung 1.0.0
 
 Die erste Fassung dieser Roadmap entstand vor dem produktiven Einsatz. Seitdem läuft ProxLedger mit
 echten Daten, und das hat die Reihenfolge deutlich verändert: Was aus der Benutzung kam, war fast
@@ -18,12 +18,25 @@ Stellen.
 
 ---
 
-## Bis 1.0.0
+## 1.0.0 ist erreicht (23.10.2026)
 
-Kein neuer Funktionsumfang – es fehlt Erprobung.
+Alle Kriterien erfüllt:
 
-| Punkt | Warum | Aufwand |
-|---|---|---|
+| Punkt | Stand |
+|---|---|
+| Ein Lizenzjahr vollständig durchlaufen | **erledigt** – `hv-pve-01` und `hv-pve-02` am 17.10.2026, beide Rechnungen bezahlt |
+| PBS mit aktiver Lizenz | **erledigt** – drei PBS-Hosts melden Key und Ablauf |
+| Sicherung zurückspielen | **erledigt** ([#045](issues/045-wiederherstellung-geprobt.md)) |
+| PMG im Feldtest | **zurückgestellt** – wird derzeit nicht betrieben ([#023](issues/023-feldtest-pbs-pmg.md)) |
+
+Zwei kleinere Punkte bleiben offen, keiner davon hält 1.0.0 auf:
+
+- Die Wiederherstellungsprobe für die **Installation als Dienst** (geprobt ist der Docker-Weg).
+- Ein **wöchentlicher `npm audit`-Lauf in der CI**. Zwei Wartungsblicke hintereinander haben hohe bis
+  kritische Meldungen gefunden – zuletzt zwei kritische Lücken in Next.js. Bei einem öffentlich
+  erreichbaren Dashboard gehört das automatisiert.
+
+---|---|---|
 | **PMG im Feldtest** ([#023](issues/023-feldtest-pbs-pmg.md)) | Der einzige Produktzweig ohne echten Host. Bei PBS lag die Annahme daneben, und der Agent hätte dort nichts gemeldet. | 1 h, sobald ein Host da ist |
 | **PBS mit aktiver Lizenz** | Bisher nur „keine Subscription“ geprüft. | 30 min |
 | ~~Sicherung einmal zurückspielen~~ | **Erledigt am 10.10.2026** ([#045](issues/045-wiederherstellung-geprobt.md)) – dabei kamen zwei Lücken heraus. Offen bleibt die Probe für die Installation als Dienst. | – |

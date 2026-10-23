@@ -73,7 +73,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.27.1
+**Version:** 1.0.0
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -236,6 +236,11 @@
 - `npm audit`: drei neue Meldungen zu Next.js ≤ 16.4.0, zwei davon kritisch (RCE über Bildoptimierung und `use cache`, dazu eine Blockade über Server Actions). Auf 16.4.2 angehoben, alles grün
 - Geprüft, was davon ProxLedger trifft: `next/image` und `use cache` werden nicht genutzt, Server Actions dagegen überall – die Blockade war also echt
 - Erinnerung an mich: Zwei Wartungsblicke in Folge haben hohe bis kritische Meldungen gefunden. Der wöchentliche Lauf in der CI ist überfällig
+
+### 23.10.2026 – 1.0.0
+- Florian hat den Beleg geliefert: `hv-pve-01` und `hv-pve-02` sind verlängert, beide Rechnungen bezahlt, die Folgelaufzeiten stehen auf 17.10.2027. Dazu drei PBS-Hosts mit aktiver Lizenz
+- PMG wird zurückgestellt – kein Host im Betrieb. Die Lücke bleibt im Handbuch benannt, statt sie wegzudefinieren
+- Damit ist 1.0.0 gerechtfertigt: nicht weil nichts mehr fehlt, sondern weil das, was fehlte, erprobt wurde
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
