@@ -17,6 +17,12 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [0.27.1] – 2026-10-23
+
+### Sicherheit
+- **Next.js auf 16.4.2.** Für 16.0.0 bis 16.4.0 wurden drei Lücken gemeldet, zwei davon **kritisch**: Remote Code Execution über die Bildoptimierung mit SVG-Dateien (GHSA-2464-fhr4-w9xw), Remote Code Execution in `use cache` (GHSA-673q-mjm6-r5xr) und eine Blockade über Server Actions (GHSA-p3m5-59mp-jv5r)
+- ProxLedger nutzt weder `next/image` noch `use cache`; die Blockade über Server Actions betraf die Installation dagegen unmittelbar. **Wer öffentlich erreichbar ist, sollte sofort aktualisieren.**
+
 ## [0.27.0] – 2026-10-10
 
 ### Hinzugefügt

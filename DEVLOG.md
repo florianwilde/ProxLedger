@@ -73,7 +73,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 0.27.0
+**Version:** 0.27.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -231,6 +231,11 @@
 
 - Wiederherstellung geprobt (#045): Daten zerstört, zurückgespielt, geprüft. Zwei Lücken kamen erst dabei heraus – ohne `--clean` ließ sich nur in eine leere Datenbank zurückspielen, und für die PDFs gab es gar keinen Weg
 - Damit ist einer der vier Punkte bis 1.0.0 erledigt. Offen bleiben PMG, PBS mit Lizenz und ein vollständiger Lizenzjahr-Durchlauf (17.10.)
+
+### 23.10.2026 – Wartungsblick
+- `npm audit`: drei neue Meldungen zu Next.js ≤ 16.4.0, zwei davon kritisch (RCE über Bildoptimierung und `use cache`, dazu eine Blockade über Server Actions). Auf 16.4.2 angehoben, alles grün
+- Geprüft, was davon ProxLedger trifft: `next/image` und `use cache` werden nicht genutzt, Server Actions dagegen überall – die Blockade war also echt
+- Erinnerung an mich: Zwei Wartungsblicke in Folge haben hohe bis kritische Meldungen gefunden. Der wöchentliche Lauf in der CI ist überfällig
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline
