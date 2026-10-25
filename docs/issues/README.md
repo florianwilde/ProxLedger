@@ -49,4 +49,5 @@ Details und Architektur: [../architektur.md](../architektur.md). Zeiten werden a
 | [#043](043-laufzeiten-bearbeiten.md) | Laufzeiten anlegen, bearbeiten, zusammenführen | erledigt | v0.25.0 | 4 h | 1 h 05 min |
 | [#044](044-eigenbedarf.md) | Eigene Hosts ohne Weiterberechnung | erledigt | v0.26.0 | 2 h | 0 h 40 min |
 | [#045](045-wiederherstellung-geprobt.md) | Wiederherstellung proben und Skript dafür | erledigt | v0.27.0 | 2 h | 0 h 50 min |
-| | **Summe** | | | **177 h** | **25 h 28 min** |
+| [#046](046-gitea-releases.md) | Releases in Gitea statt nur Tags | erledigt | v1.0.1 | 1 h | 0 h 25 min |
+| | **Summe** | | | **178 h** | **25 h 53 min** |

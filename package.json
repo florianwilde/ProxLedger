@@ -1,6 +1,6 @@
 {
   "name": "proxledger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -27,7 +27,8 @@
     "screenshots": "node scripts/screenshots.mjs",
     "icons": "node scripts/icons.mjs",
     "pruefe:doku": "node scripts/pruefe-doku.mjs",
-    "benutzer": "tsx scripts/benutzer.ts"
+    "benutzer": "tsx scripts/benutzer.ts",
+    "releases:sync": "tsx scripts/gitea-releases.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.1",
