@@ -73,7 +73,7 @@
 
 ## 2026-09-17 · Sitzung 1 · 19:36–laufend
 **Issue:** #001–#007 (Meilensteine v0.1.0 bis v0.4.0)
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 ### Erledigt
 - Auftrag gelesen, Rückfragen gestellt
@@ -241,6 +241,10 @@
 - Florian hat den Beleg geliefert: `hv-pve-01` und `hv-pve-02` sind verlängert, beide Rechnungen bezahlt, die Folgelaufzeiten stehen auf 17.10.2027. Dazu drei PBS-Hosts mit aktiver Lizenz
 - PMG wird zurückgestellt – kein Host im Betrieb. Die Lücke bleibt im Handbuch benannt, statt sie wegzudefinieren
 - Damit ist 1.0.0 gerechtfertigt: nicht weil nichts mehr fehlt, sondern weil das, was fehlte, erprobt wurde
+
+### 25.10.2026 – Releases
+- `releases:sync` gebaut: Das CHANGELOG ist die Quelle, Gitea bekommt daraus Releases zu den vorhandenen Tags
+- Dabei bestätigt, was beim Issue-Abgleich am 10.10. schon aufgefallen war: Der hinterlegte Zugang ist ein elfstelliges Passwort, kein API-Token. Pushen geht, die API nicht
 
 ### Nächster Schritt
 - #016 Benutzerhandbuch mit Screenshots, danach #017 Favicons und #019 CI-Pipeline

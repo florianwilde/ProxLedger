@@ -17,6 +17,11 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Sicherheit
 
+## [1.0.1] – 2026-10-25
+
+### Hinzugefügt
+- `npm run releases:sync` legt zu jedem Tag eine Release in Gitea an – Titel und Beschreibung stammen aus diesem CHANGELOG (#046)
+
 ## [1.0.0] – 2026-10-23
 
 Erste stabile Fassung. Kein neuer Funktionsumfang gegenüber 0.27.1 – was fehlte, war Erprobung, und

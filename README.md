@@ -175,9 +175,12 @@ npm run issues:sync -- --dry-run    # zeigt nur, was passieren würde
 npm run issues:sync                 # echter Abgleich
 ```
 
+Dasselbe gilt für Releases: `npm run releases:sync` legt zu jedem Tag einen Eintrag unter *Releases*
+an und nimmt den passenden Abschnitt aus dem CHANGELOG als Beschreibung (`--dry-run` zeigt es nur an).
+
 Serveradresse und Repository liest das Skript aus dem Git-Remote, den Token aus den hinterlegten
 Git-Zugangsdaten (Schlüsselbund oder `~/.git-credentials`) – derselbe Token wie fürs Pushen, er braucht
-zusätzlich das Recht `issue:write`. Wer beides trennen möchte, setzt `GITEA_URL`, `GITEA_REPO` und
+zusätzlich die Rechte `issue:write` (Issues) und `write:repository` (Releases). Wer beides trennen möchte, setzt `GITEA_URL`, `GITEA_REPO` und
 `GITEA_TOKEN` in der `.env`.
 
 Der Abgleich legt Labels und Meilensteine an, erkennt vorhandene Issues an der Nummer im Titel,
