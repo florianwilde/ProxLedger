@@ -82,6 +82,8 @@ konfiguration_laden() {
   TOKEN=""
   CA_CERT=""
   AUTO_UPDATE="no"
+  # Steht in der Konfiguration, die der Installer schreibt; der Agent selbst liest sie nicht.
+  # shellcheck disable=SC2034
   AGENT_ID=""
   TLS_PRUEFEN="yes"
 
