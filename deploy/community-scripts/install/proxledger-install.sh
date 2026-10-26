@@ -3,7 +3,7 @@
 # Copyright (c) 2021-2026 tteck
 # Author: Florian Wilde
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
-# Source: https://git.wilde-server.de/florian.wilde/ProxLedger
+# Source: https://github.com/florianwilde/ProxLedger
 
 source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
 color
@@ -14,7 +14,7 @@ network_check
 update_os
 
 # Die Quelle laesst sich ueberschreiben, solange das Repository nicht oeffentlich ist.
-QUELLE="${PROXLEDGER_REPO:-https://git.wilde-server.de/florian.wilde/ProxLedger.git}"
+QUELLE="${PROXLEDGER_REPO:-https://github.com/florianwilde/ProxLedger.git}"
 ZWEIG="${PROXLEDGER_BRANCH:-main}"
 
 msg_info "Installing Dependencies"
