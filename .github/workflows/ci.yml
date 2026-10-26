@@ -1,5 +1,4 @@
-# Prüft jeden Push und jede Pull-Request-Änderung.
-# Läuft mit Gitea Actions (act_runner); die Syntax entspricht GitHub Actions.
+# Prüft jeden Push und jede Pull-Request-Änderung mit GitHub Actions.
 
 name: Prüfung
 

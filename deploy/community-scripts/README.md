@@ -20,7 +20,7 @@ wieder absenken lassen.
 Auf dem Proxmox-VE-Host als root:
 
 ```bash
-bash -c "$(curl -fsSL https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/florianwilde/ProxLedger/main/deploy/community-scripts/ct/proxledger.sh)"
 ```
 
 Das Gerüst (`build.func`) lädt das Skript von den community-scripts nach – das ist öffentlich und ohne
@@ -31,35 +31,44 @@ Angabe sucht das Gerüst `install/proxledger-install.sh` bei den community-scrip
 bricht mit *404 – Could not fetch install/proxledger-install.sh* ab. Das ct-Skript setzt deshalb
 
 ```bash
-COMMUNITY_SCRIPTS_URL="https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts"
+COMMUNITY_SCRIPTS_URL="https://raw.githubusercontent.com/florianwilde/ProxLedger/main/deploy/community-scripts"
 ```
 
 selbst. Für einen anderen Zweig oder einen Fork lässt sich die Angabe von außen überschreiben:
 
 ```bash
-COMMUNITY_SCRIPTS_URL=https://git.example.de/<nutzer>/ProxLedger/raw/branch/<zweig>/deploy/community-scripts \
+COMMUNITY_SCRIPTS_URL=https://raw.githubusercontent.com/<nutzer>/ProxLedger/<zweig>/deploy/community-scripts \
   bash -c "$(curl -fsSL …/ct/proxledger.sh)"
 ```
 
 Das Verzeichnis dahinter muss `ct/` und `install/` enthalten – deshalb zeigt die Angabe auf
 `deploy/community-scripts`, nicht auf die Wurzel des Repositorys.
 
-Zwei Umgebungsvariablen steuern die Quelle, solange das Repository nicht öffentlich ist:
+Zwei Umgebungsvariablen steuern, woher der Container ProxLedger klont:
 
 ```bash
-PROXLEDGER_REPO=https://git.example.de/fw/ProxLedger.git PROXLEDGER_BRANCH=main bash -c "$(curl -fsSL …)"
+PROXLEDGER_REPO=https://github.com/<nutzer>/ProxLedger.git PROXLEDGER_BRANCH=main bash -c "$(curl -fsSL …)"
 ```
 
-Ist das Git-Repository nicht ohne Anmeldung lesbar, gehört ein Lesezugriffs-Token in die Adresse
-(`https://<token>@git.example.de/...`). Das Token landet dann in der Prozessliste des Containers –
-also besser einen Deploy-Token verwenden, der nur lesen darf.
+**Solange das Repository privat ist**, liefert `raw.githubusercontent.com` ohne Anmeldung nur 404 –
+der Einzeiler funktioniert dann nicht, und das Gerüst kann `install/proxledger-install.sh` nicht
+nachladen. Für den Klon allein genügt ein Lesezugriffs-Token in der Adresse
+(`https://<token>@github.com/...`), am besten ein Fine-grained Token, der nur dieses Repository lesen
+darf. Das Token landet dann in der Prozessliste und in `.git/config` des Containers.
+
+**Bestehende Installationen** ziehen Updates weiter von der Adresse, von der sie geklont wurden. Nach
+dem Umzug von Gitea einmal im Container umstellen:
+
+```bash
+git -C /opt/proxledger remote set-url origin https://github.com/florianwilde/ProxLedger.git
+```
 
 ## Was eine Einreichung bei community-scripts verlangen würde
 
 Wir liefern die Skripte vorerst **nur intern** aus. Für eine Einreichung wären zusätzlich nötig:
 
 1. **Öffentlich erreichbarer Quelltext.** Die Skripte dort holen die Anwendung praktisch immer aus
-   einem öffentlichen GitHub-Repository (`fetch_and_deploy_gh_release`). Ein privates Gitea genügt nicht.
+   einem öffentlichen GitHub-Repository (`fetch_and_deploy_gh_release`). Ein privates Repository genügt nicht.
 2. **Pull Request gegen [ProxmoxVED](https://github.com/community-scripts/ProxmoxVED)**, nicht gegen
    ProxmoxVE. Neue Skripte, die direkt gegen ProxmoxVE eingereicht werden, werden ohne Prüfung
    geschlossen.

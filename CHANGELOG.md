@@ -10,6 +10,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### Hinzugefügt
 
 ### Geändert
+- Repository auf GitHub umgezogen: Die CI läuft mit GitHub Actions (`.github/workflows/ci.yml`), README, Inbetriebnahme und die LXC-Skripte holen ProxLedger von `github.com/florianwilde/ProxLedger`
 
 ### Behoben
 

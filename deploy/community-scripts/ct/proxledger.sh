@@ -2,7 +2,7 @@
 # Woher die App-Skripte kommen. Ein per curl geladenes ct-Skript kann seine eigene Herkunft nicht
 # ermitteln – ohne diese Angabe sucht das Geruest install/proxledger-install.sh bei den
 # community-scripts und bricht mit 404 ab. Ueberschreibbar fuer eigene Zweige oder Forks.
-COMMUNITY_SCRIPTS_URL="${COMMUNITY_SCRIPTS_URL:-https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts}"
+COMMUNITY_SCRIPTS_URL="${COMMUNITY_SCRIPTS_URL:-https://raw.githubusercontent.com/florianwilde/ProxLedger/main/deploy/community-scripts}"
 export COMMUNITY_SCRIPTS_URL
 _CS_DEFAULT_URL="$COMMUNITY_SCRIPTS_URL"
 _cs_boot="${COMMUNITY_SCRIPTS_CORE_DIR:-$(dirname "${BASH_SOURCE[0]}")/../../core}/core/build.func"
@@ -10,7 +10,7 @@ source "$_cs_boot" 2>/dev/null || source <(curl -fsSL "${COMMUNITY_SCRIPTS_CORE_
 # Copyright (c) 2021-2026 tteck
 # Author: Florian Wilde
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
-# Source: https://git.wilde-server.de/florian.wilde/ProxLedger
+# Source: https://github.com/florianwilde/ProxLedger
 
 APP="ProxLedger"
 var_tags="${var_tags:-monitoring;licensing}"

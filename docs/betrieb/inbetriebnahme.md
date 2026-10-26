@@ -20,7 +20,7 @@ die Domäne, unter der sie entstanden sind, und die Adresse steckt im Installati
 **Docker** (beliebiger Host mit Docker):
 
 ```bash
-git clone https://git.wilde-server.de/florian.wilde/ProxLedger.git proxledger && cd proxledger
+git clone https://github.com/florianwilde/ProxLedger.git proxledger && cd proxledger
 cp .env.example .env
 # Pflicht: APP_SECRET, POSTGRES_PASSWORD, ADMIN_PASSWORD, APP_URL
 docker compose up -d
@@ -34,11 +34,17 @@ bash deploy/lxc-installer.sh                    # Container mit Docker darin
 
 ```bash
 # Nach Art der Proxmox VE Helper-Scripts, ohne Docker:
-bash -c "$(curl -fsSL https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/florianwilde/ProxLedger/main/deploy/community-scripts/ct/proxledger.sh)"
 ```
 
 Der erste Administrator entsteht beim Einrichten aus `ADMIN_EMAIL` und `ADMIN_PASSWORD`; beim
 LXC-Weg stehen die erzeugten Zugangsdaten in `/opt/proxledger/.credentials`.
+
+Das Repository liegt seit Oktober 2026 auf GitHub. Eine Installation, die noch von
+`git.wilde-server.de` geklont wurde, holt Updates weiter von dort; einmal umstellen genügt:
+`git -C <installationsverzeichnis> remote set-url origin https://github.com/florianwilde/ProxLedger.git`.
+Solange das Repository privat ist, braucht der Klon einen Lesezugriffs-Token in der Adresse –
+Einzelheiten in [deploy/community-scripts/README.md](../../deploy/community-scripts/README.md).
 
 **`APP_SECRET` gehört sofort in die Sicherung.** Er signiert die Sitzungen und verschlüsselt die
 gespeicherten Zugangsdaten für SMTP und Webhooks. Ohne ihn sind beide unbrauchbar.

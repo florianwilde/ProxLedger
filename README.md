@@ -14,7 +14,7 @@ Auf jedem Host meldet ein schlanker Agent täglich per HTTPS seinen Status (Push
 Auf einem Rechner mit Docker:
 
 ```bash
-git clone https://git.wilde-server.de/florian.wilde/ProxLedger.git proxledger && cd proxledger
+git clone https://github.com/florianwilde/ProxLedger.git proxledger && cd proxledger
 cp .env.example .env
 # Pflichtangaben setzen: APP_SECRET, POSTGRES_PASSWORD, ADMIN_PASSWORD, APP_URL
 docker compose up -d
@@ -38,7 +38,7 @@ bash deploy/lxc-installer.sh          # eigener Installer: Container mit Docker 
 
 ```bash
 # Nach Art der Proxmox VE Helper-Scripts: Container mit Node und PostgreSQL direkt darin
-bash -c "$(curl -fsSL https://git.wilde-server.de/florian.wilde/ProxLedger/raw/branch/main/deploy/community-scripts/ct/proxledger.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/florianwilde/ProxLedger/main/deploy/community-scripts/ct/proxledger.sh)"
 ```
 
 Der zweite Weg folgt den Konventionen von [community-scripts.org](https://community-scripts.org) und
@@ -90,9 +90,8 @@ Weitere Skripte:
 | `npm run pruefe:doku` | Doku, Versionen und Bilder auf Konsistenz prüfen |
 | `npm run lasttest` | Abfragen mit 200 Hosts und fünf Jahren Reports messen |
 
-Jeder Push wird von [Gitea Actions](.gitea/workflows/ci.yml) geprüft: Lint, Typen, Tests gegen eine
+Jeder Push wird von [GitHub Actions](.github/workflows/ci.yml) geprüft: Lint, Typen, Tests gegen eine
 PostgreSQL-Instanz, Build, ShellCheck für die Agent-Skripte und die Konsistenz der Dokumentation.
-Dafür muss auf dem Gitea-Server ein `act_runner` eingerichtet sein.
 
 ## Agent auf einem Proxmox-Host installieren
 
