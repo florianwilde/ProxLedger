@@ -8,6 +8,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unveröffentlicht]
 
 ### Hinzugefügt
+- Workflow `Gitea-Spiegel`: überträgt `main` und alle Tags von GitHub nach Gitea (Secret `GITEA_TOKEN`)
 
 ### Geändert
 - Repository auf GitHub umgezogen: Die CI läuft mit GitHub Actions (`.github/workflows/ci.yml`), README, Inbetriebnahme und die LXC-Skripte holen ProxLedger von `github.com/florianwilde/ProxLedger`
