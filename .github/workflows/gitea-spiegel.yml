@@ -1,0 +1,44 @@
+# Spiegelt main und alle Tags nach Gitea, sobald sie sich auf GitHub ändern.
+# GitHub ist die Quelle: Ein abweichender Stand in Gitea wird überschrieben.
+# Benötigt das Secret GITEA_TOKEN (Gitea-Zugriffstoken mit Schreibrecht auf das Repository).
+
+name: Gitea-Spiegel
+
+on:
+  push:
+    branches: [main]
+    tags: ["**"]
+  workflow_dispatch:
+
+concurrency:
+  group: gitea-spiegel
+  cancel-in-progress: false
+
+jobs:
+  spiegeln:
+    if: github.repository == 'florianwilde/ProxLedger'
+    runs-on: ubuntu-latest
+    env:
+      GITEA_URL: https://git.wilde-server.de/florian.wilde/ProxLedger.git
+      GITEA_BENUTZER: florian.wilde
+
+    steps:
+      - name: Quelltext mit Verlauf und Tags holen
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Nach Gitea übertragen
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+        run: |
+          if [ -z "$GITEA_TOKEN" ]; then
+            echo "::error::Secret GITEA_TOKEN fehlt (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          anmeldung=$(printf '%s:%s' "$GITEA_BENUTZER" "$GITEA_TOKEN" | base64 -w0)
+          echo "::add-mask::$anmeldung"
+          git fetch --tags --force origin
+          git -c http.extraheader="Authorization: Basic $anmeldung" \
+            push --force "$GITEA_URL" refs/remotes/origin/main:refs/heads/main 'refs/tags/*:refs/tags/*'

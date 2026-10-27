@@ -93,6 +93,10 @@ Weitere Skripte:
 Jeder Push wird von [GitHub Actions](.github/workflows/ci.yml) geprüft: Lint, Typen, Tests gegen eine
 PostgreSQL-Instanz, Build, ShellCheck für die Agent-Skripte und die Konsistenz der Dokumentation.
 
+Ein zweiter Workflow ([Gitea-Spiegel](.github/workflows/gitea-spiegel.yml)) überträgt `main` und alle
+Tags nach `git.wilde-server.de`. Er braucht das Repository-Secret `GITEA_TOKEN`: ein Gitea-Zugriffstoken
+mit Schreibrecht auf Repositories. GitHub ist die Quelle – was nur in Gitea liegt, wird überschrieben.
+
 ## Agent auf einem Proxmox-Host installieren
 
 ```bash
