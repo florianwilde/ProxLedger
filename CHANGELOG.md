@@ -8,6 +8,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unveröffentlicht]
 
 ### Hinzugefügt
+- Workflow `Sicherheitsprüfung`: `npm audit` wöchentlich und bei jeder Änderung an den Abhängigkeiten, rot ab einer hohen Meldung
 - Workflow `Gitea-Spiegel`: überträgt `main` und alle Tags von GitHub nach Gitea (Secret `GITEA_TOKEN`)
 - Releases auch auf GitHub: `npm run releases:sync` bedient GitHub und Gitea, ein Workflow legt bei jedem neuen Tag auf beiden Seiten die Release an
 
@@ -21,6 +22,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### Entfernt
 
 ### Sicherheit
+- `zod` 4.6.7 (Speicher erschöpfbar bei großen Sammlungen), `nodemailer` 10.3.1 (Adress-Parser, DoS bei SMTP AUTH) und `vite` 8.3.5 angehoben – `npm audit fix` ohne Major-Sprünge
 
 ## [1.0.1] – 2026-10-25
 

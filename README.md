@@ -92,6 +92,8 @@ Weitere Skripte:
 
 Jeder Push wird von [GitHub Actions](.github/workflows/ci.yml) geprüft: Lint, Typen, Tests gegen eine
 PostgreSQL-Instanz, Build, ShellCheck für die Agent-Skripte und die Konsistenz der Dokumentation.
+Die [Sicherheitsprüfung](.github/workflows/audit.yml) führt montags und bei jeder Änderung an den
+Abhängigkeiten `npm audit` aus und schlägt ab einer hohen Meldung fehl.
 
 Ein zweiter Workflow ([Gitea-Spiegel](.github/workflows/gitea-spiegel.yml)) überträgt `main` und alle
 Tags nach `git.wilde-server.de` und legt bei einem neuen Tag dort die Release an. Er braucht das Repository-Secret `GITEA_TOKEN`: ein Gitea-Zugriffstoken

@@ -32,7 +32,8 @@ Alle Kriterien erfüllt:
 Zwei kleinere Punkte bleiben offen, keiner davon hält 1.0.0 auf:
 
 - Die Wiederherstellungsprobe für die **Installation als Dienst** (geprobt ist der Docker-Weg).
-- Ein **wöchentlicher `npm audit`-Lauf in der CI**. Zwei Wartungsblicke hintereinander haben hohe bis
+- ~~Ein **wöchentlicher `npm audit`-Lauf in der CI**.~~ **Erledigt am 04.11.2026**
+  ([Sicherheitsprüfung](../.github/workflows/audit.yml)). Zwei Wartungsblicke hintereinander haben hohe bis
   kritische Meldungen gefunden – zuletzt zwei kritische Lücken in Next.js. Bei einem öffentlich
   erreichbaren Dashboard gehört das automatisiert.
 
