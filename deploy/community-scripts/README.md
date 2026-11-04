@@ -50,14 +50,15 @@ Zwei Umgebungsvariablen steuern, woher der Container ProxLedger klont:
 PROXLEDGER_REPO=https://github.com/<nutzer>/ProxLedger.git PROXLEDGER_BRANCH=main bash -c "$(curl -fsSL …)"
 ```
 
-**Solange das Repository privat ist**, liefert `raw.githubusercontent.com` ohne Anmeldung nur 404 –
-der Einzeiler funktioniert dann nicht, und das Gerüst kann `install/proxledger-install.sh` nicht
-nachladen. Für den Klon allein genügt ein Lesezugriffs-Token in der Adresse
-(`https://<token>@github.com/...`), am besten ein Fine-grained Token, der nur dieses Repository lesen
-darf. Das Token landet dann in der Prozessliste und in `.git/config` des Containers.
+Das Repository ist öffentlich; Einzeiler und Klon kommen ohne Anmeldung aus. Nur ein **privater Fork**
+braucht für den Klon einen Lesezugriffs-Token in der Adresse (`https://<token>@github.com/...`), am
+besten ein Fine-grained Token, der nur dieses Repository lesen darf. Das Token landet dann in der
+Prozessliste und in `.git/config` des Containers. Den Einzeiler selbst liefert
+`raw.githubusercontent.com` bei einem privaten Repository nicht aus.
 
-**Bestehende Installationen** ziehen Updates weiter von der Adresse, von der sie geklont wurden. Nach
-dem Umzug von Gitea einmal im Container umstellen:
+**Bestehende Installationen** ziehen Updates weiter von der Adresse, von der sie geklont wurden. Von
+Gitea geklonte bleiben aktuell, weil `main` und alle Tags dorthin gespiegelt werden. Wer direkt von
+GitHub holen will, stellt einmal im Container um:
 
 ```bash
 git -C /opt/proxledger remote set-url origin https://github.com/florianwilde/ProxLedger.git

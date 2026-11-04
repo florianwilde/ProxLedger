@@ -12,6 +12,8 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 - Releases auch auf GitHub: `npm run releases:sync` bedient GitHub und Gitea, ein Workflow legt bei jedem neuen Tag auf beiden Seiten die Release an
 
 ### Geändert
+- GitHub Actions auf `actions/checkout@v7` und `actions/setup-node@v7` angehoben (Node 24 statt des auslaufenden Node 20)
+- Hinweise auf ein privates Repository aus der Installationsdoku entfernt – das Repository ist öffentlich
 - Repository auf GitHub umgezogen: Die CI läuft mit GitHub Actions (`.github/workflows/ci.yml`), README, Inbetriebnahme und die LXC-Skripte holen ProxLedger von `github.com/florianwilde/ProxLedger`
 
 ### Behoben

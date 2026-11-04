@@ -44,8 +44,6 @@ Das Repository liegt seit Oktober 2026 auf GitHub. Eine Installation, die noch v
 `git.wilde-server.de` geklont wurde, holt Updates weiter von dort. Das bleibt so in Ordnung, weil ein
 Workflow `main` und alle Tags nach Gitea spiegelt. Wer trotzdem direkt von GitHub holen will:
 `git -C <installationsverzeichnis> remote set-url origin https://github.com/florianwilde/ProxLedger.git`.
-Solange das Repository privat ist, braucht der Klon einen Lesezugriffs-Token in der Adresse –
-Einzelheiten in [deploy/community-scripts/README.md](../../deploy/community-scripts/README.md).
 
 **`APP_SECRET` gehört sofort in die Sicherung.** Er signiert die Sitzungen und verschlüsselt die
 gespeicherten Zugangsdaten für SMTP und Webhooks. Ohne ihn sind beide unbrauchbar.
