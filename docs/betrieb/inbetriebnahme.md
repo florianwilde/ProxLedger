@@ -41,7 +41,8 @@ Der erste Administrator entsteht beim Einrichten aus `ADMIN_EMAIL` und `ADMIN_PA
 LXC-Weg stehen die erzeugten Zugangsdaten in `/opt/proxledger/.credentials`.
 
 Das Repository liegt seit Oktober 2026 auf GitHub. Eine Installation, die noch von
-`git.wilde-server.de` geklont wurde, holt Updates weiter von dort; einmal umstellen genügt:
+`git.wilde-server.de` geklont wurde, holt Updates weiter von dort. Das bleibt so in Ordnung, weil ein
+Workflow `main` und alle Tags nach Gitea spiegelt. Wer trotzdem direkt von GitHub holen will:
 `git -C <installationsverzeichnis> remote set-url origin https://github.com/florianwilde/ProxLedger.git`.
 Solange das Repository privat ist, braucht der Klon einen Lesezugriffs-Token in der Adresse –
 Einzelheiten in [deploy/community-scripts/README.md](../../deploy/community-scripts/README.md).

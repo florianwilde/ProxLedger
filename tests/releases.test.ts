@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { changelogZerlegen } from "../scripts/gitea-releases";
+import { changelogZerlegen, neuesteFassung, remoteZerlegen } from "../scripts/releases";
 
-/** Zerlegung des CHANGELOG in Release-Abschnitte (#046). */
+/** Zerlegung des CHANGELOG in Release-Abschnitte (#046) und Hilfen für GitHub und Gitea. */
 
 const BEISPIEL = `# Changelog
 
@@ -50,5 +50,45 @@ describe("CHANGELOG zerlegen", () => {
 
   it("kommt mit einem Changelog ohne Fassungen zurecht", () => {
     expect(changelogZerlegen("# Changelog\n\nNoch nichts veröffentlicht.\n")).toEqual([]);
+  });
+});
+
+describe("neueste Fassung", () => {
+  it("vergleicht Versionsnummern, nicht Zeichenketten", () => {
+    const fassungen = ["v0.9.0", "v0.10.0", "v0.27.1"].map((tag) => ({
+      tag,
+      titel: tag,
+      text: "",
+      datum: null,
+    }));
+    expect(neuesteFassung(fassungen)).toBe("v0.27.1");
+  });
+
+  it("findet sie unabhängig von der Reihenfolge", () => {
+    expect(neuesteFassung(changelogZerlegen(BEISPIEL))).toBe("v1.0.0");
+  });
+
+  it("liefert nichts ohne Fassungen", () => {
+    expect(neuesteFassung([])).toBeNull();
+  });
+});
+
+describe("Remote zerlegen", () => {
+  it("erkennt ein GitHub-Remote", () => {
+    expect(remoteZerlegen("https://github.com/florianwilde/ProxLedger")).toEqual({
+      host: "github.com",
+      repo: "florianwilde/ProxLedger",
+    });
+  });
+
+  it("entfernt .git und Zugangsdaten", () => {
+    expect(remoteZerlegen("https://nutzer:geheim@git.example.de/fw/ProxLedger.git\n")).toEqual({
+      host: "git.example.de",
+      repo: "fw/ProxLedger",
+    });
+  });
+
+  it("lehnt SSH-Adressen ab", () => {
+    expect(remoteZerlegen("git@github.com:florianwilde/ProxLedger.git")).toBeNull();
   });
 });

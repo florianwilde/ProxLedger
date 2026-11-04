@@ -94,7 +94,7 @@ Jeder Push wird von [GitHub Actions](.github/workflows/ci.yml) geprüft: Lint, T
 PostgreSQL-Instanz, Build, ShellCheck für die Agent-Skripte und die Konsistenz der Dokumentation.
 
 Ein zweiter Workflow ([Gitea-Spiegel](.github/workflows/gitea-spiegel.yml)) überträgt `main` und alle
-Tags nach `git.wilde-server.de`. Er braucht das Repository-Secret `GITEA_TOKEN`: ein Gitea-Zugriffstoken
+Tags nach `git.wilde-server.de` und legt bei einem neuen Tag dort die Release an. Er braucht das Repository-Secret `GITEA_TOKEN`: ein Gitea-Zugriffstoken
 mit Schreibrecht auf Repositories. GitHub ist die Quelle – was nur in Gitea liegt, wird überschrieben.
 
 ## Agent auf einem Proxmox-Host installieren
@@ -178,8 +178,11 @@ npm run issues:sync -- --dry-run    # zeigt nur, was passieren würde
 npm run issues:sync                 # echter Abgleich
 ```
 
-Dasselbe gilt für Releases: `npm run releases:sync` legt zu jedem Tag einen Eintrag unter *Releases*
-an und nimmt den passenden Abschnitt aus dem CHANGELOG als Beschreibung (`--dry-run` zeigt es nur an).
+**Releases** entstehen automatisch: Bei jedem neuen Tag legen die Workflows
+[Releases](.github/workflows/releases.yml) (GitHub) und [Gitea-Spiegel](.github/workflows/gitea-spiegel.yml)
+(Gitea) einen Eintrag an, Titel und Beschreibung aus dem passenden Abschnitt des CHANGELOG. Von Hand geht
+es mit `npm run releases:sync` (`--dry-run` zeigt es nur an, `--ziel github` oder `--ziel gitea` nimmt
+nur eines der beiden). Der Token für GitHub kommt aus `GITHUB_TOKEN`, der für Gitea aus `GITEA_TOKEN`.
 
 Serveradresse und Repository liest das Skript aus dem Git-Remote, den Token aus den hinterlegten
 Git-Zugangsdaten (Schlüsselbund oder `~/.git-credentials`) – derselbe Token wie fürs Pushen, er braucht

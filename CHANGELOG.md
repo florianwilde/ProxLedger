@@ -9,6 +9,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Hinzugefügt
 - Workflow `Gitea-Spiegel`: überträgt `main` und alle Tags von GitHub nach Gitea (Secret `GITEA_TOKEN`)
+- Releases auch auf GitHub: `npm run releases:sync` bedient GitHub und Gitea, ein Workflow legt bei jedem neuen Tag auf beiden Seiten die Release an
 
 ### Geändert
 - Repository auf GitHub umgezogen: Die CI läuft mit GitHub Actions (`.github/workflows/ci.yml`), README, Inbetriebnahme und die LXC-Skripte holen ProxLedger von `github.com/florianwilde/ProxLedger`

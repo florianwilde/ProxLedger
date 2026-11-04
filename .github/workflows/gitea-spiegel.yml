@@ -1,4 +1,5 @@
-# Spiegelt main und alle Tags nach Gitea, sobald sie sich auf GitHub ändern.
+# Spiegelt main und alle Tags nach Gitea, sobald sie sich auf GitHub ändern; bei einem Tag
+# legt der zweite Job danach die Releases in Gitea an.
 # GitHub ist die Quelle: Ein abweichender Stand in Gitea wird überschrieben.
 # Benötigt das Secret GITEA_TOKEN (Gitea-Zugriffstoken mit Schreibrecht auf das Repository).
 
@@ -42,3 +43,32 @@ jobs:
           git fetch --tags --force origin
           git -c http.extraheader="Authorization: Basic $anmeldung" \
             push --force "$GITEA_URL" refs/remotes/origin/main:refs/heads/main 'refs/tags/*:refs/tags/*'
+
+  releases:
+    # Erst nach dem Spiegeln: Gitea würde ein fehlendes Tag sonst selbst anlegen, am falschen Commit.
+    needs: spiegeln
+    if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Quelltext mit Tags holen
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci --ignore-scripts
+
+      - name: Releases in Gitea abgleichen
+        env:
+          GITEA_URL: https://git.wilde-server.de
+          GITEA_REPO: florian.wilde/ProxLedger
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+        run: npm run releases:sync -- --ziel gitea
