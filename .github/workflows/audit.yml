@@ -1,0 +1,49 @@
+# Prüft die Abhängigkeiten wöchentlich auf bekannte Sicherheitslücken – und immer dann, wenn sich
+# package.json oder package-lock.json ändern. Rot wird der Lauf ab einer hohen Meldung; mittlere und
+# niedrige stehen nur in der Zusammenfassung. Schlägt der wöchentliche Lauf fehl, schickt GitHub eine
+# E-Mail.
+
+name: Sicherheitsprüfung
+
+on:
+  schedule:
+    # Montags 05:17 UTC (06:17 bzw. 07:17 in Deutschland).
+    - cron: "17 5 * * 1"
+  push:
+    branches: [main]
+    paths: [package.json, package-lock.json]
+  pull_request:
+    paths: [package.json, package-lock.json]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Quelltext holen
+        uses: actions/checkout@v7
+
+      - name: Node einrichten
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: npm audit
+        run: |
+          set +e
+          npm audit --audit-level=high > audit.txt
+          ergebnis=$?
+          set -e
+          {
+            echo "## npm audit"
+            echo
+            echo '```'
+            tail -n 60 audit.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat audit.txt
+          exit $ergebnis
