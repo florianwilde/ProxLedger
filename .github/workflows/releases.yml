@@ -1,0 +1,41 @@
+# Legt zu jedem Tag eine GitHub-Release an, Titel und Beschreibung aus dem CHANGELOG.
+# Die Gitea-Releases entstehen im Workflow Gitea-Spiegel, nachdem die Tags dort angekommen sind.
+
+name: Releases
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: releases-github
+  cancel-in-progress: false
+
+jobs:
+  github:
+    if: github.repository == 'florianwilde/ProxLedger'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Quelltext mit Tags holen
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci --ignore-scripts
+
+      - name: Releases abgleichen
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run releases:sync -- --ziel github
